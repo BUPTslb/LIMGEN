@@ -38,6 +38,11 @@ j = tj.visit_HdlContext(d)
                 #  indent=4, separators=(',', ': ')))
 # 以上函数会对生成的json进行可视化友好的输出
 # d的类型<'hdlConvertorAst.hdlAst._structural.HdlContext'>
+# print('type of j=:', type(j), '\n')
+# pretty print json
+# print(json.dumps(j, sort_keys=True,
+#                  indent=4, separators=(',', ': ')))
+
 # obj有两种类型：
 # <class 'hdlConvertorAst.hdlAst._structural.HdlModuleDec'> 声明，entity部分
 # <class 'hdlConvertorAst.hdlAst._structural.HdlModuleDef'> 定义，architecture部分
