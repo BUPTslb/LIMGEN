@@ -14,14 +14,14 @@ signal B: bit_vector(7 downto 0);
 signal C: bit_vector(7 downto 0);
 signal D: bit_vector(7 downto 0);
 begin
-
+--当前只处理两个操作数的情况，多个呢？
 process(clk)
 begin
 	A <= in1 and in2;
 	B <= in1 or in2;
 	C <= A xor B ;
 	D <= C sll 1;
-
+--有elseif的当前不太会处理
 	if   A<0    then
 		A <= not A;
 	elsif A=0	then

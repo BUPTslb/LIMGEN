@@ -4,5 +4,11 @@
 			"path": ".."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"iosfwd": "cpp",
+			"ostream": "cpp",
+			"iostream": "cpp"
+		}
+	}
 }
