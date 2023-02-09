@@ -1,3 +1,0 @@
-/home/shenlibo/CLionProjects/Synthesis/LogicPro/cmake-build-debug/CMakeFiles/LogicPro.dir
-/home/shenlibo/CLionProjects/Synthesis/LogicPro/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/shenlibo/CLionProjects/Synthesis/LogicPro/cmake-build-debug/CMakeFiles/rebuild_cache.dir

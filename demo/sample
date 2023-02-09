@@ -1,5 +1,0 @@
-#include <iostream>
-#include <ffmpeg/avcodec.h>
-#include "stdio.h"
-#     include "space.h"
-# include "../aa.h"
