@@ -54,7 +54,7 @@ int main()
     map<int,int> op_map;//存储op类型的id索引关系，input做键
     
     //1.先读一个节点让其输出
-    ifstream file("../hdlAst/hdlast.json");
+    ifstream file("../hdlAst/hdlast2.json");
     stringstream buffer;
     buffer << file.rdbuf();
     string content(buffer.str());
@@ -67,6 +67,7 @@ int main()
         cout<<"IsString的功能："<<d[0]["Input"].IsString()<<endl;
         cout<<"IsString的功能："<<d[0]["Input"][1].IsString()<<endl;
         cout<<"IsString的功能："<<d[0]["Node_ID"].IsString()<<endl;
+        cout<<"IsString的功能："<<d[0]["Node_ID"].IsInt()<<endl;
         cout<<"HasMember的功能："<<d[0].HasMember("Dst")<<endl;
     //***********************************************************    
     int json_size=d.Size();//整个数组的尺寸（节点的数量）
@@ -133,7 +134,7 @@ int main()
             //Branch和loop没有input
             //如果有“Input”，得到input的数量
         type_id=Type2node(d[i]["Type"].GetString());
-        map<int,bool> input_depend;//构建hash表，存储当前输入，如果前面找到了前驱依赖，值为true
+        map<int,bool> input_depend;//每次i都构建hash表，存储当前输入（最多两个），如果前面找到了前驱依赖，值为true
         if(d[i].HasMember("Input"))
         {
             num_input=d[i]["Input"].IsArray() ? d[i]["Input"].Size() : 1; 
@@ -146,7 +147,7 @@ int main()
             if(d[j].HasMember("Dst"))
             {
                 string key_dst=d[j]["Dst"].GetString();
-                if(dst_id[key_dst]&&(dst_id[key_dst]>j+1))//已经存在，且值比j大
+                if(dst_id[key_dst]&&(dst_id[key_dst]>j+1)&&(dst_id[key_dst]<i+1))//已经存在，且值比j大,但是比i+1小
                     break;
                 else //不存在，或者位置错了
                     dst_id[key_dst]=j+1;
@@ -163,34 +164,46 @@ int main()
                     string name_in1=d[i]["Input"][0].GetString();
                     string name_in2=d[i]["Input"][1].GetString();
                     int id_dst;
-                    if(dst_id[name_in1]&&(!input_depend[0]))//存在且未被输出
+                    if(dst_id[name_in1]&&(!input_depend[0])&&(dst_id[name_in1]<i+1))//存在且未被输出且节点对应关系正确
                     {   
                         input_depend[0]=true;
-                        cout<<"输入数量为string2，in1存在数据依赖："<<dst_id[name_in1]<<"->"<<i+1<<"  j= "<<j<<endl;
+                        cout<<"输入数量为string2，in1存在数据依赖："<<dst_id[name_in1]<<"->"<<i+1<<endl;
                     }
-                    if(dst_id[name_in2]&&(!input_depend[1]))//存在
+                    if(dst_id[name_in2]&&(!input_depend[1])&&(dst_id[name_in2]<i+1))//存在
                     {
                         input_depend[1]=true;
-                        cout<<"输入数量为string2，in2存在数据依赖："<<dst_id[name_in2]<<"->"<<i+1<<"  j="<<j<<endl;
+                        cout<<"输入数量为string2，in2存在数据依赖："<<dst_id[name_in2]<<"->"<<i+1<<endl;
                         break;  
                     }      
                 }
                 else //Op输入数量为1
                 {
-                    
                     string input_name=d[i]["Input"][0].GetString();
-                    if(dst_id[input_name])//存在
+                    if(dst_id[input_name]&&(dst_id[input_name]<i+1)&&(!input_depend[0]))//存在且值比i+1小且没输出过
                     {
                         input_depend[0]=true;
-                        cout<<"输入数量为string1，存在数据依赖："<<j+1<<"->"<<dst_id[input_name]<<endl;
-                    }
-                    
+                        cout<<"输入数量为string1，存在数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
+                    }   
                 }
             }
                 break;
-            case 2://类型为assign
+            case 2://类型为assign,默认只有一个输入
             {
-                int a=0;
+                //如果input是ID，则直接输出
+                if(d[i]["Input"].IsInt()&& !input_depend[0])
+                {
+                    input_depend[0]=true;
+                    cout<<"节点"<<i+1<<"的输入为int,ID: "<<d[i]["Input"].GetInt()<<"数据依赖："<<d[i]["Input"].GetInt()<<"->"<<i+1<<endl;
+                }
+                //如果input是数，搜索hash表（立即数和变量名都会被表示为string）
+                if(d[i]["Input"].IsString()&& !input_depend[0])
+                {
+                    input_depend[0]=true;
+                    string input_name=d[i]["Input"].GetString();
+                    cout<<"节点"<<i+1<<"的输入为string,ID: "<<dst_id[input_name]<<"数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
+                }
+                
+
             }
                 break;
             case 3://类型为branch
