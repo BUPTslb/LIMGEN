@@ -1,2 +1,4 @@
 {
+  "editor.suggestSelection": "recentlyUsed",
+  "editor.suggest.snippetsPreventQuickSuggestions": false
 }

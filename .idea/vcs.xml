@@ -2,8 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/AES" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/CGRA-Mapper" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/LogicPro/CDFG/VHDL-AST" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/TriLogic" vcs="" />
+    <mapping directory="$PROJECT_DIR$/hdlAst" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rapidjson" vcs="Git" />
   </component>
 </project>

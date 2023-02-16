@@ -24,12 +24,14 @@ begin
 --有elseif的当前不太会处理
 	if   A<0    then
 		A <= not A;
-	elsif A=0	then
-		A <= B;
-		A <=A+B;
+	-- elsif A=0	then
+	-- 	A <= B;
+	-- 	A <=A+B;
 	else
 		A<= not A;
 	end if;
+--立即数
+	A <= -1;
 
 	while D<0 loop
 		D <= D sll 1;
