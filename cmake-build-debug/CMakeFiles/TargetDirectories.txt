@@ -1,0 +1,3 @@
+/home/shenlibo/CLionProjects/Synthesis/cmake-build-debug/CMakeFiles/Synthesis.dir
+/home/shenlibo/CLionProjects/Synthesis/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/shenlibo/CLionProjects/Synthesis/cmake-build-debug/CMakeFiles/rebuild_cache.dir

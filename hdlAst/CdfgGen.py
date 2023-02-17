@@ -34,15 +34,13 @@ d = c.parse(filenames, Language.VHDL_2008, include_dirs,
 tj = ToJson()
 j = tj.visit_HdlContext(d)
 # j就是解析之后的VHDL代码,输出其类型为<list>
-# print(json.dumps(j, sort_keys=True,
-                #  indent=4, separators=(',', ': ')))
+print(json.dumps(j, sort_keys=True,
+                 indent=4, separators=(',', ': ')))
 # 以上函数会对生成的json进行可视化友好的输出
 # d的类型<'hdlConvertorAst.hdlAst._structural.HdlContext'>
 # print('type of j=:', type(j), '\n')
-# pretty print json
-# print(json.dumps(j, sort_keys=True,
-#                  indent=4, separators=(',', ': ')))
-
+for o in d.objs:
+    print('type of d.objs:\n',type(o),'\n',o)
 # obj有两种类型：
 # <class 'hdlConvertorAst.hdlAst._structural.HdlModuleDec'> 声明，entity部分
 # <class 'hdlConvertorAst.hdlAst._structural.HdlModuleDef'> 定义，architecture部分
@@ -78,13 +76,12 @@ def DoAssign(body, N):
 
 def DoIf(body, N):
     # 定义函数处理If类型
-    # elif类型：列表[元组]，现将其改成list类型。可能为空，要先做判断
-    if body.elifs:  # 列表不为空
-        body.elifs[0] = list(body.elifs[0])
-        # print('Type     : Elsif')
-        N = DoOp(body.elifs[0][0], N)
-        N = DoBlock(body.elifs[0][1], N)
+    # cond类型：
+    if body.cond:
+        N=DoOp(body.cond,N)
+        N_cond = N  # 记录条件的位置
     if body.if_true:
+        #把condition的节点加上
         list_true = []
         True_start = N
         # print('---Statements When True---')
@@ -92,6 +89,14 @@ def DoIf(body, N):
         True_end = N
         for i in range(True_start+1, True_end+1):
             list_true.append(i)
+    # elif类型：列表[元组]，现将其改成list类型。可能为空，要先做判断
+    if body.elifs:  # 列表不为空
+        #false指向elifs或者if_false
+        body.elifs[0] = list(body.elifs[0])
+        print('Type     : Elsif')
+        N = DoOp(body.elifs[0][0], N) #处理elseif的条件节点
+        elsif_op=N
+        N = DoBlock(body.elifs[0][1], N)
     if body.if_false:
         false_start = N
         list_false = []
@@ -100,14 +105,13 @@ def DoIf(body, N):
         false_end = N
         for i in range(false_start+1, false_end+1):
             list_false.append(i)
-
     # cond类型：包含条件和if判断两部分，其中if部分要输出T和F分别的指向
     # 输出条件节点
-    N = DoOp(body.cond, N)
-    N_cond = N  # 记录条件的位置
+    # N = DoOp(body.cond, N)
+    
     # 输出分支节点
     N = Node_ID(N)
-    dic.append(dict(Node_ID=N, Type='Branch',
+    dic.append(dict(Node_ID=N, condition=N_cond,Type='Branch',
                     Statement_when_true=list_true, Statement_when_false=list_false))
     print(dic[N-1], '\n')
     return N
@@ -117,11 +121,12 @@ def DoWhile(body, N):
     # 定义函数处理While类型
     # 循环也是分支结构节点，在条件判断下增加一个分支节点，将loop内容输出
     # 进入Block中的节点，和返回Block的节点之间存在一个数量差，就是循环中的节点数量
+    
+    N = DoOp(body.cond, N)
+    N_cond = N  # 记录条件的节点号码
     N0 = N  # 起始节点
     N = DoBlock(body.body, N)
     N1 = N  # 终止节点
-    N = DoOp(body.cond, N)
-    N_cond = N  # 记录条件的节点号码
     N = Node_ID(N)
     # 应该创建一个列表，记录LOOP中的所有节点号码然后输出，因此先处理内部，在处理外部
 
@@ -179,10 +184,10 @@ for o in d.objs:
                 print(json.dumps(dic, sort_keys=True, cls=MyEncoder,
                                  indent=4, separators=(',', ': ')))
                 # 将输出设置为json文件，其中包含节点信息，可以由此进行CDFG的绘制
-                # out_file = open("hdlast.json", "w")
-                # json.dump(dic, out_file, indent=4,
-                #           sort_keys=True, cls=MyEncoder)
-                # out_file.close()
+                out_file = open("hdlast2.json", "w")
+                json.dump(dic, out_file, indent=4,
+                          sort_keys=True, cls=MyEncoder)
+                out_file.close()
     # HdlStmProcess的body是HdlStmBlock
     # HdlStmBlock的body是[],列表类型list
 # 开始绘制CDFG图：主要就是圆圈方块和三角，实线虚线
