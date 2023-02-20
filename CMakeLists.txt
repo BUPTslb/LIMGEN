@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Synthesis
         TriLogic/Func_main.cpp
+        TriLogic/logic_func.cpp
+        TriLogic/logic_func.h
         TriLogic/rapidjson/document.h
 
         )

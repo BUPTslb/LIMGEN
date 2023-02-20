@@ -30,10 +30,27 @@ begin
 	else
 		A<= not A;
 	end if;
+
+	if D>0 then
+	    D<=D sll 1;
+	else
+	    D<=D srl 1;
+	end if;
+
 --立即数
 	A <= -1;
+	while A<0 loop
+	    A <= A srl 1;
+	end loop;
 
-	while D<0 loop
+--嵌套
+	while D>0 loop
+	    if D < 5 then
+	        if A >0 then
+	            D<=D+A;
+	        end if;
+	    end if;
+
 		D <= D sll 1;
 	end loop ; -- identifier
 
