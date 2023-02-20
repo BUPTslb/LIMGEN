@@ -34,7 +34,7 @@ struct ControlStep{
 };
 
 int Type2node(string type);//Type2node函数的声明
-Node * find_node_by_number(const std::vector<Node>& nodes, int node_id);//寻找节点指针的函数声明
+Node * find_node_by_number(std::vector<Node>& nodes, int node_id);//寻找节点指针的函数声明
 
 int main()
 {
@@ -170,14 +170,20 @@ int main()
                 {
                     cout<<d[i]["Statement_when_true"][there].GetInt()<<"   ";
                     Node *a=find_node_by_number(nodes,d[i]["Statement_when_true"][there].GetInt());
-                    a->control=con_node;//分支节点的控制指针指向条件节点
+                    if(a!=NULL && a->control==NULL)//a不是控制节点,且当前控制节点没有指向
+                    {
+                        a->control=con_node;
+                    }
                 }
                 cout<<endl<<"F：";
                 for(int there=0;there<sizeofF;there++)
                 {
                     cout<<d[i]["Statement_when_false"][there].GetInt()<<"   ";
                     Node *b=find_node_by_number(nodes,d[i]["Statement_when_false"][there].GetInt());
-                    b->control=con_node;//分支节点的控制指针指向条件节点
+                    if(b!=NULL && b->control==NULL)//b不是控制节点,且当前控制节点没有指向
+                    {
+                        b->control=con_node;
+                    }
                 }
                 cout<<endl;
             
@@ -197,8 +203,13 @@ int main()
                     cout<<there_id<<endl;
                     //1.该节点可能是OP，没有Dst，所以要先对类型进行判断
                     //2.条件节点判断的输入也可能有多个，最好写成函数，直接套用OP之间的依赖
+                    //问题：there_id可能根本不在nodes中，nodes的依赖可能有很多，需要找到他的直接依赖
                     Node* a= find_node_by_number(nodes,there_id);
-                    a->control=con_node;
+                    if(a!=NULL && a->control==NULL)//a不是控制节点,且当前控制节点没有指向
+                    {
+                        a->control=con_node;
+                    }
+
                 }
         
         }
@@ -291,7 +302,10 @@ int main()
      * 下面进行新一轮循环
      * 循环对象为nodes
      * 构建控制步
+     * 使用的逻辑不同，控制步也会不同，这时要开始设计空间探索
      *******************************/
+
+
 
 
 
@@ -311,7 +325,7 @@ int Type2node(string type){
         return 0;
 }
 //根据节点id，返回节点指针
-Node * find_node_by_number(vector<Node>& nodes, int node_id) {
+Node * find_node_by_number(std::vector<Node>& nodes, int node_id) {
     auto it = std::find_if(nodes.begin(), nodes.end(),
                            [node_id](const Node& node) {
                                return node.node_id == node_id;
