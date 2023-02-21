@@ -24,9 +24,6 @@ begin
 --有elseif的当前不太会处理
 	if   A<0    then
 		A <= not A;
-	-- elsif A=0	then
-	-- 	A <= B;
-	-- 	A <=A+B;
 	else
 		A<= not A;
 	end if;
@@ -38,7 +35,9 @@ begin
 	end if;
 
 --立即数
-	A <= -1;
+	A <= 10010111;
+	B <= 123;
+	C <= 555;
 	while A<0 loop
 	    A <= A srl 1;
 	end loop;
