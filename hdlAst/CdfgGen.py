@@ -73,7 +73,6 @@ def DoAssign(body, N):
     print(dic[N-1], '\n')
     return N
 
-
 def DoIf(body, N):
     # 定义函数处理If类型
     #先定义好list_true和false放在前面
@@ -194,24 +193,4 @@ for o in d.objs:
                 out_file.close()
     # HdlStmProcess的body是HdlStmBlock
     # HdlStmBlock的body是[],列表类型list
-# 开始绘制CDFG图：主要就是圆圈方块和三角，实线虚线
-# 将列表转换为DOT语言
-# 类型Digraph，先实例化一个对象
-# dot = Digraph(comment='The Round Table')
 
-
-# def change(obj):
-#     if obj["Type"] == "Assign":
-#         return obj["Operation"]
-#     if obj["Type"] == "Op":
-#         return obj["Operation"]
-#     if obj["Type"] == "Loop":
-#         return "Loop"
-#     if obj["Type"] == "Branch":
-#         return "Branch"
-#     else:
-#         return obj
-
-
-# for i in dic:
-#     dot.node(i["Node_ID"])
