@@ -61,6 +61,12 @@ build CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o: CXX_COMPILER__Synthesi
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
 
+build CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/mainfunc.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Synthesis
@@ -69,7 +75,7 @@ build CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o: CXX_COMPILER__Synthesi
 #############################################
 # Link the executable Synthesis
 
-build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o
+build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   POST_BUILD = :

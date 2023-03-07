@@ -1,44 +1,15 @@
-#include<iostream>
-#include<fstream>
-#include<sstream>
-#include<map>
-#include<SDL2/SDL.h>
-#include<typeinfo>
-#include <algorithm>
-#include"rapidjson/document.h"
-#include"logic_func.h"
-#include "vector"
-#include <queue>
+#include "mainfunc.h"
 #include <algorithm>
 using namespace rapidjson;
 using namespace std;
-
 //设计空间探索的限制
 double cycle_limit=500;//运行时间(速度)限制，单位：周期
 double area_limit=1000;//面积限制，单位：
 double power_limit=10;//功耗限制，单位：
-//测试迭代次数
-int test=0;
-/*节点中包含的字符串，用作匹配*/
-string op= "Op";
-string assign="Assign";
-string branch="Branch";
-string loop="Loop";
-//绘制节点依赖关系的图形
-const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 480;
-//定义节点类型
-struct Node{
-    int node_id;//节点ID,用来代表节点
-    string operator_name;//算子，只算有操作的，用来选逻辑族，也能判断是不是写操作
-    Node* depend1=NULL;//两个数据依赖指针,初始定义为NULL
-    Node* depend2=NULL;//指向前面
-    Node* control=NULL;//控制依赖
-};
-
-int Type2node(string type);//Type2node函数的声明
-Node * find_node_by_number(std::vector<Node>& nodes, int node_id);//寻找节点指针的函数声明
-
+//定义数据的位数，这个后期要修改，从CDFG中得到
+int bit_num_operand=32;//暂时定义为32
+//优化目标
+int target=1;//1速度，2面积，3功耗
 int main()
 {
     //三种阵列使用的数量
@@ -163,11 +134,11 @@ int main()
                 Node* con_node= find_node_by_number(nodes,con);//条件节点的指针
                 int sizeofT=d[i]["Statement_when_true"].Size();//T的节点数目
                 int sizeofF=d[i]["Statement_when_false"].Size();//F的节点数目
-                cout<<"分支节点依赖"<<endl<<"条件节点:"<<con<<"  size of true:"<<sizeofT<<endl;
-                cout<<"T：";
+//                cout<<"分支节点依赖"<<endl<<"条件节点:"<<con<<"  size of true:"<<sizeofT<<endl;
+//                cout<<"T：";
                 for(int there=0;there<sizeofT;there++)
                 {
-                    cout<<d[i]["Statement_when_true"][there].GetInt()<<"   ";
+//                    cout<<d[i]["Statement_when_true"][there].GetInt()<<"   ";
                     Node *a=find_node_by_number(nodes,d[i]["Statement_when_true"][there].GetInt());
 //                    if(a!=NULL && a->control==NULL)//a不是空节点,且当前控制节点没有指向
                     if(a!=NULL && (a->control==NULL || a->control->node_id<con))
@@ -176,13 +147,13 @@ int main()
                             inDegree[a->node_id]++;//节点a的入度++
                         a->control=con_node;
                         TvsF.insert(pair<int, bool>(a->node_id, true));//构建互斥
-                        cout<<"存在"<<con<<"到"<<a->node_id<<"的控制依赖"<<endl;
+//                        cout<<"存在"<<con<<"到"<<a->node_id<<"的控制依赖"<<endl;
                     }
                 }
-                cout<<endl<<"F：";
+//                cout<<endl<<"F：";
                 for(int there=0;there<sizeofF;there++)
                 {
-                    cout<<d[i]["Statement_when_false"][there].GetInt()<<"   ";
+//                    cout<<d[i]["Statement_when_false"][there].GetInt()<<"   ";
                     Node *b=find_node_by_number(nodes,d[i]["Statement_when_false"][there].GetInt());
                     if(b!=NULL && (b->control==NULL || b->control->node_id<con))//b不是空节点,且当前控制节点没有指向
                     {
@@ -190,10 +161,10 @@ int main()
                             inDegree[b->node_id]++;//节点b的入度++
                         b->control=con_node;
                         TvsF.insert(pair<int, bool>(b->node_id, false));//构建互斥
-                        cout<<"存在"<<con<<"到"<<b->node_id<<"的控制依赖"<<endl;
+//                        cout<<"存在"<<con<<"到"<<b->node_id<<"的控制依赖"<<endl;
                     }
                 }
-                cout<<endl;
+//                cout<<endl;
         }
         if(type_id==4)//类型为loop
         {
@@ -201,12 +172,12 @@ int main()
                 //先输出控制依赖
                 int con=d[i]["Condition"].GetInt();//条件节点的位置
                 Node* con_node= find_node_by_number(nodes,con);
-                cout<<"loop节点依赖"<<endl<<"条件节点："<<con<<endl;
+//                cout<<"loop节点依赖"<<endl<<"条件节点："<<con<<endl;
                 int sizeofL=d[i]["Statement_loop"].Size();//LOOP节点数目
                 for(int there=0;there<sizeofL;there++)
                 {
                     int there_id=d[i]["Statement_loop"][there].GetInt();
-                    cout<<there_id<<endl;
+//                    cout<<there_id<<endl;
                     //1.该节点可能是OP，没有Dst，所以要先对类型进行判断
                     //2.条件节点判断的输入也可能有多个，最好写成函数，直接套用OP之间的依赖
                     //问题：there_id可能根本不在nodes中，nodes的依赖可能有很多，需要找到他的直接依赖
@@ -216,7 +187,7 @@ int main()
                         if (a->control==NULL)//如果第一次设置控制节点
                             inDegree[a->node_id]++;//入度++
                         a->control=con_node;
-                        cout<<"loop节点"<<there_id<<"的控制依赖为"<<con_node->node_id<<endl;
+//                        cout<<"loop节点"<<there_id<<"的控制依赖为"<<con_node->node_id<<endl;
 
                     }
                 }
@@ -255,7 +226,7 @@ int main()
                         input_depend[0]=true;
                         c->depend1=a;//当前节点的输入依赖于a
                         inDegree[c->node_id]++;//当前节点入度++
-                        cout<<"节点"<<i+1<<"输入数量为string2，in1数据依赖："<<dst_id[name_in1]<<"->"<<i+1<<endl;
+//                        cout<<"节点"<<i+1<<"输入数量为string2，in1数据依赖："<<dst_id[name_in1]<<"->"<<i+1<<endl;
                     }
                     if(dst_id[name_in2]&&(!input_depend[1])&&(dst_id[name_in2]<i+1))//存在
                     {
@@ -263,8 +234,8 @@ int main()
                         input_depend[1]=true;
                         c->depend2=b;
                         inDegree[c->node_id]++;//入度++
-                        cout<<"节点"<<i+1<<"输入数量为string2，in2数据依赖："<<dst_id[name_in2]<<"->"<<i+1<<endl;
-                        break;
+//                        cout<<"节点"<<i+1<<"输入数量为string2，in2数据依赖："<<dst_id[name_in2]<<"->"<<i+1<<endl;
+//                        break;
                     }
                 }
                 else //Op输入数量为1
@@ -277,7 +248,7 @@ int main()
                         input_depend[0]=true;
                         c->depend1=a;
                         inDegree[c->node_id]++;//入度++
-                        cout<<"节点"<<i+1<<"输入数量为string1，数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
+//                        cout<<"节点"<<i+1<<"输入数量为string1，数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
                     }
                 }
             }
@@ -291,7 +262,7 @@ int main()
                     input_depend[0]=true;
                     c->depend1=a;
                     inDegree[c->node_id]++;//入度++
-                    cout<<"节点"<<i+1<<"的输入为int，"<<"数据依赖："<<d[i]["Input"].GetInt()<<"->"<<i+1<<endl;
+//                    cout<<"节点"<<i+1<<"的输入为int，"<<"数据依赖："<<d[i]["Input"].GetInt()<<"->"<<i+1<<endl;
                 }
                 //如果input是数，搜索hash表（立即数和变量名都会被表示为string）
                 if(d[i]["Input"].IsString()&& !input_depend[0])
@@ -302,7 +273,7 @@ int main()
                     c->depend1=a;
                     if(dst_id[input_name]!=0)//利用立即数此值为0的性质修改入度
                         inDegree[c->node_id]++;//入度++
-                    cout<<"节点"<<i+1<<"的输入为string，"<<"数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
+//                    cout<<"节点"<<i+1<<"的输入为string，"<<"数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
                 }
             }
                 break;
@@ -314,138 +285,76 @@ int main()
     /**************************
      * 下面进行新一轮循环
      * 循环对象为nodes,vector<Node>
-     * 构建控制步
-     * 使用的逻辑不同，控制步也会不同，这时要开始设计空间探索
+     * 构建初始的控制步
      *******************************/
-    void topologicalSort(vector<Node> nodes,map<int,int> &inDegree,\
-                        vector<vector<Node>>& controlstep,\
-                        map<int,int> &id_pos) ;//函数声明
-    void ComIndegree(queue<int> &nodeQueue,map<int,int> &inDegree,\
-                        vector<Node> &nodes,map<int,int> &id_pos);//子函数声明
-
     topologicalSort(nodes,inDegree,controlstep,id_pos);//函数使用，现在得到了controlstep vector<vector<Node*>>
-//    测试，验证节点中的函数指向是否正确--不正确
-    cout<< "节点30在nodes中的位置为："<<id_pos[30]<<"其控制依赖为"<<nodes[id_pos[30]].control->node_id<<endl;//取节点29在nodes中的位置，其control指向的节点，的node_id应该等于28
 
-    cout<<"cout the control step:"<<endl;
+    cout<<"cout the control step:"<<endl<<endl;
     for (int i = 0; i < controlstep.size(); ++i) {
         cout<<"control step"<<i+1<<"大小为"<<controlstep[i].size()<<endl;
         for (int j = 0; j < controlstep[i].size(); ++j) {
-            cout<< controlstep[i][j].node_id<<"  ";
+            cout<< controlstep[i][j].node_id<<":"<<controlstep[i][j].operator_name<<endl;
         }
-        cout<<endl;
+    }
+
+    /*开始新的循环
+     * 在初始控制步中加入逻辑函数
+     * 调度算子
+     * 先写单个循环，然后在最外层套上一个大的DSE迭代
+     * */
+    //我们规定，只能使用4/6输入的LUT
+    //VHDL中，逻辑操作都是按位的，需要由一位操作拼接
+    struct array{
+        bool is_using;//当前正在使用
+        int logic_type;//阵列的类型
+        int row_num;//大小，行数
+        int col_num;//大小，列数
+        double write_number;//写次数，以行数为计数单位
+        vector<int> store_node;//存储的节点操作数ID,如果是LUT模式，则代表其可以完成的运算
+    };
+    vector<array> array_list;//存储阵列类型的向量
+    for(int i=0;i<controlstep.size();i++)
+    {
+        for (int j = 0; j <controlstep[i].size() ; ++j) {
+            //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
+            int type_operation= op2int(controlstep[i][j].operator_name);
+            //数据位数，bit_num_operand
+            array arr_now;//新建一个阵列
+            //如果是LUT模式,需要阵列存放数据和计算结果
+            arr_now.logic_type=1;//将其设置为LUT模式
+            switch (arr_now.logic_type) {
+                case 1://LUT，以2*操作数位数为行数
+                    if (2*bit_num_operand<=32)
+                        arr_now.row_num=32;
+                    else
+                        arr_now.row_num=64;//设定最大是64
+                    break;
+                case 2://sa，以操作数位数为列数
+                    if (bit_num_operand<=32)
+                        arr_now.col_num=32;
+                    else
+                        arr_now.col_num=64;//设定最大是64
+                    break;
+                case 3://magic,以操作数
+                    if (bit_num_operand<=32)
+                        arr_now.row_num=32;
+                    else
+                        arr_now.row_num=64;//设定最大是64
+                    break;
+                default:
+                    break;
+            }
+            arr_now.col_num=arr_now.row_num;//默认阵列是方形的
+            arr_now.store_node.push_back(controlstep[i][j].node_id);//加入节点
+            //对于LUT，逻辑节点的类型最多为三个
+
+
+
+
+
+        }
     }
 
     return 0;
 }
 
-//定义函数，判断节点的类型
-int Type2node(string type){
-        if(type==op)
-            return 1;
-        if(type==assign)
-            return 2;
-        if(type==branch)
-            return 3;
-        if(type==loop)
-            return 4;
-        return 0;
-}
-//根据节点id，返回节点指针，好像和id_pos功能冲突了
-Node * find_node_by_number(std::vector<Node>& nodes, int node_id) {
-    auto it = std::find_if(nodes.begin(), nodes.end(),
-                           [node_id](const Node& node) {
-                               return node.node_id == node_id;
-                           });
-
-    if (it != nodes.end()) {
-        return &(*it);//返回指针指向的变量的地址
-    } else {
-        return nullptr;
-    }
-}
-//计算入度的函数,直接对nodes进行修改
-void ComIndegree(queue<int> &nodeQueue,map<int,int> &inDegree,vector<Node> &nodes,map<int,int> &id_pos){
-    if (nodeQueue.empty())
-        return;
-    //nodeQueue存放当前入度为零的点的id
-    while (!nodeQueue.empty())
-    {
-        int now_id=nodeQueue.front();
-        cout<<"nodeQueue:  "<<now_id<<endl;
-        nodeQueue.pop();//出队
-        int node_pos=id_pos[now_id];//获得节点的位置
-        //从当前位置开始循环
-        for (int i = node_pos; i < nodes.size(); ++i) {
-            if (nodes[i].control&&nodes[i].control->node_id == now_id){
-
-                nodes[i].control=NULL;
-                if (nodes[i].control==NULL)
-                    cout<<"当前节点"<<nodes[i].node_id<<"对节点"<<now_id<<"存在控制依赖，已消除"<<endl;
-            }
-            if (nodes[i].depend1&&nodes[i].depend1->node_id==now_id){
-                nodes[i].depend1=NULL;
-                if (nodes[i].depend1==NULL)
-                    cout<<"当前节点"<<nodes[i].node_id<<"对节点"<<now_id<<"存在数据依赖，已消除"<<endl;
-            }
-            if (nodes[i].depend2&&nodes[i].depend2->node_id==now_id){
-                nodes[i].depend2=NULL;
-                if (nodes[i].depend2==NULL)
-                    cout<<"当前节点"<<nodes[i].node_id<<"对节点"<<now_id<<"存在数据依赖，已消除"<<endl;
-            }
-            //如果指针依赖全为空，则将其入度设置为0
-            //问题在这！！不能用now_id,now_id已经是0了
-            if (inDegree[nodes[i].node_id]>0 &&nodes[i].control==NULL && \
-                    nodes[i].depend1==NULL && nodes[i].depend2==NULL)
-            {
-                inDegree[nodes[i].node_id]=0;
-                cout<<"已经将节点"<<nodes[i].node_id<<"的入度设置为0"<<endl;
-            }
-
-        }
-
-    }
-    //现在得到了一个新的inDegree
-}
-//拓朴排序，返回节点指针
-//递归调用，获取控制步：vector<vector<Node*>>
-void topologicalSort(vector<Node> nodes,map<int,int> &inDegree,\
-                        vector<vector<Node>>& controlstep,\
-                        map<int,int> &id_pos) {
-    test++;
-    cout<<"迭代次数："<<test<<endl;
-    vector<Node> stepnow;//当前控制步，存放节点指针
-    queue<int>  nodeQueue;//存放度为0的节点
-    // 计算每个节点的入度
-    // 将入度为0的节点加入队列
-    //由于node是指针，只需要获取nodes中节点的地址即可
-    for (auto it =inDegree.begin(); it !=inDegree.end();it++)
-    {
-        cout<<it->first<<"  "<<it->second<<endl;//当前hash表的值
-        int now_pos=id_pos[it->first];//当前要入队的节点在nodes中的位置
-//        cout<<"当前要入队的节点在nodes中的位置"<<now_pos<<"当前要入队的节点"<<nodes[now_pos].node_id<<endl;
-        if (it->second == 0) {
-            stepnow.push_back(nodes[id_pos[it->first]]);
-            nodeQueue.push(it->first);//将当前入度为0的节点号码入队
-            cout<<"新入队的元素为："<<nodeQueue.back()<<endl;
-            cout<<"新进入step的元素ID："<<nodes[id_pos[it->first]].node_id<<endl;
-            it->second=-1;//将当前的值设为-1，表示已经入队了
-        }
-    }
-    //将stepnow加入到控制步中
-    if(!stepnow.empty())
-    {
-        controlstep.push_back(stepnow);
-        cout<<"第一个控制步骤大小："<<controlstep[0].size()<<endl;
-    }
-    // 执行拓扑排序,有许多节点依赖于入度为0的节点
-    //control,depend1,depend2(都是指针)=inDegree[]为0的点
-    cout<<"调用topo排序"<<endl;
-    bool stop_topoSort=nodeQueue.empty();//根据队列是否为空判断是否该停止循环
-    ComIndegree(nodeQueue,inDegree,nodes,id_pos);//更新inDegree
-    //现在得到了新的inDegree，可以进行递归了
-    //防止无限循环,如果map中还有大于等于0的点
-    if (!stop_topoSort) {
-        topologicalSort(nodes, inDegree,controlstep,id_pos);
-    }
-}

@@ -18,6 +18,7 @@ begin
 process(clk)
 begin
 	A <= in1 and in2;
+	A <= in1 * 2;
 	B <= in1 or in2;
 	C <= A xor B ;
 	D <= C sll 1;
