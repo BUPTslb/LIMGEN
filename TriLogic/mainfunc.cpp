@@ -124,7 +124,7 @@ void topologicalSort(vector<Node> nodes,map<int,int> &inDegree,\
     }
 }
 int op2int(string operation){
-    if(operation==seq)  return 0;
+    if(operation==seq)  return 0;//赋值，写操作
     if(operation==l_less)  return 1;
     if(operation==l_bigger)  return 2;
     if(operation==l_shiftL)  return 3;

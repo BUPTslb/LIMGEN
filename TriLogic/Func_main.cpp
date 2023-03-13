@@ -7,7 +7,7 @@ double cycle_limit=500;//运行时间(速度)限制，单位：周期
 double area_limit=1000;//面积限制，单位：
 double power_limit=10;//功耗限制，单位：
 //定义数据的位数，这个后期要修改，从CDFG中得到
-int bit_num_operand=32;//暂时定义为32
+unsigned int bit_num_operand=32;//暂时定义为32
 //优化目标
 int target=1;//1速度，2面积，3功耗
 int main()
@@ -304,52 +304,25 @@ int main()
      * */
     //我们规定，只能使用4/6输入的LUT
     //VHDL中，逻辑操作都是按位的，需要由一位操作拼接
-    struct array{
-        bool is_using;//当前正在使用
-        int logic_type;//阵列的类型
-        int row_num;//大小，行数
-        int col_num;//大小，列数
-        double write_number;//写次数，以行数为计数单位
-        vector<int> store_node;//存储的节点操作数ID,如果是LUT模式，则代表其可以完成的运算
-    };
-    vector<array> array_list;//存储阵列类型的向量
+    vector<lut_arr> array_list1;//lut向量
+    vector<sa_arr> array_list2;//sa向量
+    vector<magic_arr> array_list3;//magic向量
+
     for(int i=0;i<controlstep.size();i++)
     {
         for (int j = 0; j <controlstep[i].size() ; ++j) {
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
             int type_operation= op2int(controlstep[i][j].operator_name);
+            //运算阵列的大小，可能不对
+            unsigned int lut_size= arr_size(1,bit_num_operand);
+            unsigned int sa_size= arr_size(2,bit_num_operand);
+            unsigned int magic_size= arr_size(3,bit_num_operand);
             //数据位数，bit_num_operand
-            array arr_now;//新建一个阵列
-            //如果是LUT模式,需要阵列存放数据和计算结果
-            arr_now.logic_type=1;//将其设置为LUT模式
-            switch (arr_now.logic_type) {
-                case 1://LUT，以2*操作数位数为行数
-                    if (2*bit_num_operand<=32)
-                        arr_now.row_num=32;
-                    else
-                        arr_now.row_num=64;//设定最大是64
-                    break;
-                case 2://sa，以操作数位数为列数
-                    if (bit_num_operand<=32)
-                        arr_now.col_num=32;
-                    else
-                        arr_now.col_num=64;//设定最大是64
-                    break;
-                case 3://magic,以操作数
-                    if (bit_num_operand<=32)
-                        arr_now.row_num=32;
-                    else
-                        arr_now.row_num=64;//设定最大是64
-                    break;
-                default:
-                    break;
-            }
-            arr_now.col_num=arr_now.row_num;//默认阵列是方形的
-            arr_now.store_node.push_back(controlstep[i][j].node_id);//加入节点
-            //对于LUT，逻辑节点的类型最多为三个
-
-
-
+           //先不管立即数
+           //对该算子，选择使用lut：
+            com_lut(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
+            com_sa(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
+            com_magic(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
 
 
         }

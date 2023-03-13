@@ -18,6 +18,8 @@ struct Node{
     Node* depend1=NULL;//两个数据依赖指针,初始定义为NULL
     Node* depend2=NULL;//指向前面
     Node* control=NULL;//控制依赖
+    double start_time=0;//开始时间
+    double end_time=0;//结束时间
 };
 
 int Type2node(string type);//Type2node函数的声明
