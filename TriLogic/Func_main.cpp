@@ -77,9 +77,10 @@ int main()
             Node n;
             n.node_id=d[i]["Node_ID"].GetInt();
             n.operator_name=d[i]["Operation"].GetString();
-            nodes.push_back(n);
+            n.wb_pos.resize(3);//节点存储表，初始化为3，其中0：LUT,1：SA，2：MA
             inDegree[n.node_id]=0;//初始化节点的入度
             id_pos[n.node_id]=nodes.size()-1;//新节点在nodes中的位置
+            nodes.push_back(n);//将节点加入节点向量
         }
         //统计各个OP操作的数量
         if(type_id==1)
@@ -304,9 +305,11 @@ int main()
      * */
     //我们规定，只能使用4/6输入的LUT
     //VHDL中，逻辑操作都是按位的，需要由一位操作拼接
-    vector<lut_arr> array_list1;//lut向量
-    vector<sa_arr> array_list2;//sa向量
-    vector<magic_arr> array_list3;//magic向量
+    vector<lut_arr> array_list1;//lut阵列表
+    vector<sa_arr> array_list2;//sa阵列表
+    vector<magic_arr> array_list3;//magic阵列表
+
+    //先判断设计目标，按照设计目标来循环给约束
 
     for(int i=0;i<controlstep.size();i++)
     {
@@ -319,15 +322,23 @@ int main()
             unsigned int magic_size= arr_size(3,bit_num_operand);
             //数据位数，bit_num_operand
            //先不管立即数
-           //对该算子，选择使用lut：
-            com_lut(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
-            com_sa(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
-            com_magic(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
+           //多种方式遍历，然后再剪枝
+           //对于当前算子，目标是：找一个阵列/新建一个阵列，然后计算其参数增加，就结束
+
 
 
         }
-    }
 
+//            com_lut(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
+//            com_sa(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
+//            com_magic(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
+
+
+
+        }
     return 0;
 }
+
+
+
 
