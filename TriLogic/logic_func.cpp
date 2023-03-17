@@ -387,28 +387,27 @@ void data_read(int input_type,int op_id,int input_id,vector<lut_arr> &array_list
 {
     if (input_type==2)//MA 存储
     {
+
         //读数逻辑
     }
-    else if (input_type=1)
+    else if (input_type==1)
     {
         if (array_list2[input_id].sa_latch==op_id)
         {
                 //直接连线
         }
         else{
-
+            //读数逻辑
         }
     }
-    else
+    else//LUT
     {
         if (array_list1[input_id].lut_out==op_id)
         {
             //直接连线
+        }else{
+            //读数逻辑
         }
-        else
-        {
-            //等待逻辑
-        }
-
     }
+
 }

@@ -52,7 +52,7 @@ bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos);
 bool update_wb_pos(bool cache_like,int pos_input,int array_type,int pos_array);
 //流水线
 /*中层：阵列行为*/
-void find_input(Node* node_depend,int &type,int &id,int cycle);//寻找操作数来源,node_depend指向nodes中的节点
+void find_input(Node* &node_depend,int &type,int &id,int cycle);//寻找操作数来源,node_depend指向nodes中的节点
 //决定执行阵列的类型
 int decide_array_type(int op_type,int design_target);//由算子支持和设计目标共同决定
 //决定执行阵列的ID,输入操作数个数1false2true,输入参数带默认值，-1表示无
@@ -62,8 +62,17 @@ int decide_array_id(int decide_array_type,bool number_input_2,\
 //等待、建立逻辑，等待过程如何反映在代码中？？
 void wait_build(int decide_array_type,int decide_array_id,\
                     vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
-//读数逻辑
+//数据读函数,输入：各阵列表，执行的运算节点
+//目的：找到输入数据依赖的“阵列“，完成数据搬移：需要增加读就读++，需要移动写就写++
+// 操作：修改阵列读写和时间参数
 void data_read(int input_type,int input_id,\
+                    vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+//执行逻辑
+void input_logic(int op_type,int decide_array_type,int decide_array_id,Node* &node_depend);
+void output_logic(int decide_array_type,int decide_array_id,\
+                    vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+
+void write_back_logic(int out_type,int out_id,Node* &node_now,\
                     vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 //LUT计算函数：
 void com_lut(int type_operation,int bit_num_operand,int op_num,vector<lut_arr> &array_list1,\
@@ -77,10 +86,7 @@ void com_magic(int type_operation,int bit_num_operand,int op_num,vector<lut_arr>
 //阵列尺寸设定函数，一定是方形的
 unsigned int arr_size(int logic_type,unsigned int bit_num_operand);
 
-//数据读函数,输入：各阵列表，执行的运算节点
-//目的：找到输入数据依赖的“阵列“，完成数据搬移：需要增加读就读++，需要移动写就写++
-// 操作：修改阵列读写和时间参数
-void date_read(vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+
 
 //查找表
 //AES中的乘法
