@@ -211,8 +211,8 @@ double SA::SA_power(int type,int bl,int wl)
 }
 //cache一致性函数定义
 bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos){
-    if (array_type==0)  return false;
-    else if (array_type==1)
+    if (array_type==1)  return false;
+    else if (array_type==2)
     {
         //遍历wb_pos[1],如果=id就命中
         if (wb_pos[1].empty())    return false;
@@ -236,61 +236,70 @@ bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos){
 bool update_wb_pos(bool cache_like,int pos_input,int array_type,int pos_array)
 {
     //cache命中 || 阵列类型为LUT
-    if (cache_like || array_type==0)
+    if (cache_like || array_type==1)
         return false;
     else //不命中且在SA/MAGIC
         return true;
 }
-void find_input(Node* node_depend,int &type,int &id,int cycle){
-        type=-1;
-        id=-1;
+//寻找输入操作数的类型ID
+void find_input(int &array_type,int &array_id,int op_type,Node* node_depend,int cycle){
+    if (node_depend== nullptr)
+    {
+        if (op_type==0||op_type==7)//  one operand : = not
+            return;
+        else //two operand
+        {
+            array_type = -1;
+            return;
+        }
+    }
     //添加迭代条件
     if (!node_depend->wb_pos[0].empty())
     {//遍历wb_pos
             int lut_depend_size=node_depend->wb_pos[0].size();
-            type=0;
-            id=node_depend->wb_pos[0].back();
+            array_type=1;
+            array_id=node_depend->wb_pos[0].back();
     }
     if (!node_depend->wb_pos[1].empty())
     {//遍历wb_pos
         int sa_depend_size=node_depend->wb_pos[1].size();
-        type=1;
-        id=node_depend->wb_pos[1].back();
+        array_type=2;
+        array_id=node_depend->wb_pos[1].back();
     }
     if (!node_depend->wb_pos[2].empty())
     {//遍历wb_pos
         int ma_depend_size=node_depend->wb_pos[2].size();
-        type=2;
-        id=node_depend->wb_pos[2].back();
+        array_type=3;
+        array_id=node_depend->wb_pos[2].back();
     }
 }
-//定义决定执行阵列类型
+//定义决定执行阵列类型,**
 int decide_array_type(int op_type,int design_target)
 {
     int decide_array_type=0;
     if (1<=op_type && op_type<=4 || op_type==11)
     {
-        decide_array_type=0;//移位，比较，选择lut
+        decide_array_type=1;//移位，比较，选择lut
     }
-    else if (op_type==1)
+    else if (op_type==8)
     {
-        decide_array_type=2;
+        decide_array_type=3;
     }
     else if (op_type==9)
     {
-        decide_array_type=1;
+        decide_array_type=2;
     }
     else
     {
         switch (design_target) {
             case 0:
-                decide_array_type=0;
-                break;
-            case 1:
                 decide_array_type=1;
                 break;
-            case 2:
+            case 1:
                 decide_array_type=2;
+                break;
+            case 2:
+                decide_array_type=3;
                 break;
             default:
                 break;
@@ -300,97 +309,126 @@ int decide_array_type(int op_type,int design_target)
     return decide_array_type;
 }
 //定义执行阵列的id
-int decide_array_id(int decide_array_type,bool number_input_2,\
+int decide_array_id(int decide_array_type,\
                     vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3, \
                     int input1_type,int input1_id,int input2_type,int input2_id)
 {
+/*当前的寻找策略
+ * 如果操作数存放位置与执行阵列的类型相同，就在此执行
+ * 否则找一个同类型能用的执行
+ * 如果暂时都在使用，则新建一个阵列
+ * 方案二：等待阵列执行完毕，寻找一个阵列执行，这样可以提供好面积利用率，待
+ * */
     int decide_array_id=0;
-    if (!number_input_2)//2个操作数
+    if (input2_type==0)//如果只有一个操作数,基本上执行的都是not操作
     {
-        //立即数?
-        if (input1_type=-1);
-        //非立即数
-        if (input1_type==decide_array_type)//类型
+        if(input1_type==-1)
         {
-            if(input1_id==input2_id){
-                //等待逻辑
-
-                //执行逻辑
-
-            } else{
-                //读数逻辑，把2读到1中
-
+            //立即数，找一个能用的即可
+            decide_array_id=find_no_using(decide_array_type,array_list1,array_list2,array_list3);
+            //如果在等待，返回-1，建立新阵列
+            if (decide_array_id==-1)
+                decide_array_id=build(decide_array_type,array_list1,array_list2,array_list3);
+        }
+        else//不是立即数
+        {
+            if (input1_type==decide_array_type)//类型same
+            {
+                decide_array_id=input1_id;
             }
-            decide_array_id=input1_id;
-        }
-        else if (input2_type==decide_array_type)//在2中执行，1不是同意类型
-        {
-            //读数逻辑，读1，将其读到2中
-            decide_array_id=input2_id;
-        }
-        else
-        {
-            //选择阵列
-            //在其他阵列中执行
+            else//unsame
+            {
+                decide_array_id=find_no_using(decide_array_type,array_list1,array_list2,array_list3);
+                if (decide_array_id==-1)
+                    decide_array_id=build(decide_array_type,array_list1,array_list2,array_list3);
+            }
         }
     }
-    else//只有一个操作数
+    else//two operands
     {
-        if (input1_type==decide_array_type){
-            //等待逻辑
-            //执行逻辑
+        if(input1_type==decide_array_type)
+        {
             decide_array_id=input1_id;
         }
-        else{
-            //选择阵列
-            //在其他阵列中执行
+        else if(input2_type==decide_array_type)
+        {
+            decide_array_id=input2_id;
+        }
+        else//find a  no_using
+        {
+            decide_array_id=find_no_using(decide_array_type,array_list1,array_list2,array_list3);
+            if (decide_array_id==-1)
+                decide_array_id=build(decide_array_type,array_list1,array_list2,array_list3);
         }
     }
     return decide_array_id;
 }
-//定义等待，建立逻辑
-void wait_build(int decide_array_type,int decide_array_id,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+//找一个能用的
+int find_no_using(int decide_array_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
+    int find_no_using=-1;
     switch (decide_array_type) {
-        case 0:
-            if (array_list1[decide_array_id].is_using)//不可用
-            {
-                //等待？
-
-                //建立？
-            }
-            break;
         case 1:
-            if (array_list2[decide_array_id].is_using)//不可用
-            {
-                //等待？
-
-                //建立？
+            for (int i = 0; i < array_list1.size(); ++i) {
+                if (!array_list1[i].is_using)
+                    find_no_using=i;
             }
             break;
         case 2:
-            if (array_list3[decide_array_id].is_using)//不可用
-            {
-                //等待？
-
-                //建立？
+            for (int i = 0; i < array_list2.size(); ++i) {
+                if (!array_list2[i].is_using)
+                    find_no_using=i;
+            }
+            break;
+        case 3:
+            for (int i = 0; i < array_list3.size(); ++i) {
+                if (!array_list3[i].is_using)
+                    find_no_using=i;
             }
             break;
         default:
-
             break;
-
     }
+    return find_no_using;
+}
+//定义建立逻辑
+int build(int decide_array_type,vector<lut_arr> &array_list1,\
+                vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+{
+    int build;
+    switch (decide_array_type) {
+        case 1:{
+                lut_arr now1;
+                array_list1.push_back(now1);
+                build=array_list1.size()-1;
+            break;
+        }
+        case 2:{
+            sa_arr now2;
+            array_list2.push_back(now2);
+            build=array_list2.size()-1;
+            break;
+        }
+        case 3: {
+            magic_arr now3;
+            array_list3.push_back(now3);
+            build=array_list3.size()-1;
+            break;
+        }
+        default:
+            break;
+    }
+    return build;
 }
 //定义数据读函数,SA、lUT需要比较是否是当前输出
 void data_read(int input_type,int op_id,int input_id,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
-    if (input_type==2)//MA 存储
+    if (input_type==3)//MA 存储
     {
 
         //读数逻辑
     }
-    else if (input_type==1)
+    else if (input_type==2)
     {
         if (array_list2[input_id].sa_latch==op_id)
         {
@@ -400,7 +438,7 @@ void data_read(int input_type,int op_id,int input_id,vector<lut_arr> &array_list
             //读数逻辑
         }
     }
-    else//LUT
+    else//LUT,register
     {
         if (array_list1[input_id].lut_out==op_id)
         {

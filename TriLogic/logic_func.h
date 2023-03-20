@@ -26,8 +26,13 @@ struct magic_arr : public Array{
 };
 struct sa_arr : public Array{
     int sa_latch;//锁存当前输出
+    int sa_direct;//接收直接输入
     vector<int> store_node;//存储的节点操作数ID
 };
+//寄存器结构,可能不需要
+//struct Register{
+//    int id_now;//当前存储的节点操作数id
+//};
 //定义节点类型
 struct Node{
     int node_id;//节点ID,用来代表节点
@@ -35,16 +40,13 @@ struct Node{
     Node* depend1=NULL;//两个数据依赖指针,初始定义为NULL
     Node* depend2=NULL;//指向前面
     Node* control=NULL;//控制依赖
-    double start_time=0;//开始时间
-    double end_time=0;//结束时间
+    double start_time;//开始时间
+    double end_time;//结束时间
+    int do_type;//执行的类型
     //节点存储表,结构体中不能对向量对象进行初始化
-    vector<vector<int>> wb_pos;//存储节点写回的位置,0:lut,1:sa,2:ma
+    vector<vector<int>> wb_pos;//存储节点写回的位置,0:register,1:lut,2:sa,3:ma
 };
-//迭代，当前操作数的位置结构
-struct Input_Pos{
-    int array_type;
-    int array_id;
-};
+
 /*中层：cache一致性*/
 //cache一致性函数,输入执行阵列类型，ID,当前节点存储表，输出是否命中
 bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos);
@@ -52,16 +54,17 @@ bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos);
 bool update_wb_pos(bool cache_like,int pos_input,int array_type,int pos_array);
 //流水线
 /*中层：阵列行为*/
-void find_input(Node* &node_depend,int &type,int &id,int cycle);//寻找操作数来源,node_depend指向nodes中的节点
+void find_input(int &array_type,int &array_id,int op_type,Node* node_depend=nullptr,int cycle=0);//寻找操作数来源,node_depend指向nodes中的节点
 //决定执行阵列的类型
 int decide_array_type(int op_type,int design_target);//由算子支持和设计目标共同决定
 //决定执行阵列的ID,输入操作数个数1false2true,输入参数带默认值，-1表示无
-int decide_array_id(int decide_array_type,bool number_input_2,\
-                    vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3, \
-                    int input1_type=-1,int input1_id=-1,int input2_type=-1,int input2_id=-1);
+int decide_array_id(int decide_array_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,\
+    vector<magic_arr> &array_list3,int input1_type=0,int input1_id=0,int input2_type=0,int input2_id=0);
+//立即数，随便找一个能用的就行
+int find_no_using(int decide_array_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 //等待、建立逻辑，等待过程如何反映在代码中？？
-void wait_build(int decide_array_type,int decide_array_id,\
-                    vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+int build(int decide_array_type,vector<lut_arr> &array_list1,\
+                vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 //数据读函数,输入：各阵列表，执行的运算节点
 //目的：找到输入数据依赖的“阵列“，完成数据搬移：需要增加读就读++，需要移动写就写++
 // 操作：修改阵列读写和时间参数

@@ -2,6 +2,8 @@
 #include <algorithm>
 using namespace rapidjson;
 using namespace std;
+//设计目标
+int design_target=0;
 //设计空间探索的限制
 double cycle_limit=500;//运行时间(速度)限制，单位：周期
 double area_limit=1000;//面积限制，单位：
@@ -308,6 +310,7 @@ int main()
     vector<lut_arr> array_list1;//lut阵列表
     vector<sa_arr> array_list2;//sa阵列表
     vector<magic_arr> array_list3;//magic阵列表
+    int Register[2]={0,0};//用寄存器的读写次数
 
     //先判断设计目标，按照设计目标来循环给约束
 
@@ -324,16 +327,43 @@ int main()
            //先不管立即数
            //多种方式遍历，然后再剪枝
            //对于当前算子，目标是：找一个阵列/新建一个阵列，然后计算其参数增加，就结束
+            //第一步，取操作数
+            int input1_type=-1,input2_type=0,input1_id=-1,input2_id=-1;
+            find_input(input1_type,input1_id,type_operation,controlstep[i][j].depend1);//-1 R 1 lut 2 sa 3 magic
+            find_input(input2_type,input2_id,type_operation,controlstep[i][j].depend2);
+            int do_array_type=0,do_array_id=-1;//执行阵列的类型,id
+            do_array_type=decide_array_type(type_operation,design_target);//决定执行阵列类型
+            //如果要执行的类型当前没有阵列，则建立
+            if (do_array_type==1&&array_list1.empty()||do_array_type==2&&array_list2.empty()||do_array_type==3&&array_list3.empty())
+                build(do_array_type,array_list1,array_list2,array_list3);
+            //先讨论写回的情况:
+            if (type_operation==0)
+            {
+                if (controlstep[i][j].depend1->do_type==3)
+                {
+                    controlstep[i][j].do_type=3;
+                }
+                else
+                {
+                    Register[1]++;
+                    controlstep[i][j].wb_pos[0].push_back(-1);
+                    controlstep[i][j].do_type=-1;
+                }
+                continue;//进行下一个循环
+            }//下面的操作没有=了
+            //决定执行阵列的id
+           do_array_id= decide_array_id(do_array_type,array_list1,array_list2,array_list3,input1_type,input1_id,input2_type,input2_id);
+
+
+
+
+            //如果当前阵列为空
+
+
 
 
 
         }
-
-//            com_lut(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
-//            com_sa(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
-//            com_magic(type_operation,bit_num_operand,2,array_list1,array_list2,array_list3);
-
-
 
         }
     return 0;
