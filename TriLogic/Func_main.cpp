@@ -1,17 +1,16 @@
 #include "mainfunc.h"
+#include "algorithm"
 #include <algorithm>
 using namespace rapidjson;
 using namespace std;
 //设计目标
-int design_target=0;
+int design_target=2;//1速度，2面积，3功耗
 //设计空间探索的限制
 double cycle_limit=500;//运行时间(速度)限制，单位：周期
 double area_limit=1000;//面积限制，单位：
 double power_limit=10;//功耗限制，单位：
 //定义数据的位数，这个后期要修改，从CDFG中得到
 unsigned int bit_num_operand=32;//暂时定义为32
-//优化目标
-int target=1;//1速度，2面积，3功耗
 int main()
 {
     //三种阵列使用的数量
@@ -80,6 +79,7 @@ int main()
             n.node_id=d[i]["Node_ID"].GetInt();
             n.operator_name=d[i]["Operation"].GetString();
             n.wb_pos.resize(3);//节点存储表，初始化为3，其中0：LUT,1：SA，2：MA
+            n.out_degree=0;//初始化出度
             inDegree[n.node_id]=0;//初始化节点的入度
             id_pos[n.node_id]=nodes.size()-1;//新节点在nodes中的位置
             nodes.push_back(n);//将节点加入节点向量
@@ -133,12 +133,15 @@ int main()
         {
             //对互斥表进行清空重建
                 TvsF.clear();
-                int con=d[i]["condition"].GetInt();//条件节点的位置
+                int con=d[i]["condition"].GetInt();//条件节点的位置,其类型是op
                 Node* con_node= find_node_by_number(nodes,con);//条件节点的指针
                 int sizeofT=d[i]["Statement_when_true"].Size();//T的节点数目
                 int sizeofF=d[i]["Statement_when_false"].Size();//F的节点数目
+                con_node->out_degree=max(sizeofF,sizeofT);//更新条件节点的出度
+
 //                cout<<"分支节点依赖"<<endl<<"条件节点:"<<con<<"  size of true:"<<sizeofT<<endl;
 //                cout<<"T：";
+
                 for(int there=0;there<sizeofT;there++)
                 {
 //                    cout<<d[i]["Statement_when_true"][there].GetInt()<<"   ";
@@ -152,12 +155,14 @@ int main()
                         TvsF.insert(pair<int, bool>(a->node_id, true));//构建互斥
 //                        cout<<"存在"<<con<<"到"<<a->node_id<<"的控制依赖"<<endl;
                     }
+
                 }
 //                cout<<endl<<"F：";
                 for(int there=0;there<sizeofF;there++)
                 {
 //                    cout<<d[i]["Statement_when_false"][there].GetInt()<<"   ";
                     Node *b=find_node_by_number(nodes,d[i]["Statement_when_false"][there].GetInt());
+
                     if(b!=NULL && (b->control==NULL || b->control->node_id<con))//b不是空节点,且当前控制节点没有指向
                     {
                         if (b->control==NULL)
@@ -175,8 +180,11 @@ int main()
                 //先输出控制依赖
                 int con=d[i]["Condition"].GetInt();//条件节点的位置
                 Node* con_node= find_node_by_number(nodes,con);
+
 //                cout<<"loop节点依赖"<<endl<<"条件节点："<<con<<endl;
                 int sizeofL=d[i]["Statement_loop"].Size();//LOOP节点数目
+                con_node->out_degree+=sizeofL;//更新条件节点的出度
+
                 for(int there=0;there<sizeofL;there++)
                 {
                     int there_id=d[i]["Statement_loop"][there].GetInt();
@@ -214,9 +222,9 @@ int main()
 
             switch (type_id)
             {
+
             case 1://类型为Op，input的类型都是string
             {
-
                 //设定：输入最多为两个
                 // string name_dst;
                 if(num_input==2)
@@ -226,6 +234,7 @@ int main()
                     if(dst_id[name_in1]&&(!input_depend[0])&&(dst_id[name_in1]<i+1))//存在且未被输出且节点对应关系正确
                     {
                         Node *a= find_node_by_number(nodes,dst_id[name_in1]);//当前输入依赖的节点1
+                        a->out_degree++;//依赖的节点的出度++
                         input_depend[0]=true;
                         c->depend1=a;//当前节点的输入依赖于a
                         inDegree[c->node_id]++;//当前节点入度++
@@ -234,6 +243,7 @@ int main()
                     if(dst_id[name_in2]&&(!input_depend[1])&&(dst_id[name_in2]<i+1))//存在
                     {
                         Node *b= find_node_by_number(nodes,dst_id[name_in2]);//当前输入依赖的节点2
+                        b->out_degree++;
                         input_depend[1]=true;
                         c->depend2=b;
                         inDegree[c->node_id]++;//入度++
@@ -248,6 +258,7 @@ int main()
                     if(dst_id[input_name]&&(dst_id[input_name]<i+1)&&(!input_depend[0]))//存在且值比i+1小且没输出过
                     {
                         Node *a= find_node_by_number(nodes,dst_id[input_name]);//指向输入依赖
+                        a->out_degree++;
                         input_depend[0]=true;
                         c->depend1=a;
                         inDegree[c->node_id]++;//入度++
@@ -258,15 +269,18 @@ int main()
                 break;
             case 2://类型为assign,默认只有一个输入
             {
+
                 //如果input是ID，则直接输出
                 if(d[i]["Input"].IsInt()&& !input_depend[0])
                 {
                     Node *a= find_node_by_number(nodes,d[i]["Input"].GetInt());
+                    a->out_degree++;
                     input_depend[0]=true;
                     c->depend1=a;
                     inDegree[c->node_id]++;//入度++
 //                    cout<<"节点"<<i+1<<"的输入为int，"<<"数据依赖："<<d[i]["Input"].GetInt()<<"->"<<i+1<<endl;
                 }
+
                 //如果input是数，搜索hash表（立即数和变量名都会被表示为string）
                 if(d[i]["Input"].IsString()&& !input_depend[0])
                 {
@@ -274,10 +288,12 @@ int main()
                     string input_name=d[i]["Input"].GetString();
                     Node *a= find_node_by_number(nodes,dst_id[input_name]);
                     c->depend1=a;
+                    a->out_degree++;
                     if(dst_id[input_name]!=0)//利用立即数此值为0的性质修改入度
                         inDegree[c->node_id]++;//入度++
 //                    cout<<"节点"<<i+1<<"的输入为string，"<<"数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
                 }
+
             }
                 break;
             default:
@@ -331,28 +347,47 @@ int main()
             int input1_type=-1,input2_type=0,input1_id=-1,input2_id=-1;
             find_input(input1_type,input1_id,type_operation,controlstep[i][j].depend1);//-1 R 1 lut 2 sa 3 magic
             find_input(input2_type,input2_id,type_operation,controlstep[i][j].depend2);
+
             int do_array_type=0,do_array_id=-1;//执行阵列的类型,id
             do_array_type=decide_array_type(type_operation,design_target);//决定执行阵列类型
             //如果要执行的类型当前没有阵列，则建立
             if (do_array_type==1&&array_list1.empty()||do_array_type==2&&array_list2.empty()||do_array_type==3&&array_list3.empty())
                 build(do_array_type,array_list1,array_list2,array_list3);
             //先讨论写回的情况:
-            if (type_operation==0)
+            //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
+            if (type_operation==0)//等号,假设等于一定有依赖
             {
+                //统一，更改节点的执行结束id和写回id
+                controlstep[i][j].finish_id=controlstep[i][j].depend1->finish_id;
+                controlstep[i][j].wb_pos[controlstep[i][j].depend1->do_type-1].push_back(controlstep[i][j].finish_id);
+                //如果操作数来自MAGIC阵列
                 if (controlstep[i][j].depend1->do_type==3)
                 {
+                    //节点行为
                     controlstep[i][j].do_type=3;
+                    //阵列行为：添加存储节点
+                    array_list3[controlstep[i][j].finish_id].store_node.push_back(controlstep[i][j].node_id);
+
                 }
-                else
+                else if(controlstep[i][j].depend1->do_type==2)//SA
                 {
-                    Register[1]++;
-                    controlstep[i][j].wb_pos[0].push_back(-1);
-                    controlstep[i][j].do_type=-1;
+                    Register[1]++;//寄存器写
+                    controlstep[i][j].do_type=5;//SA BUFFER
+                    //阵列行为：
+                    array_list2[controlstep[i][j].finish_id].sa_buffer=controlstep[i][j].node_id;
+                }
+                else//LUT
+                {
+                    Register[1]++;//lut-out中的锁存器件写
+                    //node
+                    controlstep[i][j].do_type=4;//LUT-OUT
+                    //array
+                    array_list1[controlstep[i][j].finish_id].lut_latch=controlstep[i][j].node_id;
                 }
                 continue;//进行下一个循环
             }//下面的操作没有=了
             //决定执行阵列的id
-           do_array_id= decide_array_id(do_array_type,array_list1,array_list2,array_list3,input1_type,input1_id,input2_type,input2_id);
+           do_array_id= decide_array_id(type_operation,nodes,do_array_type,array_list1,array_list2,array_list3,input1_type,input1_id,input2_type,input2_id);
 
 
 
