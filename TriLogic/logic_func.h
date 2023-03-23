@@ -1,7 +1,6 @@
 //#pragma once //只被编译一次
 #include<string>
-#include "map"
-#include"vector"
+#include <vector>
 #include "mainfunc.h"
 using namespace std;
 
@@ -35,22 +34,7 @@ struct sa_arr : public Array{
     vector<int> store_node;//存储的节点操作数ID
 };
 
-//定义节点类型
-struct Node{
-    int node_id;//节点ID,用来代表节点
-    string operator_name;//算子，只算有操作的，用来选逻辑族，也能判断是不是写操作
-    Node* depend1=NULL;//两个数据依赖指针,初始定义为NULL
-    Node* depend2=NULL;//指向前面
-    Node* control=NULL;//控制依赖
-    double start_time;//开始时间
-    double end_time;//结束时间
-    int do_type;//执行的类型 1 LUT 2 SA 3 MA 4 LUT-OUT 5 SA-BUFFER
-    int finish_id;//节点执行完（输出）的位置
-    int out_degree;//出度
-    //节点存储表,结构体中不能对向量对象进行初始化
-    vector<vector<int>> wb_pos;//存储节点执行完的位置
-    //存储节点写回的位置,0:register,1:lut,2:sa,3:ma
-};
+
 
 /*中层：cache一致性*/
 //cache一致性函数,输入执行阵列类型，ID,当前节点存储表，输出是否命中
@@ -64,7 +48,7 @@ bool update_wb_pos(bool cache_like,int pos_input,int array_type,int pos_array);
 void find_input(int &array_type,int &array_id,int op_type,Node* node_depend=nullptr,int cycle=0);//寻找操作数来源,node_depend指向nodes中的节点
 
 //决定执行阵列的类型
-int decide_array_type(int op_type,int design_target);//由算子支持和设计目标共同决定
+int decide_array_type(int op_type,int design_target,int input1_type,int input1_id,int input2_type=0,int input2_id=0);//由算子支持和设计目标共同决定
 
 //决定执行阵列的ID,输入操作数个数1false2true,输入参数带默认值，-1表示无
 int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,\
@@ -75,7 +59,7 @@ int find_no_using(int op_type,vector<Node> &nodes,int decide_array_type,vector<l
                                                                                 vector<magic_arr> &array_list3);
 
 //等待、建立逻辑，等待过程如何反映在代码中？？
-int build(int decide_array_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,\
+int build(int decide_array_type,int op_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,\
                                                             vector<magic_arr> &array_list3);
 
 //计算阵列剩余/可覆盖容量

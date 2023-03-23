@@ -97,14 +97,14 @@ void topologicalSort(vector<Node> nodes,map<int,int> &inDegree,\
     //由于node是指针，只需要获取nodes中节点的地址即可
     for (auto it =inDegree.begin(); it !=inDegree.end();it++)
     {
-//        cout<<it->first<<"  "<<it->second<<endl;//当前hash表的值
+        cout<<it->first<<"  "<<it->second<<endl;//当前hash表的值
         int now_pos=id_pos[it->first];//当前要入队的节点在nodes中的位置
-//        cout<<"当前要入队的节点在nodes中的位置"<<now_pos<<"当前要入队的节点"<<nodes[now_pos].node_id<<endl;
+        cout<<"当前要入队的节点在nodes中的位置"<<now_pos<<"当前要入队的节点"<<nodes[now_pos].node_id<<endl;
         if (it->second == 0) {
             stepnow.push_back(nodes[id_pos[it->first]]);
             nodeQueue.push(it->first);//将当前入度为0的节点号码入队
-//            cout<<"新入队的元素为："<<nodeQueue.back()<<endl;
-//            cout<<"新进入step的元素ID："<<nodes[id_pos[it->first]].node_id<<endl;
+            cout<<"新入队的元素为："<<nodeQueue.back()<<endl;
+            cout<<"新进入step的元素ID："<<nodes[id_pos[it->first]].node_id<<endl;
             it->second=-1;//将当前的值设为-1，表示已经入队了
         }
     }
@@ -136,6 +136,7 @@ int op2int(string operation){
     if(operation==l_xor)  return 9;
     if(operation==l_add)  return 10;
     if(operation==l_mul)  return 11;
+    return -1;
 }
 
 

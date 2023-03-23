@@ -31,6 +31,7 @@ unsigned int arr_size(int logic_type,unsigned int bit_num_operand){
             break;
 
     }
+    return arr_size;
 }
 void com_lut(int type_operation,int bit_num_operand,int op_num, \
     vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
@@ -275,7 +276,7 @@ void find_input(int &array_type,int &array_id,int op_type,Node* node_depend,int 
 
 }
 //定义决定执行阵列类型,**,
-int decide_array_type(int op_type,int design_target,int input1_type,int input1_id,int input2_type=0,int input2_id=0)
+int decide_array_type(int op_type,int design_target,int input1_type,int input1_id,int input2_type,int input2_id)
 {
     int decide_array_type=0;
     if (1<=op_type && op_type<=4 || op_type==11)
@@ -331,7 +332,7 @@ int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,\
             //如果结束时间+当前执行时间都超过标准，则新建
             if (decide_array_id==-1)
             {
-                return build(decide_array_type,array_list1,array_list2,array_list3);
+                return build(decide_array_type,op_type,array_list1,array_list2,array_list3);
             }
 
         }
@@ -342,7 +343,7 @@ int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,\
                 //如果是lut,还是需要判断,尽量在本阵列执行
                 if (decide_array_type==1)
                 {
-                    if (array_list1[input1_id].op_type[op_type])
+                    if (array_list1[input1_id].op_type[op_type]) //算子支持
                         return input1_id;
                     else
                         decide_array_id=find_no_using(op_type,nodes,decide_array_type,array_list1,array_list2,array_list3);
@@ -358,7 +359,7 @@ int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,\
                 //都不行
                 if (decide_array_id==-1)
                 {
-                    return build(decide_array_type,array_list1,array_list2,array_list3);
+                    return build(decide_array_type,op_type,array_list1,array_list2,array_list3);
                 }
             }
             else//类型不同
@@ -366,7 +367,7 @@ int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,\
                 decide_array_id=find_no_using(op_type,nodes,decide_array_type,array_list1,array_list2,array_list3);
                 if (decide_array_id==-1)
                 {
-                    return build(decide_array_type,array_list1,array_list2,array_list3);
+                    return build(decide_array_type,op_type,array_list1,array_list2,array_list3);
                 }
             }
         }
@@ -382,43 +383,61 @@ int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,\
                 else
                     decide_array_id=find_no_using(op_type,nodes,decide_array_type,array_list1,array_list2,array_list3);
                 if(decide_array_id==-1)
-                    return build(decide_array_type,array_list1,array_list2,array_list3);
+                    return build(decide_array_type,op_type,array_list1,array_list2,array_list3);
             }
-            else if(decide_array_type==2) //sa
+            else
             {
                 //尽量在本阵列执行，如果容量不够，考虑其他阵列
-                int cap=cap_array(decide_array_type,input1_id,nodes,array_list1,array_list2,array_list3);
-                if ((decide_array_type==2 && cap>0) || (decide_array_type==3 && cap>1))
+                int cap1=cap_array(decide_array_type,input1_id,nodes,array_list1,array_list2,array_list3);
+
+                if ((decide_array_type==2 && cap1>0) || (decide_array_type==3 && cap1>1))
                     return input1_id;
+
                 //容量不够,考虑其他阵列
                 //如果阵列2能用，返回阵列2
                 if (input2_type==decide_array_type)
                 {
-                    int cap=cap_array(decide_array_type,input1_id,nodes,array_list1,array_list2,array_list3);
-                    if ((decide_array_type==2 && cap>0) || (decide_array_type==3 && cap>1))
-                        return input1_id;
+                    int cap2=cap_array(decide_array_type,input2_id,nodes,array_list1,array_list2,array_list3);
+                    if ((decide_array_type==2 && cap2>0) || (decide_array_type==3 && cap2>1))
+                        return input2_id;
                 }
+                //如果阵列2也不能用，新建，返回新建阵列的id
+                return build(decide_array_type,op_type,array_list1,array_list2,array_list3);
+
+            }
+
+        }
+        else if(input2_type==decide_array_type) //1类型不同，2类型一致
+        {
+            if (decide_array_type==1)//LUT,无关，但还是尽量在本节点进行
+            {
+                if (array_list1[input2_id].op_type[op_type])
+                    return input2_id;
+                else
+                    decide_array_id=find_no_using(op_type,nodes,decide_array_type,array_list1,array_list2,array_list3);
+
+                if(decide_array_id==-1)
+                    return build(decide_array_type,op_type,array_list1,array_list2,array_list3);
+            }
+            else
+            {
+                int cap=cap_array(decide_array_type,input2_id,nodes,array_list1,array_list2,array_list3);
+
+                if ((decide_array_type==2 && cap>0) || (decide_array_type==3 && cap>1))
+                    return input2_id;
 
                 //如果阵列2也不能用，新建，返回新建阵列的id
-
-            }
-            else  //magic
-            {
+                return build(decide_array_type,op_type,array_list1,array_list2,array_list3);
 
             }
 
-
         }
-        else if(input2_type==decide_array_type)
-        {
-            decide_array_id=input2_id;
-        }
-        else//find a  no_using
+        else//find a  no_using，12都不同
         {
             decide_array_id=find_no_using(op_type,nodes,decide_array_type,array_list1,array_list2,array_list3);
             if (decide_array_id==-1)
             {
-                decide_array_id=build(decide_array_type,array_list1,array_list2,array_list3);
+                decide_array_id=build(decide_array_type,op_type,array_list1,array_list2,array_list3);
             }
         }
     }
@@ -488,14 +507,15 @@ int find_no_using(int op_type,vector<Node> &nodes,int decide_array_type,vector<l
     }
     return find_no_using;
 }
-//定义建立逻辑
-int build(int decide_array_type,vector<lut_arr> &array_list1,\
+//定义建立逻辑，对于LUT,考虑加入操作
+int build(int decide_array_type,int op_type,vector<lut_arr> &array_list1,\
                 vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
     int build;
     switch (decide_array_type) {
         case 1:{
                 lut_arr now1;
+                now1.op_type[op_type]= true;
                 array_list1.push_back(now1);
                 build=array_list1.size()-1;
 
@@ -527,16 +547,25 @@ int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vect
 {
     int cap_array=0;
     switch (decide_array_type) {
-        case 1://LUT
-            //一般不会用到这个
+        case 1://LUT, 计算还能够放下几个运算
+        {
+            map<int,bool>::iterator it=array_list1[decide_array_id].op_type.begin();
+            if (it->first==10 || it->first==11 || it->first==3 || it->first==4)
+                return 0;
+            else
+                cap_array=3-array_list1[decide_array_id].op_type.size();
+            cout<<"lut当前的容量为"<<cap_array<<endl;
+        }
             break;
         case 2://SA
         {
+            //根据store_node,计算实际容量
+
             if (array_list2[decide_array_id].row_num-array_list2[decide_array_id].store_node.size()<2)
                 for (int i = 0; i < array_list2[decide_array_id].store_node.size(); ++i) {
                     if(find_node_by_number(nodes,i)->out_degree==0) //节点出度为0，不再被需要
                     {
-                    cap_array++;
+                        cap_array++;
                     }
                 }
             else
@@ -545,7 +574,16 @@ int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vect
             break;
         case 3://MAGIC
         {
-            if (array_list3[decide_array_id].row_num-array_list3[decide_array_id].store_node.size()<3)
+            int stored=0;
+            //magic中，立即数也会被写入，因此要全部统计
+            for (int i = 0; i < array_list3[decide_array_id].store_node.size(); ++i) {
+                int op= op2int(find_node_by_number(nodes,array_list3[decide_array_id].store_node[i])->operator_name);
+                if (op==0||op==7)
+                    stored++;
+                else
+                    stored+=2;
+            }
+            if (array_list3[decide_array_id].row_num-stored<3)
                 for (int i = 0; i < array_list3[decide_array_id].store_node.size(); ++i) {
                     if(find_node_by_number(nodes,i)->out_degree==0) //节点出度为0，不再被需要
                     {
@@ -553,7 +591,7 @@ int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vect
                     }
                 }
             else
-                cap_array=array_list3[decide_array_id].row_num-array_list3[decide_array_id].store_node.size();
+                cap_array=array_list3[decide_array_id].row_num-stored;
         }
             break;
         default:
