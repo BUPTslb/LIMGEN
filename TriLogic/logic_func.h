@@ -48,7 +48,7 @@ bool update_wb_pos(bool cache_like,int pos_input,int array_type,int pos_array);
 void find_input(int &array_type,int &array_id,int op_type,Node* node_depend=nullptr,int cycle=0);//寻找操作数来源,node_depend指向nodes中的节点
 
 //决定执行阵列的类型
-int decide_array_type(int op_type,int design_target,int input1_type,int input1_id,int input2_type=0,int input2_id=0);//由算子支持和设计目标共同决定
+int decide_array_type(int op_type,int design_target);//由算子支持和设计目标共同决定
 
 //决定执行阵列的ID,输入操作数个数1false2true,输入参数带默认值，-1表示无
 int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,\
@@ -69,11 +69,12 @@ int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vect
 //数据读函数,输入：各阵列表，执行的运算节点
 //目的：找到输入数据依赖的“阵列“，完成数据搬移：需要增加读就读++，需要移动写就写++
 // 操作：修改阵列读写和时间参数
-void data_read(int input_type,int input_id,\
+void data_read(int input_type,int input_id,int decide_array_type,int decide_array_id,int *Register,\
                     vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 
 //执行逻辑
-void input_logic(int op_type,int decide_array_type,int decide_array_id,Node* &node_depend);
+void input_logic(int input1_type,int input1_id,int input2_type,int input2_id,int decide_array_type,int decide_array_id,\
+       Node *now,int *Register,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 
 void output_logic(int decide_array_type,int decide_array_id,vector<lut_arr> &array_list1,\
                                 vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);

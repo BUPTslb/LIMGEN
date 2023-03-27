@@ -334,7 +334,7 @@ int main()
     vector<lut_arr> array_list1;//lut阵列表
     vector<sa_arr> array_list2;//sa阵列表
     vector<magic_arr> array_list3;//magic阵列表
-    int Register[2]={0,0};//用寄存器的读写次数
+    int Register[2]={0,0};//用寄存器的读写次数 0:read 1:write
 
     //先判断设计目标，按照设计目标来循环给约束
 
@@ -408,20 +408,25 @@ int main()
 
             //先决定执行类型
             int do_array_type=0,do_array_id=-1;//执行阵列的类型,id
-            do_array_type=decide_array_type(type_operation,design_target,input1_type,input1_id,input2_type,input2_id);//决定执行阵列类型
+            do_array_type=decide_array_type(type_operation,design_target);//决定执行阵列类型
             //如果要执行的类型当前没有阵列，则建立
             if (do_array_type==1&&array_list1.empty()||do_array_type==2&&array_list2.empty()||do_array_type==3&&array_list3.empty())
-                build(do_array_type,array_list1,array_list2,array_list3);
+                do_array_id=build(do_array_type,type_operation,array_list1,array_list2,array_list3);
             //决定执行阵列的id
             do_array_id= decide_array_id(type_operation,nodes,do_array_type,array_list1,array_list2,array_list3,input1_type,input1_id,input2_type,input2_id);
-
-            /*现在已知：操作数1类型，id；操作数2类型，id；执行阵列类型，执行阵列id；
-            * 现在还没有进行读写执行
-             * 节点的内容修改：
-             * 阵列的内容修改：
-            * */
             cout<<"算子id："<<controlstep[i][j].node_id<<"  算子类型："<<controlstep[i][j].operator_name<<endl;
             cout<<"执行类型： "<<do_array_type<<"  执行id："<<do_array_id<<endl;
+            /*现在已知：操作数1类型，id；操作数2类型，id；执行阵列类型，执行阵列id；
+            * 现在还没有进行读写执行
+             *  节点的内容修改：
+             *  阵列的内容修改：
+            * */
+            //从阵列中将数据读出，修改阵列/寄存器的读参数
+            data_read(input1_type,input1_id,do_array_type,do_array_id,Register,array_list1,array_list2,array_list3);
+            data_read(input2_type,input2_id,do_array_type,do_array_id,Register,array_list1,array_list2,array_list3);
+            //将数据输入到执行阵列：input逻辑
+
+
 
 
 
