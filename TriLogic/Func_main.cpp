@@ -76,7 +76,7 @@ int main()
             Node n;
             n.node_id=d[i]["Node_ID"].GetInt();
             n.operator_name=d[i]["Operation"].GetString();
-            n.wb_pos.resize(5);//节点存储表，初始化为3，其中0：LUT,1：SA，2：MA 3:LUT-latch 4:SA-buffer
+            n.wb_pos.resize(3);//节点存储表，初始化为3，其中0：LUT,1：SA，2：MA
             n.out_degree=0;//初始化出度
             inDegree[n.node_id]=0;//初始化节点的入度
             nodes.push_back(n);//将节点加入节点向量
@@ -314,7 +314,7 @@ int main()
      * 循环对象为nodes,vector<Node>
      * 构建初始的控制步
      *******************************/
-    topologicalSort(nodes,inDegree,controlstep,id_pos);//函数使用，现在得到了controlstep vector<vector<Node*>>
+    topologicalSort(nodes,inDegree,controlstep,id_pos);//函数使用，现在得到了controlstep vector<vector<Node>>
 
     cout<<"cout the control step:"<<endl<<endl;
     for (int i = 0; i < controlstep.size(); ++i) {
@@ -360,7 +360,7 @@ int main()
 
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
-            if (type_operation==0)//等号
+            if (type_operation==0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
                 //如果没有依赖，交给寄存器
@@ -374,9 +374,12 @@ int main()
                     //不更新wb_pos,等写回到阵列中再更新
                     continue;//进行下一个循环
                 }
-                //统一，更改节点的执行结束id和写回id
+
+                //有依赖,假设不会出现A=B这种直接赋值，则依赖一定来自OP
+                //统一，更改节点的执行结束id和do_type
                 controlstep[i][j].finish_id=controlstep[i][j].depend1->finish_id;
-                controlstep[i][j].wb_pos[controlstep[i][j].depend1->do_type-1].push_back(controlstep[i][j].finish_id);
+//                controlstep[i][j].wb_pos[controlstep[i][j].depend1->do_type-1].push_back(controlstep[i][j].finish_id);
+
                 //如果操作数来自MAGIC阵列
                 if (controlstep[i][j].depend1->do_type==3)
                 {
@@ -409,6 +412,8 @@ int main()
             //先决定执行类型
             int do_array_type=0,do_array_id=-1;//执行阵列的类型,id
             do_array_type=decide_array_type(type_operation,design_target);//决定执行阵列类型
+            //更新节点的do_type,执行节点的do_type只有123
+            controlstep[i][j].do_type=do_array_type;
             //如果要执行的类型当前没有阵列，则建立
             if (do_array_type==1&&array_list1.empty()||do_array_type==2&&array_list2.empty()||do_array_type==3&&array_list3.empty())
                 do_array_id=build(do_array_type,type_operation,array_list1,array_list2,array_list3);
@@ -425,6 +430,8 @@ int main()
             data_read(input1_type,input1_id,do_array_type,do_array_id,Register,array_list1,array_list2,array_list3);
             data_read(input2_type,input2_id,do_array_type,do_array_id,Register,array_list1,array_list2,array_list3);
             //将数据输入到执行阵列：input逻辑
+            input_logic(input1_type,input1_id,input2_type,input2_id,do_array_type,do_array_id, &controlstep[i][j],Register,array_list1,array_list2,array_list3);
+            //执行运算
 
 
 

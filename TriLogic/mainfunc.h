@@ -21,7 +21,7 @@ struct Node{
     Node* control=NULL;//控制依赖
     double start_time;//开始时间
     double end_time;//结束时间
-    int do_type;//执行的类型 1 LUT 2 SA 3 MA 4 LUT-OUT 5 SA-BUFFER
+    int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-OUT 5 SA-BUFFER
     int finish_id;//节点执行完（输出）的位置
     int out_degree;//出度
     //节点存储表,结构体中不能对向量对象进行初始化

@@ -211,6 +211,7 @@ double SA::SA_power(int type,int bl,int wl)
     //如果遇到不支持的算子怎么办
     return cycle_power;
 }
+
 //cache一致性函数定义
 bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos){
     if (array_type==1)  return false;
@@ -234,6 +235,7 @@ bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos){
     }
 
 }
+
 //定义节点执行表更新策略
 bool update_wb_pos(bool cache_like,int pos_input,int array_type,int pos_array)
 {
@@ -245,7 +247,7 @@ bool update_wb_pos(bool cache_like,int pos_input,int array_type,int pos_array)
 }
 //寻找输入操作数来源：阵列（ID）/寄存器
 void find_input(int &array_type,int &array_id,int op_type,Node* node_depend,int cycle){
-    if (node_depend== nullptr)//立即数
+    if (node_depend== nullptr || node_depend->do_type==-1)//立即数,或者（A=立即数）
     {
         if (op_type==0||op_type==7)//  one operand : = not
             return;
@@ -257,12 +259,12 @@ void find_input(int &array_type,int &array_id,int op_type,Node* node_depend,int 
     }
     //depend is not null:
     //应该还有其他情况，若写回了多个阵列，应该以现在能用的或者数据搬移最小的为准，从wb_pos中挑选一个
-    if (node_depend->do_type==1 || node_depend->do_type==4)  //LUT
+    if (node_depend->do_type==1 || node_depend->do_type==4)  //LUT LUT-OUT
     {
         array_type=1;
         array_id=node_depend->finish_id;
     }
-    else if(node_depend->do_type==2 || node_depend->do_type==5) //SA
+    else if(node_depend->do_type==2 || node_depend->do_type==5) //SA SA-BUFFER
     {
         array_type=2;
         array_id=node_depend->finish_id;
@@ -275,6 +277,7 @@ void find_input(int &array_type,int &array_id,int op_type,Node* node_depend,int 
     }
 
 }
+
 //定义决定执行阵列类型,**,
 int decide_array_type(int op_type,int design_target)
 {
@@ -311,6 +314,7 @@ int decide_array_type(int op_type,int design_target)
     }
     return decide_array_type;
 }
+
 //定义执行阵列的id
 int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,\
                     vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3, \
@@ -443,6 +447,7 @@ int decide_array_id(int op_type,vector<Node> &nodes,int decide_array_type,\
     }
     return decide_array_id;
 }
+
 //找一个能用的，或者结束时间最快的
 int find_no_using(int op_type,vector<Node> &nodes,int decide_array_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
@@ -507,6 +512,7 @@ int find_no_using(int op_type,vector<Node> &nodes,int decide_array_type,vector<l
     }
     return find_no_using;
 }
+
 //定义建立逻辑，对于LUT,考虑加入操作
 int build(int decide_array_type,int op_type,vector<lut_arr> &array_list1,\
                 vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
@@ -652,55 +658,93 @@ void data_read(int input_type,int input_id,int decide_array_type,int decide_arra
 //以上都没有讨论直接连线的情况..
 }
 
+//判断节点的写回表中有当前阵列
+bool is_in_wb(int array_type,int array_id,Node *node_now)
+{
+    //array_type 1 2 3
+    switch (array_type) {
+        case 1:
+        {
+            for (int i = 0; i < node_now->wb_pos[0].size(); ++i) {
+                if (node_now->wb_pos[0][i]==array_id)
+                    return true;
+            }
+            return false;
+        }
+            break;
+        case 2:
+        {
+            for (int i = 0; i < node_now->wb_pos[1].size(); ++i) {
+                if (node_now->wb_pos[1][i]==array_id)
+                    return true;
+            }
+            return false;
+        }
+            break;
+        case 3:
+        {
+            for (int i = 0; i < node_now->wb_pos[2].size(); ++i) {
+                if (node_now->wb_pos[2][i]==array_id)
+                    return true;
+            }
+            return false;
+        }
+            break;
+        default:
+            break;
+
+    }
+    return false;
+}
+
 //写入逻辑
 void input_logic(int input1_type,int input1_id,int input2_type,int input2_id,int decide_array_type,int decide_array_id,\
         Node *now, int *Register,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
-    if (decide_array_type==1) //LUT
-    {
-        return;
-    }
-    if (decide_array_type==2)//sa
-    {
-        //先讨论操作数1,如果在阵列中（不在buffer中）
-            if (input1_type==2 && input1_id==decide_array_id && array_list2[decide_array_id].sa_buffer != input1_id)
+    switch (decide_array_type) {
+        case 1://LUT
+            return;//LUT输入无需写入
+
+        case 2: //LUT
+        {
+            //先讨论操作数1,如果在本SA阵列中（不是单纯的立即数、节点的写回表中有此阵列）
+            if (input1_type==2 && input1_id==decide_array_id && is_in_wb(decide_array_type,decide_array_id,now->depend1))
             {
-                if (input2_type==0||(input2_type==2 && input2_id==decide_array_id && array_list2[decide_array_id].sa_buffer != input2_id))//输入2不存在或在阵列中
+                if (input2_type==0||(input2_type==2 && input2_id==decide_array_id && is_in_wb(decide_array_type,decide_array_id,now->depend2)))//输入2不存在或在阵列中
                 {
                     return;
                 }
                 //DSE位置,下方2选1
-                //2存在，输入direct
+                //2存在且2不在本阵列中，输入direct
                 array_list2[decide_array_id].sa_direct = input2_id;//输入到激活行
                 //或者写入
                 array_list2[decide_array_id].write_number++;
-                if (input2_type!=-1 && now->depend2)//不是立即数
+                if (now->depend2)//不是立即数
                 {
                     array_list2[decide_array_id].store_node.push_back(now->depend2->node_id);//阵列的存储节点
                     //更新wb_pos
-                    now->depend2->wb_pos[2].push_back(decide_array_id);
+                    now->depend2->wb_pos[1].push_back(decide_array_id);
                 }
                 else //是立即数,只更新store_node,不更新写回表
                 {
                     array_list2[decide_array_id].store_node.push_back(now->node_id);
                 }
-
             }
             else //操作数1不在阵列中
             {
-                //先讨论操作数2
-                if (input2_type==0||(input2_type==2 && input2_id==decide_array_id && array_list2[decide_array_id].sa_buffer != input2_id))
+                //先讨论操作数2在不在阵列中
+                if (input2_type==0||(input2_type==2 && input2_id==decide_array_id && is_in_wb(decide_array_type,decide_array_id,now->depend2)))
                 {
                     //DSE位置,下方2选1
                     //1输入direct
                     array_list2[decide_array_id].sa_direct = input1_id;//输入到激活行
                     //或者写入
                     array_list2[decide_array_id].write_number++;
-                    if (input1_type!=-1 && now->depend1)//不是立即数
+                    if(now->depend1)//不是立即数
                     {
                         array_list2[decide_array_id].store_node.push_back(now->depend1->node_id);//阵列的存储节点
                         //更新wb_pos
-                        now->depend1->wb_pos[2].push_back(decide_array_id);
+                        now->depend1->wb_pos[1].push_back(decide_array_id);
                     }
                     else //是立即数,只更新store_node,不更新写回表
                     {
@@ -710,125 +754,276 @@ void input_logic(int input1_type,int input1_id,int input2_type,int input2_id,int
                 else //1,2都不在本阵列中
                 {
                     //下方存在DSE，1D2W 2D1W 1W2W三种
-                    //在写回时候，对立即数进行讨论
-                    //1d2w
-                    array_list2[decide_array_id].sa_direct = input1_id;//输入到激活行
-                    array_list2[decide_array_id].write_number++;
-                    if (input2_type!=-1 && now->depend2)//不是立即数
+                    //在写回时候，如果有一个是立即数，则将立即数直连，将变量写回
+                    if (now->depend1 && now->depend2) //都不是立即数，DSE: 1D2W 2D1W 1W2W三种
                     {
+                        //1D2W
+                        array_list2[decide_array_id].sa_direct = input1_id;//1输入到激活行
+
+                        array_list2[decide_array_id].write_number++;
                         array_list2[decide_array_id].store_node.push_back(now->depend2->node_id);//阵列的存储节点
                         //更新wb_pos
+                        now->depend2->wb_pos[1].push_back(decide_array_id);
+
+                    }
+                    else if (now->depend1) //2是立即数，1不是,将1写入
+                    {
+                        array_list2[decide_array_id].sa_direct=input2_id;
+
+                        array_list2[decide_array_id].write_number++;
+                        array_list2[decide_array_id].store_node.push_back(now->depend1->node_id);//阵列的存储节点
+                        //更新wb_pos
+                        now->depend1->wb_pos[1].push_back(decide_array_id);
+
+                    }
+                    else if (now->depend2) //1是立即数，2不是
+                    {
+                        array_list2[decide_array_id].sa_direct=input1_id;
+
+                        array_list2[decide_array_id].write_number++;
+                        array_list2[decide_array_id].store_node.push_back(now->depend2->node_id);//阵列的存储节点
+                        //更新wb_pos
+                        now->depend1->wb_pos[1].push_back(decide_array_id);
+
+                    }
+                    else //1 2 都是立即数
+                    {
+                        //随意将一个写入即可
+                        array_list2[decide_array_id].sa_direct = input1_id;
+
+                        //是立即数,只更新store_node,不更新写回表
+                        //store_node存放当前“op”类型的节点id,表示存入了一个立即数
+                        array_list2[decide_array_id].store_node.push_back(now->node_id);
+
+                    }
+                }
+            }
+        }
+            break;
+        case 3: //MAGIC
+        {
+            if (input1_type==3 && input1_id==decide_array_id) //1在阵列中
+            {
+                if (input2_type==0 || (input2_type==3 && input2_id==decide_array_id)) //2也在阵列中 或者 2不存在
+                {
+                    return;
+                }
+                else //2不在阵列中
+                {
+                    array_list3[decide_array_id].write_number++;
+                    //如果不是立即数，将2的节点存到store_node中，更新wb_pos
+                    if (now->depend2)
+                    {
+                        array_list3[decide_array_id].store_node.push_back(now->depend2->node_id);
                         now->depend2->wb_pos[2].push_back(decide_array_id);
+                    }
+                    else //是立即数,只更新store_node,不更新写回表
+                    {
+                        array_list3[decide_array_id].store_node.push_back(now->node_id);
+                    }
+                }
+            }
+            else //1不在阵列中
+            {
+                //2不存在 || 2 在阵列中
+                if (input2_type==0 || input2_type==3 && input2_id==decide_array_id)
+                {
+                    //将1写入阵列
+                    array_list3[decide_array_id].write_number++;
+                    //如果不是立即数，将1的节点存到store_node中，更新wb_pos
+                    if (now->depend1)
+                    {
+                        array_list3[decide_array_id].store_node.push_back(now->depend1->node_id);
+                        now->depend1->wb_pos[2].push_back(decide_array_id);
                     }
                     else //是立即数,只更新store_node,不更新写回表
                     {
                         array_list2[decide_array_id].store_node.push_back(now->node_id);
                     }
-//                    //1w2d
-//                    array_list2[decide_array_id].sa_direct = input2_id;//输入到激活行
-//                    array_list2[decide_array_id].write_number++;
-//                    if (input1_type!=-1 && now->depend1)//不是立即数
-//                    {
-//                        array_list2[decide_array_id].store_node.push_back(now->depend1->node_id);//阵列的存储节点
-//                        //更新wb_pos
-//                        now->depend1->wb_pos[2].push_back(decide_array_id);
-//                    }
-//                    else //是立即数,只更新store_node,不更新写回表
-//                    {
-//                        array_list2[decide_array_id].store_node.push_back(now->node_id);
-//                    }
-//                    //1w2w
-//                    array_list2[decide_array_id].write_number+=2;
-//                    if (input1_type!=-1 && now->depend1)//不是立即数
-//                    {
-//                        array_list2[decide_array_id].store_node.push_back(now->depend1->node_id);//阵列的存储节点
-//                        //更新wb_pos
-//                        now->depend1->wb_pos[2].push_back(decide_array_id);
-//                    }
-//                    if (input2_type!=-1 && now->depend2)//不是立即数
-//                    {
-//                        array_list2[decide_array_id].store_node.push_back(now->depend2->node_id);//阵列的存储节点
-//                        //更新wb_pos
-//                        now->depend2->wb_pos[2].push_back(decide_array_id);
-//                    }
-//                    if (input1_type==-1||input2_type==-1) //存在立即数
-//                    {
-//                        array_list3[decide_array_id].store_node.push_back(now->node_id);
-//                    }
-
                 }
-
+                else  //1 2 都存在 且 都不在阵列中
+                {
+                    array_list3[decide_array_id].write_number+=2;
+                    //不是立即数，找到其所在节点，更新store_node,更新wb_pos
+                    if (now->depend1)
+                    {
+                        array_list3[decide_array_id].store_node.push_back(now->depend1->node_id);
+                        now->depend1->wb_pos[2].push_back(decide_array_id);
+                    }
+                    if (now->depend2)
+                    {
+                        array_list3[decide_array_id].store_node.push_back(now->depend2->node_id);
+                        now->depend2->wb_pos[2].push_back(decide_array_id);
+                    }
+                    if (!now->depend1 || !now->depend2) //存在立即数
+                    {
+                        array_list3[decide_array_id].store_node.push_back(now->node_id);
+                    }
+                }
             }
-
+        }
+            break;
+        default:
+            break;
 
     }
-    if (decide_array_type==3)//magic
-    {
-        if (input1_type==3 && input1_id==decide_array_id) //1在阵列中
+
+}
+
+void output_logic(int decide_array_type,int decide_array_id,int op_type,Node *now,\
+                vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+{
+    //执行期间对阵列的影响
+    //对节点：需要调用模块时，更新finish_id
+    //时间参数的影响
+    //1.是否需要调用模块 LUT SA MA 都有设计好的模块供调用
+    switch (decide_array_type) {
+        case 1: //LUT
         {
-            if (input2_type==0 || (input2_type==3 && input2_id==decide_array_id)) //2也在阵列中 或者 2不存在
-            {
-                return;
-            }
-            else
-            {
-                array_list3[decide_array_id].write_number++;
-                //如果不是立即数，将2的节点存到store_node中，更新wb_pos
-                if (input2_type!=-1 && now->depend2)
-                {
-                    array_list3[decide_array_id].store_node.push_back(now->depend2->node_id);
-                    now->depend2->wb_pos[3].push_back(decide_array_id);
-                }
-                else //是立即数,只更新store_node,不更新写回表
-                {
-                    array_list3[decide_array_id].store_node.push_back(now->node_id);
-                }
-            }
+            op_lut(op_type,now,array_list1);
+            //需要一个函数判断是否需要调用模块
+            //根据op_type，进行每一个阵列下的操作：lut_op\sa_op\ma_op
+            return;
         }
-        else //1不在阵列中
+        case 2:
         {
-            //2不存在 || 2 在阵列中
-            if (input2_type==3 && input2_id==decide_array_id || input2_type==0)
-            {
-                //将1写入阵列
-                array_list3[decide_array_id].write_number++;
-                //如果不是立即数，将1的节点存到store_node中，更新wb_pos
-                if (input1_type!=-1 && now->depend1)
-                {
-                    array_list3[decide_array_id].store_node.push_back(now->depend1->node_id);
-                    now->depend1->wb_pos[3].push_back(decide_array_id);
-                }
-                else //是立即数,只更新store_node,不更新写回表
-                {
-                    array_list2[decide_array_id].store_node.push_back(now->node_id);
-                }
-            }
-            else  //1 2 都不在阵列中
-            {
-                array_list3[decide_array_id].write_number+=2;
-                //不是立即数，找到其所在节点，更新store_node,更新wb_pos
-                if (input1_type!=-1 && now->depend1)
-                {
-                    array_list3[decide_array_id].store_node.push_back(now->depend1->node_id);
-                    now->depend1->wb_pos[3].push_back(decide_array_id);
-                }
-                if (input2_type!=-1 && now->depend2)
-                {
-                    array_list3[decide_array_id].store_node.push_back(now->depend2->node_id);
-                    now->depend2->wb_pos[3].push_back(decide_array_id);
-                }
-                if (input1_type==-1||input2_type==-1) //存在立即数
-                {
-                    array_list3[decide_array_id].store_node.push_back(now->node_id);
-                }
-
-            }
-
+            op_sa(op_type,now,array_list2);
+            return;
         }
+        case 3:
+        {
+            op_magic(op_type,now,array_list3);
+            return;
+        }
+        default:
+            return;
+    }
 
+}
+
+//lut执行逻辑
+void op_lut(int op_type,Node* now,vector<lut_arr> &array_list1){
+
+    switch (op_type) {
+        case 1: //比较，小于
+
+            break;
+        case 2: //比较，大于
+
+            break;
+        case 3: //逻辑左移
+
+            break;
+        case 4://逻辑右移
+
+            break;
+        case 5: //与
+
+            break;
+        case 6: //或
+
+            break;
+        case 7: //非
+
+            break;
+        case 8: //NOR
+
+            break;
+        case 9: //XOR
+
+            break;
+        case 10: //ADD
+
+            break;
+        case 11: //MUL
+
+            break;
+        default: //对于按位的逻辑运算，考虑将其合并到default中
+            break;
     }
 }
 
+//sa执行逻辑
+void op_sa(int op_type,Node* now,vector<sa_arr> &array_list2){
+    switch (op_type) {
+        case 1: //比较，小于
+
+            break;
+        case 2: //比较，大于
+
+            break;
+        case 3: //逻辑左移
+
+            break;
+        case 4://逻辑右移
+
+            break;
+        case 5: //与
+
+            break;
+        case 6: //或
+
+            break;
+        case 7: //非
+
+            break;
+        case 8: //NOR
+
+            break;
+        case 9: //XOR
+
+            break;
+        case 10: //ADD
+
+            break;
+        case 11: //MUL
+
+            break;
+        default: //对于按位的逻辑运算，考虑将其合并到default中
+            break;
+    }
+}
+
+//sa执行逻辑
+void op_magic(int op_type,Node* now,vector<magic_arr> &array_list3){
+    switch (op_type) {
+        case 1: //比较，小于
+
+            break;
+        case 2: //比较，大于
+
+            break;
+        case 3: //逻辑左移
+
+            break;
+        case 4://逻辑右移
+
+            break;
+        case 5: //与
+
+            break;
+        case 6: //或
+
+            break;
+        case 7: //非
+
+            break;
+        case 8: //NOR
+
+            break;
+        case 9: //XOR
+
+            break;
+        case 10: //ADD
+
+            break;
+        case 11: //MUL
+
+            break;
+        default: //对于按位的逻辑运算，考虑将其合并到default中
+            break;
+    }
+}
 
 
 

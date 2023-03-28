@@ -72,12 +72,25 @@ int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vect
 void data_read(int input_type,int input_id,int decide_array_type,int decide_array_id,int *Register,\
                     vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 
-//执行逻辑
+//判断节点的写回表中有当前阵列：目的是判断阵列存储中是否有数据
+bool is_in_wb(int array_type,int array_id,Node *node_now);
+
+//写入逻辑
 void input_logic(int input1_type,int input1_id,int input2_type,int input2_id,int decide_array_type,int decide_array_id,\
        Node *now,int *Register,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+//输出逻辑
+void output_logic(int decide_array_type,int decide_array_id,int op_type,Node *now,\
+                  vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 
-void output_logic(int decide_array_type,int decide_array_id,vector<lut_arr> &array_list1,\
-                                vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+//lut执行逻辑
+void op_lut(int op_type,Node* now,vector<lut_arr> &array_list1);
+
+//sa执行逻辑
+void op_sa(int op_type,Node* now,vector<sa_arr> &array_list2);
+
+//sa执行逻辑
+void op_magic(int op_type,Node* now,vector<magic_arr> &array_list3);
+
 
 void write_back_logic(int out_type,int out_id,Node* &node_now,vector<lut_arr> &array_list1,\
                                     vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
