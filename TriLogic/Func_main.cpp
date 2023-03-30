@@ -371,6 +371,8 @@ int main()
                     controlstep[i][j].finish_id=-1;//证明写到了寄存器中
                     cout<<"算子id："<<controlstep[i][j].node_id<<"  算子类型："<<controlstep[i][j].operator_name<<endl;
                     cout<<"执行类型： "<< -1<<"  执行id："<< -1<<endl;
+                    //更新出度
+                    out_degree(&controlstep[i][j]);
                     //不更新wb_pos,等写回到阵列中再更新
                     continue;//进行下一个循环
                 }
@@ -378,14 +380,15 @@ int main()
                 //有依赖,假设不会出现A=B这种直接赋值，则依赖一定来自OP
                 //统一，更改节点的执行结束id和do_type
                 controlstep[i][j].finish_id=controlstep[i][j].depend1->finish_id;
-//                controlstep[i][j].wb_pos[controlstep[i][j].depend1->do_type-1].push_back(controlstep[i][j].finish_id);
 
-                //如果操作数来自MAGIC阵列
+                //如果操作数来自MAGIC阵列,写回阵列中
                 if (controlstep[i][j].depend1->do_type==3)
                 {
                     //节点行为
                     controlstep[i][j].do_type=3;
-                    //阵列行为：添加存储节点
+                    controlstep[i][j].wb_pos[2].push_back(controlstep[i][j].finish_id);//将阵列加入写回表
+                    //阵列行为：写++，添加存储节点
+                    array_list3[controlstep[i][j].finish_id].write_number++;
                     array_list3[controlstep[i][j].finish_id].store_node.push_back(controlstep[i][j].node_id);
 
                 }
@@ -406,6 +409,8 @@ int main()
                 }
                 cout<<"算子id："<<controlstep[i][j].node_id<<"  算子类型："<<controlstep[i][j].operator_name<<endl;
                 cout<<"执行类型： "<<controlstep[i][j].do_type<<"  执行id："<<controlstep[i][j].finish_id<<endl;
+                //更新出度
+                out_degree(&controlstep[i][j]);
                 continue;//进行下一个循环
             }//下面的操作没有=了
 
@@ -432,10 +437,15 @@ int main()
             //将数据输入到执行阵列：input逻辑
             input_logic(input1_type,input1_id,input2_type,input2_id,do_array_type,do_array_id, &controlstep[i][j],Register,array_list1,array_list2,array_list3);
             //执行运算
+            output_logic(do_array_type,do_array_id,type_operation,&controlstep[i][j],array_list1,array_list2,array_list3);
+            //写回在最开始，不用在执行
+            //只要有写操作，就存在-内部有覆盖的情况，更新出度，清除被覆盖的节点，节点出度为0，找到存储他的阵列，将其擦除
+            //补充控制节点，设计比较器件 ，看是否需要加其他运算器，如ALU
+            //设计DSE
 
 
-
-
+            //更新出度
+            out_degree(&controlstep[i][j]);
 
 
         }

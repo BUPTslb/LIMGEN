@@ -1,0 +1,37 @@
+#magic(1*cyc初始化为Roff：0 或者Ron：1 忽略)
+op_type     op_num      row-num     write-num       reg-num     reg-read        reg-write       cycle
+seq             0           0           0               0           0               0               0
+
+l_less          1           3           3               0           0               0               3
+3*row:1*NOT B   1*NAND(A NOT B) 1*NOT(NAND)
+l_bigger        2           3           3               0           0               0               3
+
+
+l_shiftL        3
+l_shiftR        4
+logic shift using the skeleton idea
+
+l_and           5           2           2               0           0               0               2
+2row: 1*nand    1*not
+
+l_or            6           1           1               0           0               0               1
+初始化为Roff:0
+
+l_not           7           1           1               0           0               0               1
+l_nor           8           1           1               0           0               0               1
+初始化为Ron:1
+
+l_xor           9           1           2               0           0               0               2
+2write-num: ，1*OR，1*NAND
+xor可以用来比较相等，当输出的向量为全0，两个无符号数则相等
+
+l_add           10          4           7               0           0               0               (6+5*(N-1))
+4row: AxorB S Min(A B Cin)  C
+7write-num: 1*shiftc    2*xor(get a^b)  2*xor(get s)    2*maj(get c)
+6write-num if 1-bit
+S=A xor B xor Cin (2+2=4 cyc,2 if no cin)   C=AB+BCin+ACin(maj A B Cin; 2 cyc)
+ripple carry adder:(6+5*(N-1))cyc
+
+l_mul           11  can't
+
+注意：除了上面列出的，felix还支持：1cyc的NAND,1cyc的Min,2cyc的Maj，在逻辑综合中可以灵活的组合

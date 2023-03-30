@@ -34,8 +34,6 @@ struct sa_arr : public Array{
     vector<int> store_node;//存储的节点操作数ID
 };
 
-
-
 /*中层：cache一致性*/
 //cache一致性函数,输入执行阵列类型，ID,当前节点存储表，输出是否命中
 bool cache_like(int array_type,int array_id,vector<vector<int>> &wb_pos);
@@ -91,9 +89,15 @@ void op_sa(int op_type,Node* now,vector<sa_arr> &array_list2);
 //sa执行逻辑
 void op_magic(int op_type,Node* now,vector<magic_arr> &array_list3);
 
+//出度更新
+void out_degree(Node *now);
 
-void write_back_logic(int out_type,int out_id,Node* &node_now,vector<lut_arr> &array_list1,\
-                                    vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+//出度为0的节点对应阵列的擦除,更新节点的写回表和阵列的存储节点
+void erase_array(Node* now,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+
+//写覆盖
+void write_cover();
+
 
 //LUT计算函数：
 void com_lut(int type_operation,int bit_num_operand,int op_num,vector<lut_arr> &array_list1,\

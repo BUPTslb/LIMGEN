@@ -33,67 +33,7 @@ unsigned int arr_size(int logic_type,unsigned int bit_num_operand){
     }
     return arr_size;
 }
-void com_lut(int type_operation,int bit_num_operand,int op_num, \
-    vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
-{
-    //注：我没有考虑数据是从哪读到这里的
-    if (array_list1.empty())// 当前阵列表为空
-    {
-        lut_arr now;//新建阵列
-        now.array_type=1;//lut
-        now.is_using=1;
-        array_list1.push_back(now);
-    }
-    //对算子进行筛选
-    if (type_operation==0)//赋值操作，写操作
-    {
 
-
-    }else if(type_operation==1||type_operation==2)//比较操作
-    {
-
-
-    }else if(type_operation==3||type_operation==4)
-    {
-
-
-    }else if(type_operation<=9 && type_operation>=5)//按位操作
-    {
-        //搜索之前的阵列，是否支持这个操作
-        //如果其现在是未使用状态，并可以使用，则过
-        for (int i = 0; i < array_list1.size(); ++i) {
-            //该阵列当前未使用,且功能合适
-            if(!array_list1[i].is_using && array_list1.back().op_type[type_operation]){
-                //只增加时间和功耗
-                array_list1[i].read_number++;
-            }
-        }
-
-    }else if(type_operation==10)//向量加法操作
-    {
-
-
-    } else if (type_operation==11)//乘法操作
-    {
-
-
-    }
-
-}
-
-
-double Lut::Burn_cycle(char type,int bl,int wl)//烧录时间
-{
-
-
-
-
-}
-double Lut::Burn_power(char type,int bl,int wl)//烧录功耗
-{
-
-
-}
 
 
 int Magic::Magic_cycle(int type)
@@ -555,7 +495,7 @@ int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vect
     switch (decide_array_type) {
         case 1://LUT, 计算还能够放下几个运算
         {
-            map<int,bool>::iterator it=array_list1[decide_array_id].op_type.begin();
+            auto it=array_list1[decide_array_id].op_type.begin();
             if (it->first==10 || it->first==11 || it->first==3 || it->first==4)
                 return 0;
             else
@@ -568,10 +508,14 @@ int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vect
             //根据store_node,计算实际容量,有修改空间
             if (array_list2[decide_array_id].row_num-array_list2[decide_array_id].store_node.size()<2)
                 for (int i = 0; i < array_list2[decide_array_id].store_node.size(); ++i) {
-                    if(find_node_by_number(nodes,i)->out_degree==0) //节点出度为0，不再被需要
+                    if(find_node_by_number(nodes,i)->out_degree==0) //节点出度为0，不再被需要,直接擦除
                     {
                         cap_array++;
+                        //擦除
+                        erase_array(find_node_by_number(nodes,i),array_list1,array_list2,array_list3);
                     }
+                    //DSE
+                    //有一种情况，出度不为0，但是在多个阵列中存储的都有，可以选择擦除，但是必须留一个
                 }
             else
                 cap_array=array_list2[decide_array_id].row_num-array_list2[decide_array_id].store_node.size();
@@ -901,6 +845,8 @@ void output_logic(int decide_array_type,int decide_array_id,int op_type,Node *no
 
 }
 
+
+
 //lut执行逻辑
 void op_lut(int op_type,Node* now,vector<lut_arr> &array_list1){
 
@@ -1025,6 +971,53 @@ void op_magic(int op_type,Node* now,vector<magic_arr> &array_list3){
     }
 }
 
+//更新节点的出度
+void out_degree(Node *now)
+{
+    if (now->depend1)
+        now->depend1->out_degree--;
+    if (now->depend2)
+        now->depend2->out_degree--;
+    if (now->control)
+        now->control->out_degree--;
+}
+
+//擦除阵列中的无关节点
+void erase_array(Node* now,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+{
+    if (now->out_degree==0)
+    {
+        //清空其wb_pos
+        //在阵列中删除其节点id
+        if (!now->wb_pos[0].empty())
+        {
+        }
+        if (!now->wb_pos[1].empty())
+        {
+            for (int i = 0; i < now->wb_pos[1].size(); ++i) {
+                auto it=array_list2[now->wb_pos[1][i]].store_node.begin();
+                while (*it!=now->node_id)
+                {
+                        it++;
+                }
+                array_list2[now->wb_pos[1][i]].store_node.erase(it);//擦除
+            }
+        }
+        if (!now->wb_pos[2].empty())
+        {
+            for (int i = 0; i < now->wb_pos[2].size(); ++i) {
+                auto it=array_list3[now->wb_pos[2][i]].store_node.begin();
+                while (*it!=now->node_id)
+                {
+                    it++;
+                }
+                array_list3[now->wb_pos[2][i]].store_node.erase(it);//擦除
+            }
+        }
+        now->wb_pos[0].clear();//将写回表擦除
+    }
+
+}
 
 
 
