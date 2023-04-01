@@ -64,3 +64,7 @@
 3	1327	1679885733010083479	CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o	1c841ffe7a684517
 2	1516	1679885733198085713	CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o	6df5071918445db1
 1516	1762	1679885733446088661	Synthesis	e4e30529ee8994bf
+3	1325	1680351906686735416	CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o	b0e54db608eb1673
+3	1328	1680351906690735509	CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o	1c841ffe7a684517
+2	1541	1680351906902740409	CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o	6df5071918445db1
+1541	1741	1680351907102745030	Synthesis	e4e30529ee8994bf

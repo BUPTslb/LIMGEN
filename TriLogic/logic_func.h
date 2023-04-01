@@ -60,9 +60,14 @@ int find_no_using(int op_type,vector<Node> &nodes,int decide_array_type,vector<l
 int build(int decide_array_type,int op_type,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,\
                                                             vector<magic_arr> &array_list3);
 
-//计算阵列剩余/可覆盖容量
-int cap_array(int decide_array_type,int decide_array_id,vector<Node> &nodes,vector<lut_arr> &array_list1,\
+//计算阵列剩余
+int cap_array_lost(int decide_array_type,int decide_array_id,vector<Node> &nodes,vector<lut_arr> &array_list1,\
                             vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+//可覆盖容量
+int cap_array_cover(int decide_array_type,int decide_array_id,vector<Node> &nodes,vector<lut_arr> &array_list1,\
+                            vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
+
+//需要单独写一个函数，得出计算每一个op需要的剩余容量
 
 //数据读函数,输入：各阵列表，执行的运算节点
 //目的：找到输入数据依赖的“阵列“，完成数据搬移：需要增加读就读++，需要移动写就写++
@@ -76,7 +81,8 @@ bool is_in_wb(int array_type,int array_id,Node *node_now);
 //写入逻辑
 void input_logic(int input1_type,int input1_id,int input2_type,int input2_id,int decide_array_type,int decide_array_id,\
        Node *now,int *Register,vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
-//输出逻辑
+
+                 //输出逻辑
 void output_logic(int decide_array_type,int decide_array_id,int op_type,Node *now,\
                   vector<lut_arr> &array_list1,vector<sa_arr> &array_list2,vector<magic_arr> &array_list3);
 
