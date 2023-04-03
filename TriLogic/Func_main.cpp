@@ -239,7 +239,9 @@ int main()
                             input_depend[0]=true;
                             c->depend1=a;//当前节点的输入依赖于a
                             inDegree[c->node_id]++;//当前节点入度++
-                        cout<<"节点"<<i+1<<"输入数量为string2，in1数据依赖："<<dst_id[name_in1]<<"->"<<i+1<<endl;
+//                            cout<<"节点"<<i+1<<"输入数量为string2，in1数据依赖："<<dst_id[name_in1]<<"->"<<i+1<<endl;
+                            cout<<"节点"<<c->node_id<<"输入数量为string2，in1数据依赖："<<a->node_id<<"->"<<c->node_id<<endl;
+
                         }
                         if(dst_id[name_in2]&&(!input_depend[1])&&(dst_id[name_in2]<i+1))//存在
                         {
@@ -250,7 +252,8 @@ int main()
                             input_depend[1]=true;
                             c->depend2=b;
                             inDegree[c->node_id]++;//入度++
-                        cout<<"节点"<<i+1<<"输入数量为string2，in2数据依赖："<<dst_id[name_in2]<<"->"<<i+1<<endl;
+//                        cout<<"节点"<<i+1<<"输入数量为string2，in2数据依赖："<<dst_id[name_in2]<<"->"<<i+1<<endl;
+                        cout<<"节点"<<c->node_id<<"输入数量为string2，in2数据依赖："<<b->node_id<<"->"<<c->node_id<<endl;
 //                        break;
                         }
                     }
@@ -267,7 +270,8 @@ int main()
                             input_depend[0]=true;
                             c->depend1=a;
                             inDegree[c->node_id]++;//入度++
-                        cout<<"节点"<<i+1<<"输入数量为string1，数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
+//                        cout<<"节点"<<i+1<<"输入数量为string1，数据依赖："<<dst_id[input_name]<<"->"<<i+1<<endl;
+                        cout<<"节点"<<c->node_id<<"输入数量为string1，数据依赖："<<a->node_id<<"->"<<c->node_id<<endl;
                         }
                     }
                 }
@@ -314,13 +318,24 @@ int main()
      * 循环对象为nodes,vector<Node>
      * 构建初始的控制步
      *******************************/
-    topologicalSort(nodes,inDegree,controlstep,id_pos);//函数使用，现在得到了controlstep vector<vector<Node>>
+     vector<Node> nodes_copy=nodes;
+    topologicalSort(nodes_copy,inDegree,controlstep,id_pos);//函数使用，现在得到了controlstep vector<vector<Node>>,但是没有依赖关系
 
-    cout<<"cout the control step:"<<endl<<endl;
+    for (int i = 0; i < controlstep.size(); ++i) {
+        for (int j = 0; j < controlstep[i].size(); ++j) {
+            controlstep[i][j]=nodes_copy[id_pos[controlstep[i][j].node_id]];//换成真正的依赖关系
+                    }
+    }
+
     for (int i = 0; i < controlstep.size(); ++i) {
         cout<<"control step"<<i+1<<"大小为"<<controlstep[i].size()<<endl;
         for (int j = 0; j < controlstep[i].size(); ++j) {
             cout<< controlstep[i][j].node_id<<":"<<controlstep[i][j].operator_name<<endl;
+            cout<< controlstep[i][j].node_id<<"的依赖为"
+                <<(controlstep[i][j].depend1?controlstep[i][j].depend1->node_id:0)<<" "
+                <<(controlstep[i][j].depend2?controlstep[i][j].depend2->node_id:0)
+
+                <<endl;
         }
     }
 

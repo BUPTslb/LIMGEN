@@ -33,7 +33,7 @@ int Type2node(string type);//Type2node函数的声明
 Node * find_node_by_number(std::vector<Node>& nodes, int node_id);//寻找节点指针的函数声明
 //topo排序
 void topologicalSort(vector<Node> nodes,map<int,int> &inDegree,\
-                        vector<vector<Node>>& controlstep,\
+                        vector<vector<Node>> &controlstep,\
                         map<int,int> &id_pos) ;//函数声明
 void ComIndegree(queue<int> &nodeQueue,map<int,int> &inDegree,\
                         vector<Node> &nodes,map<int,int> &id_pos);//子函数声明
