@@ -98,7 +98,7 @@ int main()
 
     cout<<"操作数hash表的大小："<<operator_num.size()<<endl;
 
-    for(map<string,int>::iterator it=operator_num.begin();it!=operator_num.end();it++)
+    for(auto it=operator_num.begin();it!=operator_num.end();it++)
     {
         cout<<it->first<<" "<<it->second<<endl;
     }
@@ -342,6 +342,9 @@ int main()
     {
         cout<<"控制步："<<i<<endl;
         for (int j = 0; j <controlstep[i].size() ; ++j) {
+            cout<<"节点："<<controlstep[i][j].node_id<<endl
+            <<"数据依赖1为："<<(controlstep[i][j].depend1?controlstep[i][j].depend1->node_id:0)<<"  "
+            <<"数据依赖2为："<<(controlstep[i][j].depend2?controlstep[i][j].depend1->node_id:0)<<endl;
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
             int type_operation= op2int(controlstep[i][j].operator_name);
             //运算阵列的大小，可能不对
@@ -354,6 +357,7 @@ int main()
             //对于当前算子，目标是：找一个阵列/新建一个阵列，然后计算其参数增加，就结束
             //第一步，取操作数
             int input1_type=-1,input2_type=0,input1_id=-1,input2_id=-1;
+            //寻找的是节点存储的ID,或者执行完毕的输出位置
             find_input(input1_type,input1_id,type_operation,controlstep[i][j].depend1);//-1 R 1 lut 2 sa 3 magic
             find_input(input2_type,input2_id,type_operation,controlstep[i][j].depend2);
 
@@ -411,6 +415,7 @@ int main()
                 cout<<"执行类型： "<<controlstep[i][j].do_type<<"  执行id："<<controlstep[i][j].finish_id<<endl;
                 //更新出度
                 out_degree(&controlstep[i][j]);
+
                 continue;//进行下一个循环
             }//下面的操作没有=了
 
@@ -423,7 +428,7 @@ int main()
             if (do_array_type==1&&array_list1.empty()||do_array_type==2&&array_list2.empty()||do_array_type==3&&array_list3.empty())
                 do_array_id=build(do_array_type,type_operation,array_list1,array_list2,array_list3);
             //决定执行阵列的id
-            do_array_id= decide_array_id(type_operation,nodes,do_array_type,array_list1,array_list2,array_list3,input1_type,input1_id,input2_type,input2_id);
+            do_array_id= decide_array_id(type_operation,bit_num_operand,nodes,do_array_type,array_list1,array_list2,array_list3,input1_type,input1_id,input2_type,input2_id);
             cout<<"算子id："<<controlstep[i][j].node_id<<"  算子类型："<<controlstep[i][j].operator_name<<endl;
             cout<<"执行类型： "<<do_array_type<<"  执行id："<<do_array_id<<endl;
             /*现在已知：操作数1类型，id；操作数2类型，id；执行阵列类型，执行阵列id；
@@ -451,17 +456,28 @@ int main()
         }
 
     }
-    cout<<"阵列1:";
-    for (int i = 0; i < array_list1.size(); ++i) {
-        cout<<array_list1[i].op_type.size()<<endl;
+    cout<<"number of array_lut:"<<array_list1.size()<<endl;
+    for (auto & i : array_list1) {
+        cout<<"op_type of lut_array"<<i.array_id<<endl;
+        cout<<"op-num of lut"<<i.array_id<<"="<<i.op_type.size()<<endl;
+        for (auto & j : i.op_type) {
+            cout<<j<<endl;
+        }
+
     }
-    cout<<"阵列2:";
-    for (int i = 0; i < array_list2.size(); ++i) {
-        cout<<array_list2[i].store_node.size()<<endl;
+    cout<<"number of array_sa:"<<array_list2.size()<<endl;
+    for (auto & i : array_list2) {
+        cout<<"number of stored_node in sa-array-"<<i.array_id<<"="<<i.store_node.size()<<endl;
+        for (auto & j:i.store_node) {
+            cout<<j<<endl;
+        }
     }
-    cout<<"阵列3:";
-    for (int i = 0; i < array_list3.size(); ++i) {
-        cout<<array_list3[i].store_node.size()<<endl;
+    cout<<"number of array_magic:"<<array_list3.size()<<endl;
+    for (auto & i : array_list3) {
+        cout<<"number of stored_node in magic-array-"<<i.array_id<<"="<<i.store_node.size()<<endl;
+        for (auto & j:i.store_node) {
+            cout<<j<<endl;
+        }
     }
     return 0;
 }

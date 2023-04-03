@@ -129,11 +129,11 @@ int op2int(string operation){
     if(operation==l_bigger)  return 2;
     if(operation==l_shiftL)  return 3;
     if(operation==l_shiftR)  return 4;
-    if(operation==l_and)  return 5;
-    if(operation==l_or)  return 6;
-    if(operation==l_not)  return 7;
-    if(operation==l_nor)  return 8;
-    if(operation==l_xor)  return 9;
+    if(operation==l_and)  return 5;//sa ma
+    if(operation==l_or)  return 6;//sa ma
+    if(operation==l_not)  return 7;//sa ma
+    if(operation==l_nor)  return 8;//ma
+    if(operation==l_xor)  return 9;//sa ma
     if(operation==l_add)  return 10;
     if(operation==l_mul)  return 11;
     return -1;
