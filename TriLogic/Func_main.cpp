@@ -318,23 +318,23 @@ int main()
      * 循环对象为nodes,vector<Node>
      * 构建初始的控制步
      *******************************/
-     vector<Node> nodes_copy=nodes;
-    topologicalSort(nodes_copy,inDegree,controlstep,id_pos);//函数使用，现在得到了controlstep vector<vector<Node>>,但是没有依赖关系
-
+    topologicalSort(nodes,inDegree,controlstep,id_pos);//函数使用，现在得到了controlstep vector<vector<Node>>,但是没有依赖关系
+    vector<vector<Node*>> controlstep2;
     for (int i = 0; i < controlstep.size(); ++i) {
+        vector<Node*> stepnow;//当前控制步，存放节点指针
         for (int j = 0; j < controlstep[i].size(); ++j) {
-            controlstep[i][j]=nodes_copy[id_pos[controlstep[i][j].node_id]];//换成真正的依赖关系
+            stepnow.push_back(find_node_by_number(nodes,controlstep[i][j].node_id));//换成真正的依赖关系
                     }
+        controlstep2.push_back(stepnow);
     }
 
     for (int i = 0; i < controlstep.size(); ++i) {
         cout<<"control step"<<i+1<<"大小为"<<controlstep[i].size()<<endl;
         for (int j = 0; j < controlstep[i].size(); ++j) {
-            cout<< controlstep[i][j].node_id<<":"<<controlstep[i][j].operator_name<<endl;
-            cout<< controlstep[i][j].node_id<<"的依赖为"
-                <<(controlstep[i][j].depend1?controlstep[i][j].depend1->node_id:0)<<" "
-                <<(controlstep[i][j].depend2?controlstep[i][j].depend2->node_id:0)
-
+            cout<< controlstep2[i][j]->node_id<<":"<<controlstep2[i][j]->operator_name<<endl;
+            cout<< controlstep2[i][j]->node_id<<"的依赖为"
+                <<(controlstep2[i][j]->depend1?controlstep2[i][j]->depend1->node_id:0)<<" "
+                <<(controlstep2[i][j]->depend2?controlstep2[i][j]->depend2->node_id:0)
                 <<endl;
         }
     }
@@ -353,15 +353,15 @@ int main()
 
     //先判断设计目标，按照设计目标来循环给约束
 
-    for(int i=0;i<controlstep.size();i++)
+    for(int i=0;i<controlstep2.size();i++)
     {
         cout<<"控制步："<<i<<endl;
-        for (int j = 0; j <controlstep[i].size() ; ++j) {
-            cout<<"节点："<<controlstep[i][j].node_id<<endl
-            <<"数据依赖1为："<<(controlstep[i][j].depend1?controlstep[i][j].depend1->node_id:0)<<"  "
-            <<"数据依赖2为："<<(controlstep[i][j].depend2?controlstep[i][j].depend1->node_id:0)<<endl;
+        for (int j = 0; j <controlstep2[i].size() ; ++j) {
+            cout<<"节点："<<controlstep2[i][j]->node_id<<endl
+                <<"数据依赖1为："<<(controlstep2[i][j]->depend1?controlstep2[i][j]->depend1->node_id:0)<<"  "
+                <<"数据依赖2为："<<(controlstep2[i][j]->depend2?controlstep2[i][j]->depend2->node_id:0)<<endl;
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
-            int type_operation= op2int(controlstep[i][j].operator_name);
+            int type_operation= op2int(controlstep2[i][j]->operator_name);
             //运算阵列的大小，可能不对
             unsigned int lut_size= arr_size(1,bit_num_operand);
             unsigned int sa_size= arr_size(2,bit_num_operand);
@@ -373,8 +373,8 @@ int main()
             //第一步，取操作数
             int input1_type=-1,input2_type=0,input1_id=-1,input2_id=-1;
             //寻找的是节点存储的ID,或者执行完毕的输出位置
-            find_input(input1_type,input1_id,type_operation,controlstep[i][j].depend1);//-1 R 1 lut 2 sa 3 magic
-            find_input(input2_type,input2_id,type_operation,controlstep[i][j].depend2);
+            find_input(input1_type,input1_id,type_operation,controlstep2[i][j]->depend1);//-1 R 1 lut 2 sa 3 magic
+            find_input(input2_type,input2_id,type_operation,controlstep2[i][j]->depend2);
 
 
             //先讨论写回的情况:
@@ -383,53 +383,54 @@ int main()
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
                 //如果没有依赖，交给寄存器
-                if (controlstep[i][j].depend1== nullptr)
+                if (controlstep2[i][j]->depend1== nullptr)
                 {
                     Register[1]++;//寄存器写
-                    controlstep[i][j].do_type=-1;
-                    controlstep[i][j].finish_id=-1;//证明写到了寄存器中
-                    cout<<"算子id："<<controlstep[i][j].node_id<<"  算子类型："<<controlstep[i][j].operator_name<<endl;
+                    controlstep2[i][j]->do_type=-1;
+                    controlstep2[i][j]->finish_id=-1;//证明写到了寄存器中
+                    cout<<"算子id："<<controlstep2[i][j]->node_id<<"  算子类型："<<controlstep2[i][j]->operator_name<<endl;
                     cout<<"执行类型： "<< -1<<"  执行id："<< -1<<endl;
                     //更新出度
-                    out_degree(&controlstep[i][j]);
+                    out_degree(controlstep2[i][j]);
                     //不更新wb_pos,等写回到阵列中再更新
                     continue;//进行下一个循环
                 }
 
                 //有依赖,假设不会出现A=B这种直接赋值，则依赖一定来自OP
                 //统一，更改节点的执行结束id和do_type
-                controlstep[i][j].finish_id=controlstep[i][j].depend1->finish_id;
-
+                cout<<"depend1 of"<<controlstep2[i][j]->node_id<<" = "<<controlstep2[i][j]->depend1->node_id<<endl;
+                controlstep2[i][j]->finish_id=controlstep2[i][j]->depend1->finish_id;
+                cout<<"finish_id of depend1:"<<controlstep2[i][j]->depend1->finish_id<<endl;
                 //如果操作数来自MAGIC阵列,写回阵列中
-                if (controlstep[i][j].depend1->do_type==3)
+                if (controlstep2[i][j]->depend1->do_type==3)
                 {
                     //节点行为
-                    controlstep[i][j].do_type=3;
-                    controlstep[i][j].wb_pos[2].push_back(controlstep[i][j].finish_id);//将阵列加入写回表
+                    controlstep2[i][j]->do_type=3;
+                    controlstep2[i][j]->wb_pos[2].push_back(controlstep2[i][j]->finish_id);//将阵列加入写回表
                     //阵列行为：写++，添加存储节点
-                    array_list3[controlstep[i][j].finish_id].write_number++;
-                    array_list3[controlstep[i][j].finish_id].store_node.push_back(controlstep[i][j].node_id);
+                    array_list3[controlstep2[i][j]->finish_id].write_number++;
+                    array_list3[controlstep2[i][j]->finish_id].store_node.push_back(controlstep2[i][j]->node_id);
 
                 }
-                else if(controlstep[i][j].depend1->do_type==2)//SA
+                if(controlstep2[i][j]->depend1->do_type==2)//SA
                 {
                     Register[1]++;//寄存器写
-                    controlstep[i][j].do_type=5;//SA BUFFER
+                    controlstep2[i][j]->do_type=5;//SA BUFFER
                     //阵列行为：
-                    array_list2[controlstep[i][j].finish_id].sa_buffer=controlstep[i][j].node_id;
+                    array_list2[controlstep2[i][j]->finish_id].sa_buffer=controlstep2[i][j]->node_id;
                 }
-                else//LUT
+                if(controlstep2[i][j]->depend1->do_type==1)//LUT
                 {
                     Register[1]++;//lut-out中的锁存器件写
                     //node
-                    controlstep[i][j].do_type=4;//LUT-OUT
+                    controlstep2[i][j]->do_type=4;//LUT-OUT
                     //array
-                    array_list1[controlstep[i][j].finish_id].lut_latch=controlstep[i][j].node_id;
+                    array_list1[controlstep2[i][j]->finish_id].lut_latch=controlstep2[i][j]->node_id;
                 }
-                cout<<"算子id："<<controlstep[i][j].node_id<<"  算子类型："<<controlstep[i][j].operator_name<<endl;
-                cout<<"执行类型： "<<controlstep[i][j].do_type<<"  执行id："<<controlstep[i][j].finish_id<<endl;
+                cout<<"算子id："<<controlstep2[i][j]->node_id<<"  算子类型："<<controlstep2[i][j]->operator_name<<endl;
+                cout<<"执行类型： "<<controlstep2[i][j]->do_type<<"  执行id："<<controlstep2[i][j]->finish_id<<endl;
                 //更新出度
-                out_degree(&controlstep[i][j]);
+                out_degree(controlstep2[i][j]);
 
                 continue;//进行下一个循环
             }//下面的操作没有=了
@@ -438,13 +439,13 @@ int main()
             int do_array_type=0,do_array_id=-1;//执行阵列的类型,id
             do_array_type=decide_array_type(type_operation,design_target);//决定执行阵列类型
             //更新节点的do_type,执行节点的do_type只有123
-            controlstep[i][j].do_type=do_array_type;
+            controlstep2[i][j]->do_type=do_array_type;
             //如果要执行的类型当前没有阵列，则建立
             if (do_array_type==1&&array_list1.empty()||do_array_type==2&&array_list2.empty()||do_array_type==3&&array_list3.empty())
                 do_array_id=build(do_array_type,type_operation,array_list1,array_list2,array_list3);
             //决定执行阵列的id
             do_array_id= decide_array_id(type_operation,bit_num_operand,nodes,do_array_type,array_list1,array_list2,array_list3,input1_type,input1_id,input2_type,input2_id);
-            cout<<"算子id："<<controlstep[i][j].node_id<<"  算子类型："<<controlstep[i][j].operator_name<<endl;
+            cout<<"算子id："<<controlstep2[i][j]->node_id<<"  算子类型："<<controlstep2[i][j]->operator_name<<endl;
             cout<<"执行类型： "<<do_array_type<<"  执行id："<<do_array_id<<endl;
             /*现在已知：操作数1类型，id；操作数2类型，id；执行阵列类型，执行阵列id；
             * 现在还没有进行读写执行
@@ -455,9 +456,10 @@ int main()
             data_read(input1_type,input1_id,do_array_type,do_array_id,Register,array_list1,array_list2,array_list3);
             data_read(input2_type,input2_id,do_array_type,do_array_id,Register,array_list1,array_list2,array_list3);
             //将数据输入到执行阵列：input逻辑
-            input_logic(input1_type,input1_id,input2_type,input2_id,do_array_type,do_array_id, &controlstep[i][j],Register,array_list1,array_list2,array_list3);
-            //执行运算
-            output_logic(do_array_type,do_array_id,type_operation,&controlstep[i][j],array_list1,array_list2,array_list3);
+            input_logic(input1_type,input1_id,input2_type,input2_id,do_array_type,do_array_id, controlstep2[i][j],Register,array_list1,array_list2,array_list3);
+            //执行运算,要更新finish_id
+            output_logic(do_array_type,do_array_id,type_operation,controlstep2[i][j],array_list1,array_list2,array_list3);
+            cout<<"finish_id of this："<<controlstep2[i][j]->finish_id<<endl;
             //写回在最开始，不用在执行
             //只要有写操作，就存在-内部有覆盖的情况，更新出度，清除被覆盖的节点，节点出度为0，找到存储他的阵列，将其擦除
             //补充控制节点，设计比较器件 ，看是否需要加其他运算器，如ALU
@@ -465,7 +467,7 @@ int main()
 
 
             //更新出度
-            out_degree(&controlstep[i][j]);
+            out_degree(controlstep2[i][j]);
 
 
         }
