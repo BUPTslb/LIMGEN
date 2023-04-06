@@ -147,38 +147,116 @@ double SA::SA_power(int type, int bl, int wl) {
     return cycle_power;
 }
 
-void time_update(int &array_type, int &array_id, int op_type,
-                 Node *node_depend, vector<lut_arr> &array_list1,
-                 vector<sa_arr> &array_list2, vector<magic_arr> &array_list3)
-{
+//现在已经决定了从哪里找操作数，在哪里执行，可以直接进行时间更新
+double time_now(int op_type, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                   vector<magic_arr> &array_list3, Node *node_now) {
     //函数执行的操作：
     //执行阵列：更新开始时间和结束时间，将使用的阵列置为is_using=true
     //其他阵列，如果当前执行阵列的开始时间比其结束时间要大,将is_using置为false
-    int depend_type=node_depend->do_type;
-    if (depend_type==1||depend_type==4) depend_type=1; //LUT
-    if (depend_type==2||depend_type==5) depend_type=2; //SA
-    switch (array_type) {
-        case 1://LUT
-        {
+    double time_now=0;
+    if (node_now->depend1)
+    {
+        double time1=0;
+        if (node_now->depend1->do_type!=-1)
+            time1=node_now->depend1->end_time;
+        time_now=time1;
+    }
+    if (node_now->depend2)
+    {
+        double time2=0;
+        if (node_now->depend2->do_type!=-1)
+            time2=node_now->depend2->end_time;
+        time_now= max(time_now,time2);
+    }
+    if (node_now->control)
+    {
+        double time3=node_now->control->end_time;
+        time_now= max(time_now,time3);
+    }
+    //update the is_using of array
+    for (auto i:array_list1) {
+        if (i.over_time<time_now)
+            i.is_using= false;
+    }
+    for (auto i:array_list2) {
+        if (i.over_time<time_now)
+            i.is_using= false;
+    }
+    for (auto i:array_list3) {
+        if (i.over_time<time_now)
+            i.is_using= false;
+    }
 
+    return time_now;
+
+}
+
+void time_update(int op_type,int array_type, int array_id, double time_now,Node* node_now,
+                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, int bit_num)
+{
+    //set start time of node
+    node_now->start_time=time_now;
+    if (array_id==-1&&array_type==-1)   {
+        node_now->end_time=time_now+1;
+        return;
+    }
+    switch (array_type) {
+        case 1:
+        {
+            array_list1[array_id].start_time=time_now;
+            if (op_type==0||(op_type>=5&&op_type<=9))
+                node_now->end_time=time_now+1;
+            if (op_type==1||op_type==2)
+                node_now->end_time= time_now+1;
+            if (op_type==3||op_type==4)
+                node_now->end_time=time_now+bit_num;
+            if (op_type==10)
+                node_now->end_time=time_now+bit_num*2+4;
+            if (op_type==11)
+                node_now->end_time=time_now+(bit_num*2+4)*bit_num;
+
+            array_list1[array_id].over_time=node_now->end_time;
         }
             break;
         case 2://SA
         {
+            array_list2[array_id].start_time=time_now;
+            if (op_type==0||op_type==5||op_type==6||op_type==7||op_type==9)
+            {
+                node_now->end_time=time_now+1;
+                cout<<"node : "<<node_now->node_id<<" end time ="<<node_now->end_time<<endl;
+            }
+            if (op_type==1||op_type==2||op_type==3||op_type==4)
+                node_now->end_time=time_now+bit_num;
+            if (op_type==8)//nor
+                node_now->end_time=time_now+2;
+            if (op_type==10)
+                node_now->end_time=time_now+bit_num*2+4;
+            if (op_type==11)
+                node_now->end_time=time_now+(bit_num*2+4)*bit_num;
 
+            array_list2[array_id].over_time=node_now->end_time;
         }
             break;
         case 3://MAGIC
         {
+            array_list2[array_id].start_time=time_now;
+            if (op_type==0||op_type==6||op_type==7||op_type==8)
+                node_now->end_time=time_now+1;
+            if (op_type==5||op_type==9)
+                node_now->end_time=time_now+2;
+            if (op_type==10)
+                node_now->end_time=time_now+bit_num*2+4;
+            if (op_type==11)
+                node_now->end_time=time_now+(bit_num*2+4)*bit_num;
 
+            array_list3[array_id].over_time=node_now->end_time;
         }
             break;
         default:
             break;
 
     }
-
-
 }
 
 //寻找输入操作数来源：阵列（ID）/寄存器
@@ -244,7 +322,7 @@ int decide_array_type(int op_type, int design_target) {
 }
 
 //定义执行阵列的id
-int decide_array_id(int op_type, int bit_num_operand, vector<Node> &nodes, int decide_array_type, \
+int decide_array_id(int op_type, int bit_num_operand, Node* node_now,vector<Node> &nodes, int decide_array_type, \
                     vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, \
                     int input1_type, int input1_id, int input2_type, int input2_id) {
 /*当前的寻找策略
@@ -253,6 +331,7 @@ int decide_array_id(int op_type, int bit_num_operand, vector<Node> &nodes, int d
  * 如果暂时都在使用，则新建一个阵列
  * 方案二：等待阵列执行完毕，寻找一个阵列执行，这样可以提供好面积利用率，待补充
  * */
+    double time=time_now(op_type,array_list1,array_list2,array_list3,node_now);//update is_using of array_list
     int decide_array_id = -1;
     int row_need = op_row_need(op_type, decide_array_type, bit_num_operand);//执行当前操作需要的资源数
     vector<int> array_no_using = find_no_using(op_type, nodes, decide_array_type, array_list1, array_list2,
@@ -435,13 +514,13 @@ int decide_array_id(int op_type, int bit_num_operand, vector<Node> &nodes, int d
             if (decide_array_type == 1)//LUT,无关，但还是尽量在本节点进行
             {
                 if (array_list1[input1_id].op_type.find(op_type) != array_list1[input1_id].op_type.end())//1算子支持
-                    return input1_id;
+                    decide_array_id=input1_id;
             } else //SA\magic
             {
                 //尽量在本阵列执行，如果容量不够，考虑其他阵列
                 if ((decide_array_type == 2 && cap(input1_id) > row_need) ||
                     (decide_array_type == 3 && cap(input1_id) > row_need))
-                    return input1_id;
+                    decide_array_id=input1_id;
 
             }
         }
@@ -450,13 +529,13 @@ int decide_array_id(int op_type, int bit_num_operand, vector<Node> &nodes, int d
             if (decide_array_type == 1)//LUT,无关，但还是尽量在本节点进行
             {
                 if (array_list1[input2_id].op_type.find(op_type) != array_list1[input2_id].op_type.end())//2算子支持
-                    return input2_id;
+                    decide_array_id= input2_id;
             } else //SA\magic
             {
                 //尽量在本阵列执行，如果容量不够，考虑其他阵列
                 if ((decide_array_type == 2 && cap(input2_id) > row_need) ||
                     (decide_array_type == 3 && cap(input2_id) > row_need))
-                    return input2_id;
+                    decide_array_id= input2_id;
 
             }
 
@@ -499,6 +578,7 @@ int decide_array_id(int op_type, int bit_num_operand, vector<Node> &nodes, int d
             }
         }
     }
+    time_update(op_type,decide_array_type,decide_array_id,time,node_now,array_list1,array_list2,array_list3, bit_num_operand);
     return decide_array_id;
 }
 
@@ -511,41 +591,39 @@ vector<int> find_no_using(int op_type, vector<Node> &nodes, int decide_array_typ
     switch (decide_array_type) {
         case 1://找LUT,需要算子支持，并且能用
         {
-            for (int i = 0; i < array_list1.size(); ++i) {
-                if (!array_list1[i].is_using)//空闲，算子不可用，但是还有空间，可以添加算子
+            for (auto i :array_list1)
+                if (!i.is_using)//空闲，算子不可用，但是还有空间，可以添加算子
                 {
-                    if (array_list1[i].op_type.find(op_type) != array_list1[i].op_type.end() ||
-                        array_list1[i].op_type.empty() && (op_type < 5 || op_type > 9) ||
-                        (array_list1[i].op_type.find(op_type) == array_list1[i].op_type.end() &&
-                         array_list1[i].op_type.size() < 3 && op_type <= 9 && op_type >= 5)
+                    if (i.op_type.find(op_type) != i.op_type.end() ||
+                        i.op_type.empty() && (op_type < 5 || op_type > 9) ||
+                        (i.op_type.find(op_type) == i.op_type.end() &&
+                         i.op_type.size() < 3 && op_type <= 9 && op_type >= 5)
                             ) {
-                        find_no_using.push_back(i);
+                        find_no_using.push_back(i.array_id);
 
                     }
 
                 }
-                //没有可用的，跳过
-            }
+            //没有可用的，跳过
         }
             break;
         case 2://找SA
         {
 
-            for (int i = 0; i < array_list2.size(); ++i) {
+            for (const auto& i : array_list2) {
 //                if (cap_array_lost(decide_array_type, i, nodes, array_list1, array_list2, array_list3) < 2)
 //                    continue; //判断空间是否够用放在外面
-                if (!array_list2[i].is_using)//空闲
-                    find_no_using.push_back(i);
+                if (!i.is_using)//空闲
+                    find_no_using.push_back(i.array_id);
                 //没有可用的，跳过
             }
 
         }
             break;
         case 3: {
-            for (int i = 0; i < array_list3.size(); ++i) {
-
-                if (!array_list1[i].is_using)//空闲
-                    find_no_using.push_back(i);
+            for (const auto& i :array_list3) {
+                if (!i.is_using)//空闲
+                    find_no_using.push_back(i.array_id);
                 //没有可用的，跳过
             }
 
@@ -566,16 +644,16 @@ vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_arra
     switch (decide_array_type) {
         case 1://找LUT,需要算子支持，并且能用
         {
-            for (int i = 0; i < array_list1.size(); ++i) {
+            for (auto &i: array_list1) {
 
-                if (array_list1[i].is_using)//不空闲
+                if (i.is_using)//不空闲
                 {
-                    if (array_list1[i].op_type.find(op_type) != array_list1[i].op_type.end() ||
-                        array_list1[i].op_type.empty() && (op_type < 5 && op_type > 9) ||
-                        array_list1[i].op_type.find(op_type) == array_list1[i].op_type.end() &&
-                        array_list1[i].op_type.size() < 3 && op_type <= 9 && op_type >= 5
+                    if (i.op_type.find(op_type) != i.op_type.end() ||
+                        i.op_type.empty() && (op_type < 5 || op_type>9) ||
+                        i.op_type.find(op_type) == i.op_type.end() &&
+                        i.op_type.size() < 3 && op_type <= 9 && op_type >= 5
                             ) {
-                        pq.push(array_list1[i]);
+                        pq.push(i);
                     }
 
                 }
@@ -585,10 +663,10 @@ vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_arra
         case 2://找SA
         {
 
-            for (int i = 0; i < array_list2.size(); ++i) {
+            for (auto &i: array_list2) {
 
-                if (array_list2[i].is_using)//空闲
-                    pq.push(array_list2[i]);
+                if (i.is_using)//空闲
+                    pq.push(i);
                 //没有可用的，跳过
             }
 
@@ -596,9 +674,10 @@ vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_arra
             break;
         case 3: {
 
-            for (int i = 0; i < array_list3.size(); ++i) {
-                if (!array_list1[i].is_using)//空闲
-                    pq.push(array_list3[i]);
+            for (auto &i: array_list3) {
+
+                if (i.is_using)//空闲
+                    pq.push(i);
                 //没有可用的，跳过
             }
 
@@ -607,7 +686,7 @@ vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_arra
         default:
             break;
     }
-    if (pq.size() == 0) return waiting_array_list;
+    if (pq.empty()) return waiting_array_list;
     for (int i = 0; i < pq.size(); ++i) {
         waiting_array_list.push_back(pq.top().array_id);//向量首部是结束时间最小的
     }

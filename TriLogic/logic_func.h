@@ -6,38 +6,6 @@
 
 using namespace std;
 
-//阵列基类
-class Array {
-public:
-    int array_id;
-    bool is_using;//当前正在使用
-    int array_type;//阵列的类型
-    int row_num;//大小，行数
-    int col_num;//大小，列数
-    double read_number;//读次数，以操作数数量为计数单位
-    double write_number;//写次数，以行数为计数单位
-    double start_time;//存储两个变量，开始时间：s,结束时间：o,o可以更新
-    double over_time;
-};
-
-//继承
-struct lut_arr : public Array {
-    bool lut_m;//是否用作存储
-    int lut_latch;//记录当前输出
-    set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
-    //当LUT用作存储时，这个这个表用来存节点操作数
-};
-
-struct magic_arr : public Array {
-    vector<int> store_node;//存储的节点操作数ID
-};
-
-struct sa_arr : public Array {
-    int sa_buffer;//sa暂存当前输出
-    int sa_direct;//接收直接输入
-    vector<int> store_node;//存储的节点操作数ID
-};
-
 /*中层：cache一致性*/
 //cache一致性函数,输入执行阵列类型，ID,当前节点存储表，输出是否命中
 //bool cache_like(int array_type, int array_id, vector<vector<int>> &wb_pos);
@@ -47,19 +15,20 @@ struct sa_arr : public Array {
 
 //流水线
 //时间特性,更新阵列的开始时间，结束时间
-void time_update(int &array_type, int &array_id, int op_type,
-                 Node *node_depend, vector<lut_arr> &array_list1,
-                 vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
-
+double time_now(int op_type, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                vector<magic_arr> &array_list3, Node *node_now);
+//update the time of do_array
+void time_update(int op_type,int array_type, int array_id, double time_now,Node *node_now,
+                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, int bit_num=32);
 /*中层：阵列行为*/
-void find_input(int &array_type, int &array_id, int op_type, Node *node_depend = nullptr,
-                int cycle = 0);//寻找操作数来源,node_depend指向nodes中的节点
+void find_input(int &array_type, int &array_id, int op_type,
+                Node *node_depend = nullptr, int cycle = 0);//寻找操作数来源,node_depend指向nodes中的节点
 
 //决定执行阵列的类型
 int decide_array_type(int op_type, int design_target);//由算子支持和设计目标共同决定
 
 //决定执行阵列的ID,输入操作数个数1false2true,输入参数带默认值，-1表示无
-int decide_array_id(int op_type, int bit_num_operand, vector<Node> &nodes, int decide_array_type,
+int decide_array_id(int op_type, int bit_num_operand, Node* node_now,vector<Node> &nodes, int decide_array_type,
                     vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     vector<magic_arr> &array_list3, int input1_type = 0, int input1_id = 0, int input2_type = 0,
                     int input2_id = 0);

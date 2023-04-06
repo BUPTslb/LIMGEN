@@ -139,6 +139,64 @@ int op2int(string operation){
     return -1;
 }
 
+//out the report
+void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                        vector<magic_arr> &array_list3)
+{
+    cout<<"start to create report"<<endl;
+    ofstream outfile;
+    outfile.open("report.txt", ios::out | ios::trunc );
+    if (outfile.is_open())
+    {
+        cout<<"open report.txt"<<endl;
+        outfile<< "number of array_lut:" << array_list1.size() << endl;
+        for (auto &i: array_list1) {
+            outfile << "op_type of lut_array" << i.array_id << endl;
+            outfile << "op-num of lut" << i.array_id << "=" << i.op_type.size() << endl;
+            for (auto &j: i.op_type) {
+                outfile << j << endl;
+            }
+        }
+        outfile << "number of array_sa:" << array_list2.size() << endl;
+        for (auto &i: array_list2) {
+            outfile << "number of stored_node in sa-array-" << i.array_id << "=" << i.store_node.size() << endl;
+            for (auto &j: i.store_node) {
+                outfile << j << endl;
+            }
+        }
+        outfile << "number of array_magic:" << array_list3.size() << endl;
+        for (auto &i: array_list3) {
+            outfile << "number of stored_node in magic-array-" << i.array_id << "=" << i.store_node.size() << endl;
+            for (auto &j: i.store_node) {
+                outfile << j << endl;
+            }
+        }
+        outfile << "the end time of node:" << endl;
+        for (auto &i: control_step) {
+            for (auto j: i) {
+                outfile<< "node-id: " << j->node_id << endl
+                       << "depend1 over time =" << (j->depend1 ? j->depend1->end_time : 0) << endl
+                       << "depend2 over time =" << (j->depend2 ? j->depend2->end_time : 0) << endl
+                       << "control over time =" << (j->control ? j->control->end_time : 0) << endl
+                       << "start_time = " << j->start_time << endl
+                       << "do_array_type=" << j->do_type << " do_id=" << j->finish_id << endl
+                       << "end time = " << j->end_time << endl;
+            }
+        }
+        outfile.close();
+    }
+    cout<<"close the file"<<endl;
+
+}
+
+void writeVectorToFile(const std::vector<int>& A) {
+    std::ofstream outfile("report2.txt"); // create file in current directory
+    for (int i : A) {
+        outfile << i << " "; // write each element to file separated by a space
+    }
+    outfile.close(); // close the file
+}
+
 
 
 
