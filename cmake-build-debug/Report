@@ -1,0 +1,292 @@
+number of array_lut:5
+op_type of lut_array0
+op-num of lut0=1
+11
+op_type of lut_array1
+op-num of lut1=1
+1
+op_type of lut_array2
+op-num of lut2=1
+4
+op_type of lut_array3
+op-num of lut3=1
+3
+op_type of lut_array4
+op-num of lut4=1
+2
+number of array_sa:1
+number of stored_node in sa-array-0=6
+1
+5
+6
+4
+4
+28
+number of array_magic:3
+number of stored_node in magic-array-0=0
+number of stored_node in magic-array-1=2
+28
+25
+number of stored_node in magic-array-2=2
+24
+38
+the end time of node:
+node-id: 1
+depend1 over time =0
+depend2 over time =0
+control over time =0
+start_time = 0
+do_array_type=2 do_id=0
+end time = 1
+node-id: 3
+depend1 over time =0
+depend2 over time =0
+control over time =0
+start_time = 0
+do_array_type=1 do_id=0
+end time = 2176
+node-id: 5
+depend1 over time =0
+depend2 over time =0
+control over time =0
+start_time = 0
+do_array_type=2 do_id=0
+end time = 1
+node-id: 23
+depend1 over time =0
+depend2 over time =0
+control over time =0
+start_time = 0
+do_array_type=-1 do_id=-1
+end time = 1
+node-id: 24
+depend1 over time =0
+depend2 over time =0
+control over time =0
+start_time = 0
+do_array_type=-1 do_id=-1
+end time = 1
+node-id: 25
+depend1 over time =0
+depend2 over time =0
+control over time =0
+start_time = 0
+do_array_type=-1 do_id=-1
+end time = 1
+node-id: 2
+depend1 over time =1
+depend2 over time =0
+control over time =0
+start_time = 1
+do_array_type=5 do_id=0
+end time = 2
+node-id: 4
+depend1 over time =2176
+depend2 over time =0
+control over time =0
+start_time = 2176
+do_array_type=4 do_id=0
+end time = 2177
+node-id: 6
+depend1 over time =1
+depend2 over time =0
+control over time =0
+start_time = 1
+do_array_type=5 do_id=0
+end time = 2
+node-id: 26
+depend1 over time =1
+depend2 over time =0
+control over time =0
+start_time = 0
+do_array_type=1 do_id=1
+end time = 1
+node-id: 7
+depend1 over time =2177
+depend2 over time =2
+control over time =0
+start_time = 2177
+do_array_type=2 do_id=0
+end time = 2178
+node-id: 11
+depend1 over time =2177
+depend2 over time =0
+control over time =0
+start_time = 2177
+do_array_type=1 do_id=1
+end time = 2178
+node-id: 27
+depend1 over time =1
+depend2 over time =0
+control over time =1
+start_time = 1
+do_array_type=1 do_id=2
+end time = 33
+node-id: 8
+depend1 over time =2178
+depend2 over time =0
+control over time =0
+start_time = 2178
+do_array_type=5 do_id=0
+end time = 2179
+node-id: 12
+depend1 over time =2177
+depend2 over time =0
+control over time =2178
+start_time = 2178
+do_array_type=2 do_id=0
+end time = 2179
+node-id: 14
+depend1 over time =2177
+depend2 over time =0
+control over time =2178
+start_time = 2178
+do_array_type=2 do_id=0
+end time = 2179
+node-id: 28
+depend1 over time =33
+depend2 over time =0
+control over time =1
+start_time = 33
+do_array_type=4 do_id=2
+end time = 34
+node-id: 9
+depend1 over time =2179
+depend2 over time =0
+control over time =0
+start_time = 2179
+do_array_type=1 do_id=3
+end time = 2211
+node-id: 13
+depend1 over time =2179
+depend2 over time =0
+control over time =2178
+start_time = 2179
+do_array_type=5 do_id=0
+end time = 2180
+node-id: 15
+depend1 over time =2179
+depend2 over time =0
+control over time =2178
+start_time = 2179
+do_array_type=5 do_id=0
+end time = 2180
+node-id: 40
+depend1 over time =34
+depend2 over time =1
+control over time =0
+start_time = 34
+do_array_type=1 do_id=1
+end time = 35
+node-id: 10
+depend1 over time =2211
+depend2 over time =0
+control over time =0
+start_time = 2211
+do_array_type=4 do_id=3
+end time = 2212
+node-id: 41
+depend1 over time =35
+depend2 over time =0
+control over time =0
+start_time = 35
+do_array_type=4 do_id=1
+end time = 36
+node-id: 17
+depend1 over time =2212
+depend2 over time =0
+control over time =0
+start_time = 2212
+do_array_type=1 do_id=4
+end time = 2213
+node-id: 18
+depend1 over time =2212
+depend2 over time =0
+control over time =2213
+start_time = 2213
+do_array_type=1 do_id=3
+end time = 2245
+node-id: 20
+depend1 over time =2212
+depend2 over time =0
+control over time =2213
+start_time = 2213
+do_array_type=1 do_id=2
+end time = 2245
+node-id: 19
+depend1 over time =2245
+depend2 over time =0
+control over time =2213
+start_time = 2245
+do_array_type=4 do_id=3
+end time = 2246
+node-id: 21
+depend1 over time =2245
+depend2 over time =0
+control over time =2213
+start_time = 2245
+do_array_type=4 do_id=2
+end time = 2246
+node-id: 30
+depend1 over time =2246
+depend2 over time =0
+control over time =0
+start_time = 2246
+do_array_type=1 do_id=4
+end time = 2247
+node-id: 31
+depend1 over time =2246
+depend2 over time =0
+control over time =2247
+start_time = 2247
+do_array_type=1 do_id=1
+end time = 2248
+node-id: 32
+depend1 over time =34
+depend2 over time =0
+control over time =2248
+start_time = 2248
+do_array_type=1 do_id=4
+end time = 2249
+node-id: 33
+depend1 over time =2246
+depend2 over time =34
+control over time =2249
+start_time = 2249
+do_array_type=2 do_id=0
+end time = 2317
+node-id: 34
+depend1 over time =2317
+depend2 over time =0
+control over time =2249
+start_time = 2317
+do_array_type=5 do_id=0
+end time = 2318
+node-id: 37
+depend1 over time =2318
+depend2 over time =0
+control over time =2247
+start_time = 2318
+do_array_type=1 do_id=3
+end time = 2350
+node-id: 38
+depend1 over time =2350
+depend2 over time =0
+control over time =2247
+start_time = 2350
+do_array_type=4 do_id=3
+end time = 2351
+node-id: 42
+depend1 over time =1
+depend2 over time =2351
+control over time =0
+start_time = 2351
+do_array_type=1 do_id=2
+end time = 2352
+node-id: 43
+depend1 over time =2352
+depend2 over time =0
+control over time =0
+start_time = 2352
+do_array_type=4 do_id=2
+end time = 2353
