@@ -391,7 +391,7 @@ int main() {
 
                 //有依赖,假设不会出现A=B这种直接赋值，则依赖一定来自OP, from array
                 //统一，更改节点的执行结束id和do_type
-                cout << "depend1 of" << controlstep2[i][j]->node_id << " = " << controlstep2[i][j]->depend1->node_id
+                cout << "depend1 of  " << controlstep2[i][j]->node_id << " = " << controlstep2[i][j]->depend1->node_id
                      << endl;
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id;
                 cout << "finish_id of depend1:" << controlstep2[i][j]->depend1->finish_id << endl;
@@ -481,24 +481,7 @@ int main() {
         }
 
     }
-    //TEST REPORT
-    char data[100];
-    // 以写模式打开文件
-    ofstream outfile;
-    outfile.open("afile.dat");
-    cout << "Writing to the file" << endl;
-    cout << "Enter your name: ";
-    cin.getline(data, 100);
-    // 向文件写入用户输入的数据
-    outfile << data << endl;
-    cout << "Enter your age: ";
-    cin >> data;
-    cin.ignore();
-    // 再次向文件写入用户输入的数据
-    outfile << data << endl;
-    // 关闭打开的文件
-    outfile.close();
-    cout<<"over"<<endl;
+    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
     return 0;
 }
 

@@ -191,19 +191,19 @@ double time_now(int op_type, vector<lut_arr> &array_list1, vector<sa_arr> &array
 
 }
 
-void time_update(int op_type,int array_type, int array_id, double time_now,Node* node_now,
+void time_update(int op_type,int decide_array_type, int decide_array_id, double time_now,Node* node_now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, int bit_num)
 {
     //set start time of node
     node_now->start_time=time_now;
-    if (array_id==-1&&array_type==-1)   {
+    if (decide_array_id==-1&&decide_array_type==-1)   {
         node_now->end_time=time_now+1;
         return;
     }
-    switch (array_type) {
+    switch (decide_array_type) {
         case 1:
         {
-            array_list1[array_id].start_time=time_now;
+            array_list1[decide_array_id].start_time=time_now;
             if (op_type==0||(op_type>=5&&op_type<=9))
                 node_now->end_time=time_now+1;
             if (op_type==1||op_type==2)
@@ -215,16 +215,18 @@ void time_update(int op_type,int array_type, int array_id, double time_now,Node*
             if (op_type==11)
                 node_now->end_time=time_now+(bit_num*2+4)*bit_num;
 
-            array_list1[array_id].over_time=node_now->end_time;
+            array_list1[decide_array_id].over_time=node_now->end_time;
+            //set is_using
+            array_list1[decide_array_id].is_using=true;
         }
             break;
         case 2://SA
         {
-            array_list2[array_id].start_time=time_now;
+            array_list2[decide_array_id].start_time=time_now;
             if (op_type==0||op_type==5||op_type==6||op_type==7||op_type==9)
             {
                 node_now->end_time=time_now+1;
-                cout<<"node : "<<node_now->node_id<<" end time ="<<node_now->end_time<<endl;
+//                cout<<"node : "<<node_now->node_id<<" end time ="<<node_now->end_time<<endl;
             }
             if (op_type==1||op_type==2||op_type==3||op_type==4)
                 node_now->end_time=time_now+bit_num;
@@ -235,12 +237,14 @@ void time_update(int op_type,int array_type, int array_id, double time_now,Node*
             if (op_type==11)
                 node_now->end_time=time_now+(bit_num*2+4)*bit_num;
 
-            array_list2[array_id].over_time=node_now->end_time;
+            array_list2[decide_array_id].over_time=node_now->end_time;
+            //set is_using
+            array_list2[decide_array_id].is_using=true;
         }
             break;
         case 3://MAGIC
         {
-            array_list2[array_id].start_time=time_now;
+            array_list2[decide_array_id].start_time=time_now;
             if (op_type==0||op_type==6||op_type==7||op_type==8)
                 node_now->end_time=time_now+1;
             if (op_type==5||op_type==9)
@@ -250,7 +254,9 @@ void time_update(int op_type,int array_type, int array_id, double time_now,Node*
             if (op_type==11)
                 node_now->end_time=time_now+(bit_num*2+4)*bit_num;
 
-            array_list3[array_id].over_time=node_now->end_time;
+            array_list3[decide_array_id].over_time=node_now->end_time;
+            //set is_using
+            array_list3[decide_array_id].is_using=true;
         }
             break;
         default:
@@ -494,8 +500,8 @@ int decide_array_id(int op_type, int bit_num_operand, Node* node_now,vector<Node
                     if (decide_array_id == -1)//no_using找不到
                     {
                         for (int i = 0; i < array_wait.size(); ++i) {
-                            if (cap(array_no_using[i]) > row_need) {
-                                decide_array_id = array_no_using[i];//不等待，存在DSE,寻找哪个阵列最好
+                            if (cap(array_wait[i]) > row_need) {
+                                decide_array_id = array_wait[i];//不等待，存在DSE,寻找哪个阵列最好
                                 break;
                             }
                         }
@@ -553,6 +559,7 @@ int decide_array_id(int op_type, int bit_num_operand, Node* node_now,vector<Node
 
             } else//sa和magic,要保证剩余空间充足
             {
+                //array no using is not empty
                 if (!array_no_using.empty()) {
                     for (int i = 0; i < array_no_using.size(); ++i) //随便找一个能用的
                     {
@@ -562,16 +569,18 @@ int decide_array_id(int op_type, int bit_num_operand, Node* node_now,vector<Node
                         }
                     }
                 }
+                //1.empty no using 2.no cap is enough
                 if (decide_array_id == -1)//no_using找不到
                 {
                     for (int i = 0; i < array_wait.size(); ++i) {
-                        if (cap(array_no_using[i]) > row_need) {
-                            decide_array_id = array_no_using[i];//不等待，存在DSE,寻找哪个阵列最好
+                        if (cap(array_wait[i]) > row_need) {
+                            decide_array_id = array_wait[i];//不等待，存在DSE,寻找哪个阵列最好
                             break;
                         }
                     }
                 }
-                if (decide_array_id == -1)//找不到可用的，新建
+                //wait list,no using list can't find,build
+                if (decide_array_id == -1)
                 {
                     decide_array_id = build(decide_array_type, op_type, array_list1, array_list2, array_list3);//新建
                 }
@@ -635,7 +644,7 @@ vector<int> find_no_using(int op_type, vector<Node> &nodes, int decide_array_typ
     return find_no_using;
 }
 
-//阵列等待表,back是等待时间最短的,按照等待时间排序
+//阵列等待表,front是等待时间最短的,按照等待时间排序
 //只以等待时间来排序，容量的事由后续的函数考虑
 vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_array_type, vector<lut_arr> &array_list1,
                                vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
@@ -689,6 +698,7 @@ vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_arra
     if (pq.empty()) return waiting_array_list;
     for (int i = 0; i < pq.size(); ++i) {
         waiting_array_list.push_back(pq.top().array_id);//向量首部是结束时间最小的
+        pq.pop();
     }
     return waiting_array_list;
 

@@ -149,28 +149,37 @@ void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &ar
     if (outfile.is_open())
     {
         cout<<"open report.txt"<<endl;
+        outfile << "**************************************************"<< endl;
         outfile<< "number of array_lut:" << array_list1.size() << endl;
         for (auto &i: array_list1) {
             outfile << "op_type of lut_array" << i.array_id << endl;
             outfile << "op-num of lut" << i.array_id << "=" << i.op_type.size() << endl;
+            outfile << "The op of this lut:  ";
             for (auto &j: i.op_type) {
-                outfile << j << endl;
+                outfile << j << "  ";
             }
+            outfile<<endl<<"time of this lut:"<<"start time: "<<i.start_time<<"  over time: "<<i.over_time<<endl;
+
         }
+        outfile << "**************************************************"<< endl;
         outfile << "number of array_sa:" << array_list2.size() << endl;
         for (auto &i: array_list2) {
             outfile << "number of stored_node in sa-array-" << i.array_id << "=" << i.store_node.size() << endl;
             for (auto &j: i.store_node) {
-                outfile << j << endl;
+                outfile << j << "  ";
             }
+            outfile<<endl<<"time of this sa:"<<"start time: "<<i.start_time<<"  over time: "<<i.over_time<<endl;
         }
+        outfile << "**************************************************"<< endl;
         outfile << "number of array_magic:" << array_list3.size() << endl;
         for (auto &i: array_list3) {
             outfile << "number of stored_node in magic-array-" << i.array_id << "=" << i.store_node.size() << endl;
             for (auto &j: i.store_node) {
-                outfile << j << endl;
+                outfile << j <<"  ";
             }
+            outfile<<endl;
         }
+        outfile << "**************************************************"<< endl;
         outfile << "the end time of node:" << endl;
         for (auto &i: control_step) {
             for (auto j: i) {

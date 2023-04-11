@@ -1,5 +1,5 @@
 #sa
-op_type     op_num      row-num     write-num       reg-num     read-num        write-num   cycle
+op_type     op_num      row-num     write-num       reg-num     read-num        write-num    cycle
 seq             0
 l_less          1
 l_bigger        2

@@ -1,8 +1,14 @@
 #lut
 op_type     op_num      lut-num     write-num       reg-num     read-num        write-num   cycle
-seq             0
+seq             0           0           0               1           0               0           1
 l_less          1
 l_bigger        2
+ 4bit   5*lut-4     4+1            3个lut-6 2+1
+ 8bit   15*lut-4    4+6+4+1        9个lut-6 4+4+1
+ 16bit  27*lut-4    16+6+4+1       21*lut-6 14+6+1
+ 32bit  53*lut-4    32+12+6+2+1    40*lut-6 23+11+5+1
+ 64bit  105*lut-4   64+            81*lut-6
+
 l_shiftL        3
 l_shiftR        4
 l_and           5
