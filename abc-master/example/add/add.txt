@@ -1,0 +1,36 @@
+Results for add64_lut6.blif:
+[53, 25, 13, 13, 33, 38, 0, 0, 0, 0, 175]
+
+Results for add4_lut6.blif:
+[3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 5]
+
+Results for add32_lut6.blif:
+[30, 13, 9, 15, 18, 0, 0, 0, 0, 0, 85]
+
+Results for add2_lut6.blif:
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+
+Results for add16_lut4.blif:
+[17, 10, 6, 7, 7, 0, 0, 0, 0, 0, 47]
+
+Results for add64_lut4.blif:
+[67, 35, 18, 13, 14, 27, 31, 21, 0, 0, 226]
+
+Results for add4_lut4.blif:
+[4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 6]
+
+Results for add32_lut4.blif:
+[33, 16, 9, 9, 15, 15, 8, 0, 0, 0, 105]
+
+Results for add16_lut6.blif:
+[12, 8, 7, 10, 0, 0, 0, 0, 0, 0, 37]
+
+Results for add8_lut4.blif:
+[8, 3, 4, 3, 0, 0, 0, 0, 0, 0, 18]
+
+Results for add2_lut4.blif:
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+
+Results for add8_lut6.blif:
+[7, 4, 4, 0, 0, 0, 0, 0, 0, 0, 15]
+

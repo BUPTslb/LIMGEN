@@ -29,6 +29,10 @@ begin
 		A<= not A;
 	end if;
 
+	if   B=0    then
+    		B <= not B;
+    end if;
+
 	if D>0 then
 	    D<=D sll 1;
 	else

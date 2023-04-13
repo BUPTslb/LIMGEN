@@ -132,7 +132,6 @@ public:
     //需要输入进行该操作的数字的输入个数、位宽
     //单位执行周期函数
     int Magic_cycle(int type);
-
     double Magic_power(int type, int bl, int wl);
 
 };
@@ -141,7 +140,6 @@ class SA {
 public:
     bool sa_using;//SA占用情况，读写执行都要占用最下方的SA
     int SA_cycle(int type);
-
     double SA_power(int type, int bl, int wl);
 
 };

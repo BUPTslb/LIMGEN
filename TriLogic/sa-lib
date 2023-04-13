@@ -1,14 +1,15 @@
 #sa
 op_type     op_num      row-num     write-num       reg-num     read-num        write-num    cycle
 seq             0
-l_less          1
-l_bigger        2
-l_shiftL        3
-l_shiftR        4
-l_and           5
-l_or            6
-l_not           7
-l_nor           8
-l_xor           9
-l_add           10
-l_mul           11
+l_eq            1
+l_less          2
+l_bigger        3
+l_shiftL        4
+l_shiftR        5
+l_and           6
+l_or            7
+l_not           8
+l_nor           9
+l_xor           10
+l_add           11
+l_mul           12

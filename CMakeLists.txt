@@ -9,6 +9,7 @@ add_executable(Synthesis
         TriLogic/logic_func.h
         TriLogic/mainfunc.cpp
         TriLogic/mainfunc.h
+        TriLogic/dse.cpp
         TriLogic/rapidjson/document.h
 
         )

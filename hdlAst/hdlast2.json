@@ -133,51 +133,31 @@
     },
     {
         "Input": [
-            "D",
+            "B",
             "0\n"
         ],
         "Node_ID": 17,
-        "Operation": "HdlOpType.GT",
+        "Operation": "HdlOpType.EQ",
         "Type": "Op"
     },
     {
         "Input": [
-            "D",
-            "1\n"
+            "B"
         ],
         "Node_ID": 18,
-        "Operation": "HdlOpType.SLL",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "D",
+        "Dst": "B",
         "Input": 18,
         "Node_ID": 19,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Input": [
-            "D",
-            "1\n"
-        ],
         "Node_ID": 20,
-        "Operation": "HdlOpType.SRL",
-        "Type": "Op"
-    },
-    {
-        "Dst": "D",
-        "Input": 20,
-        "Node_ID": 21,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Node_ID": 22,
-        "Statement_when_false": [
-            20,
-            21
-        ],
+        "Statement_when_false": [],
         "Statement_when_true": [
             18,
             19
@@ -186,23 +166,77 @@
         "condition": 17
     },
     {
+        "Input": [
+            "D",
+            "0\n"
+        ],
+        "Node_ID": 21,
+        "Operation": "HdlOpType.GT",
+        "Type": "Op"
+    },
+    {
+        "Input": [
+            "D",
+            "1\n"
+        ],
+        "Node_ID": 22,
+        "Operation": "HdlOpType.SLL",
+        "Type": "Op"
+    },
+    {
+        "Dst": "D",
+        "Input": 22,
+        "Node_ID": 23,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "D",
+            "1\n"
+        ],
+        "Node_ID": 24,
+        "Operation": "HdlOpType.SRL",
+        "Type": "Op"
+    },
+    {
+        "Dst": "D",
+        "Input": 24,
+        "Node_ID": 25,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Node_ID": 26,
+        "Statement_when_false": [
+            24,
+            25
+        ],
+        "Statement_when_true": [
+            22,
+            23
+        ],
+        "Type": "Branch",
+        "condition": 21
+    },
+    {
         "Dst": "A",
         "Input": "10010111\n",
-        "Node_ID": 23,
+        "Node_ID": 27,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Dst": "B",
         "Input": "123\n",
-        "Node_ID": 24,
+        "Node_ID": 28,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Dst": "C",
         "Input": "555\n",
-        "Node_ID": 25,
+        "Node_ID": 29,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -211,7 +245,7 @@
             "A",
             "0\n"
         ],
-        "Node_ID": 26,
+        "Node_ID": 30,
         "Operation": "HdlOpType.LT",
         "Type": "Op"
     },
@@ -220,23 +254,23 @@
             "A",
             "1\n"
         ],
-        "Node_ID": 27,
+        "Node_ID": 31,
         "Operation": "HdlOpType.SRL",
         "Type": "Op"
     },
     {
         "Dst": "A",
-        "Input": 27,
-        "Node_ID": 28,
+        "Input": 31,
+        "Node_ID": 32,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Condition": 26,
-        "Node_ID": 29,
+        "Condition": 30,
+        "Node_ID": 33,
         "Statement_loop": [
-            27,
-            28
+            31,
+            32
         ],
         "Type": "Loop"
     },
@@ -245,7 +279,7 @@
             "D",
             "0\n"
         ],
-        "Node_ID": 30,
+        "Node_ID": 34,
         "Operation": "HdlOpType.GT",
         "Type": "Op"
     },
@@ -254,7 +288,7 @@
             "D",
             "5\n"
         ],
-        "Node_ID": 31,
+        "Node_ID": 35,
         "Operation": "HdlOpType.LT",
         "Type": "Op"
     },
@@ -263,7 +297,7 @@
             "A",
             "0\n"
         ],
-        "Node_ID": 32,
+        "Node_ID": 36,
         "Operation": "HdlOpType.GT",
         "Type": "Op"
     },
@@ -272,46 +306,8 @@
             "D",
             "A"
         ],
-        "Node_ID": 33,
-        "Operation": "HdlOpType.ADD",
-        "Type": "Op"
-    },
-    {
-        "Dst": "D",
-        "Input": 33,
-        "Node_ID": 34,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Node_ID": 35,
-        "Statement_when_false": [],
-        "Statement_when_true": [
-            33,
-            34
-        ],
-        "Type": "Branch",
-        "condition": 32
-    },
-    {
-        "Node_ID": 36,
-        "Statement_when_false": [],
-        "Statement_when_true": [
-            32,
-            33,
-            34,
-            35
-        ],
-        "Type": "Branch",
-        "condition": 31
-    },
-    {
-        "Input": [
-            "D",
-            "1\n"
-        ],
         "Node_ID": 37,
-        "Operation": "HdlOpType.SLL",
+        "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
@@ -322,17 +318,55 @@
         "Type": "Assign"
     },
     {
-        "Condition": 30,
         "Node_ID": 39,
+        "Statement_when_false": [],
+        "Statement_when_true": [
+            37,
+            38
+        ],
+        "Type": "Branch",
+        "condition": 36
+    },
+    {
+        "Node_ID": 40,
+        "Statement_when_false": [],
+        "Statement_when_true": [
+            36,
+            37,
+            38,
+            39
+        ],
+        "Type": "Branch",
+        "condition": 35
+    },
+    {
+        "Input": [
+            "D",
+            "1\n"
+        ],
+        "Node_ID": 41,
+        "Operation": "HdlOpType.SLL",
+        "Type": "Op"
+    },
+    {
+        "Dst": "D",
+        "Input": 41,
+        "Node_ID": 42,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Condition": 34,
+        "Node_ID": 43,
         "Statement_loop": [
-            31,
-            32,
-            33,
-            34,
             35,
             36,
             37,
-            38
+            38,
+            39,
+            40,
+            41,
+            42
         ],
         "Type": "Loop"
     },
@@ -341,14 +375,14 @@
             "A",
             "C"
         ],
-        "Node_ID": 40,
+        "Node_ID": 44,
         "Operation": "HdlOpType.NOR",
         "Type": "Op"
     },
     {
         "Dst": "out1",
-        "Input": 40,
-        "Node_ID": 41,
+        "Input": 44,
+        "Node_ID": 45,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -357,14 +391,14 @@
             "B",
             "D"
         ],
-        "Node_ID": 42,
+        "Node_ID": 46,
         "Operation": "HdlOpType.NOR",
         "Type": "Op"
     },
     {
         "Dst": "out2",
-        "Input": 42,
-        "Node_ID": 43,
+        "Input": 46,
+        "Node_ID": 47,
         "Operation": "SEQ",
         "Type": "Assign"
     }

@@ -8,6 +8,7 @@ std::string branch="Branch";
 std::string loop="Loop";
 //算子
 std::string seq="SEQ";//赋值
+std::string l_eq="HdlOpType.EQ";//比较
 std::string l_less="HdlOpType.LT";//比较
 std::string l_bigger="HdlOpType.GT";
 std::string l_shiftL="HdlOpType.SLL";//移位
@@ -123,19 +124,21 @@ void topologicalSort(vector<Node> nodes,map<int,int> &inDegree,\
         topologicalSort(nodes, inDegree,controlstep,id_pos);
     }
 }
+//TODO：把操作的数字都改一下
 int op2int(string operation){
-    if(operation==seq)  return 0;//赋值，写操作
-    if(operation==l_less)  return 1;
-    if(operation==l_bigger)  return 2;
-    if(operation==l_shiftL)  return 3;
-    if(operation==l_shiftR)  return 4;
-    if(operation==l_and)  return 5;//sa ma
-    if(operation==l_or)  return 6;//sa ma
-    if(operation==l_not)  return 7;//sa ma
-    if(operation==l_nor)  return 8;//ma
-    if(operation==l_xor)  return 9;//sa ma
-    if(operation==l_add)  return 10;
-    if(operation==l_mul)  return 11;
+    if (operation == seq)           return 0;//赋值，写操作
+    if (operation == l_eq)          return 1;//相等
+    if (operation == l_less)        return 2;
+    if (operation == l_bigger)      return 3;
+    if (operation == l_shiftL)      return 4;
+    if (operation == l_shiftR)      return 5;
+    if (operation == l_and)         return 6;//sa ma
+    if (operation == l_or)          return 7;//sa ma
+    if (operation == l_not)         return 8;//sa ma
+    if (operation == l_nor)         return 9;//ma
+    if (operation == l_xor)         return 10;//sa ma
+    if (operation == l_add)         return 11;
+    if (operation == l_mul)         return 12;
     return -1;
 }
 
