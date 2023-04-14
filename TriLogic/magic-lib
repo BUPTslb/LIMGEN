@@ -1,5 +1,5 @@
 #magic(1*cyc初始化为Roff：0 或者Ron：1 忽略)
-op_type     op_num      row-num     write-num       reg-num     reg-read        reg-write       cycle
+op_type     op_num      row-num     write-num       reg-num     reg-read        reg-write       cycle   time
 seq             0           0           0               0           0               0               0
 
 l_eq            1

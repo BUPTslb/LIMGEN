@@ -1,8 +1,15 @@
 from collections import defaultdict
 import re
 # 使用正则表达式匹配不符合要求的字符串
-# pattern =re.compile(r'[a-b]\[\d*\]')
-pattern =re.compile(r'N')
+# 读取.blif文件的.input一行，.input后面的都是输入，将每一个输入都设为正则表达式匹配项
+# 在with open() as f语句块中，使用for循环遍历文件的每一行，当读取到以'.input'开头的行时，使用split()方法将该行按空格分割成一个列表，然后使用切片操作[1:]获取除了第一个元素（即'.input'）以外的所有元素，即输入的名称，然后使用join()方法将这些名称连接成一个字符串，中间用'|'隔开，最后使用re.compile()方法将该字符串编译成一个正则表达式对象，存储在pattern变量中。
+
+with open(blif_file, 'r') as f:
+    for line in f:
+        if line.startswith('.input'):
+            inputs = line.split()[1:]
+            pattern = re.compile('|'.join(inputs))
+
 
 
 def topo_sort(graph):
@@ -12,7 +19,9 @@ def topo_sort(graph):
         for neighbor in graph[node]:
             if neighbor.startswith('$abc$') and not re.match(pattern,neighbor):
                 in_degree[node] += 1
-                # print(node," indegree = ",in_degree[node])
+            else:
+                in_degree[node] = -1
+                print(node," indegree = ",in_degree[node])
 
     result=[]
     i=0
@@ -66,9 +75,14 @@ def group_luts(blif_file):
                 
     lut_groups = topo_sort(graph)
     res=0
+    level=0
     for p in lut_groups:
         res+=p
+        if p!=0:
+            level+=1
     lut_groups.append(res)
+    lut_groups.append(00)
+    lut_groups.append(level)
     return lut_groups
   
 
@@ -79,7 +93,7 @@ import os
 blif_files = [f for f in os.listdir('out') if f.endswith('.blif')]
 
 # 打开comparator.txt文件以写入模式
-with open('shift.txt', 'w') as f:
+with open('iscas.txt', 'w') as f:
     # 遍历所有的.blif文件
     for blif_file in blif_files:
         # 调用group_luts函数并将结果写入comparator.txt文件中
@@ -87,4 +101,3 @@ with open('shift.txt', 'w') as f:
         results = group_luts(os.path.join('out', blif_file))
         f.write(str(results))
         f.write('\n\n')
-        

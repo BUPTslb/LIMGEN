@@ -1,8 +1,7 @@
 from collections import defaultdict
 import re
 # 使用正则表达式匹配不符合要求的字符串
-# pattern =re.compile(r'[a-b]\[\d*\]')
-pattern =re.compile(r'N')
+pattern =re.compile(r'[a-b]\[\d*\]')
 
 
 def topo_sort(graph):
@@ -16,7 +15,7 @@ def topo_sort(graph):
 
     result=[]
     i=0
-    while i<20:
+    while i<30:
         # graph-=queue
         queue = [node for node in graph if in_degree[node] == 0]
         #set indegree =-1
@@ -79,7 +78,7 @@ import os
 blif_files = [f for f in os.listdir('out') if f.endswith('.blif')]
 
 # 打开comparator.txt文件以写入模式
-with open('shift.txt', 'w') as f:
+with open('mul.txt', 'w') as f:
     # 遍历所有的.blif文件
     for blif_file in blif_files:
         # 调用group_luts函数并将结果写入comparator.txt文件中
@@ -87,4 +86,3 @@ with open('shift.txt', 'w') as f:
         results = group_luts(os.path.join('out', blif_file))
         f.write(str(results))
         f.write('\n\n')
-        
