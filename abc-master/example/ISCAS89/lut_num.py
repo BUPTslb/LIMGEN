@@ -3,16 +3,12 @@ import re
 # 使用正则表达式匹配不符合要求的字符串
 # 读取.blif文件的.input一行，.input后面的都是输入，将每一个输入都设为正则表达式匹配项
 # 在with open() as f语句块中，使用for循环遍历文件的每一行，当读取到以'.input'开头的行时，使用split()方法将该行按空格分割成一个列表，然后使用切片操作[1:]获取除了第一个元素（即'.input'）以外的所有元素，即输入的名称，然后使用join()方法将这些名称连接成一个字符串，中间用'|'隔开，最后使用re.compile()方法将该字符串编译成一个正则表达式对象，存储在pattern变量中。
-
-with open(blif_file, 'r') as f:
-    for line in f:
-        if line.startswith('.input'):
-            inputs = line.split()[1:]
-            pattern = re.compile('|'.join(inputs))
+import os
 
 
 
-def topo_sort(graph):
+
+def topo_sort(graph,pattern):
     # pattern =r'\$abc\$\d*+\$[a-b]\[\d*\]'
     in_degree = defaultdict(int)
     for node in graph:
@@ -49,7 +45,7 @@ def topo_sort(graph):
     # print("result of toposort: ",result)
     return result
 
-def group_luts(blif_file):
+def group_luts(blif_file,pattern):
     lut_groups = []
     graph = defaultdict(set)
     # pattern =r'\$abc\$\d*+\$[a-b]\[\d*\]'
@@ -73,7 +69,7 @@ def group_luts(blif_file):
                             graph[out].add(input)
     # print(graph)
                 
-    lut_groups = topo_sort(graph)
+    lut_groups = topo_sort(graph,pattern)
     res=0
     level=0
     for p in lut_groups:
@@ -86,16 +82,17 @@ def group_luts(blif_file):
     return lut_groups
   
 
-
-import os
-
-# 获取out文件夹中所有的.blif文件
-blif_files = [f for f in os.listdir('out') if f.endswith('.blif')]
-
 # 打开comparator.txt文件以写入模式
 with open('iscas.txt', 'w') as f:
     # 遍历所有的.blif文件
+    # 获取out文件夹中所有的.blif文件
+    blif_files = [f for f in os.listdir('out') if f.endswith('.blif')]
     for blif_file in blif_files:
+        with open(blif_file, 'r') as f:
+            for line in f:
+                if line.startswith('.input'):
+                    inputs = line.split()[1:]
+                    pattern = re.compile('|'.join(inputs))
         # 调用group_luts函数并将结果写入comparator.txt文件中
         f.write(f'Results for {blif_file}:\n')
         results = group_luts(os.path.join('out', blif_file))

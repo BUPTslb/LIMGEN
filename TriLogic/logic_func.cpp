@@ -36,117 +36,6 @@ unsigned int arr_size(int logic_type, unsigned int bit_num_operand) {
 }
 
 
-int Magic::Magic_cycle(int type) {
-    int cycle_time;
-    //可否构建一个hash表用来存各逻辑操作的周期？
-    switch (type) {
-        case 8://NOR
-            cycle_time = 1;
-            break;
-        case 7://NOT
-            cycle_time = 1;
-            break;
-        case 5://AND
-            cycle_time = 2;
-            break;
-        case 6://OR
-            cycle_time = 1;
-            break;
-        case 9://XOR
-            cycle_time = 3;
-            break;
-        case 10://+
-            cycle_time = 10;
-            break;
-        default:
-            break;
-    }
-    //如果遇到不支持的算子怎么办
-    return cycle_time;
-
-}
-
-double Magic::Magic_power(int type, int bl, int wl) {
-    int cycle_power;
-    //可否构建一个hash表用来存各逻辑操作的周期？
-    switch (type) {
-        case 8://NOR
-            cycle_power = 10 * wl;
-            break;
-        case 7://NOT
-            cycle_power = 5 * wl;
-            break;
-        case 5://AND
-            cycle_power = 20 * wl;
-            break;
-        case 6://OR
-            cycle_power = 5 * wl;
-            break;
-        case 9://XOR
-            cycle_power = 30 * wl;
-            break;
-        case 10://+
-            cycle_power = 100 * wl;
-            break;
-        default:
-            break;
-    }
-    //如果遇到不支持的算子怎么办
-    return cycle_power;
-}
-
-int SA::SA_cycle(int type) {
-    int cycle_time;
-    //可否构建一个hash表用来存各逻辑操作的周期？
-    switch (type) {
-        case 7://NOT
-            cycle_time = 1;
-            break;
-        case 5://AND
-            cycle_time = 1;
-            break;
-        case 6://OR
-            cycle_time = 1;
-            break;
-        case 9://XOR
-            cycle_time = 1;
-            break;
-        case 10://+
-            cycle_time = 10;
-            break;
-        default:
-            break;
-    }
-    //如果遇到不支持的算子怎么办
-    return cycle_time;
-}
-
-double SA::SA_power(int type, int bl, int wl) {
-    int cycle_power;
-    //可否构建一个hash表用来存各逻辑操作的周期？
-    switch (type) {
-        case 7://NOT
-            cycle_power = 5 * wl;
-            break;
-        case 5://AND
-            cycle_power = 20 * wl;
-            break;
-        case 6://OR
-            cycle_power = 5 * wl;
-            break;
-        case 9://XOR
-            cycle_power = 30 * wl;
-            break;
-        case 10://+
-            cycle_power = 100 * wl;
-            break;
-        default:
-            break;
-    }
-    //如果遇到不支持的算子怎么办
-    return cycle_power;
-}
-
 //现在已经决定了从哪里找操作数，在哪里执行，可以直接进行时间更新
 double time_now(int op_type, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                    vector<magic_arr> &array_list3, Node *node_now) {
@@ -298,36 +187,24 @@ void find_input(int &array_type, int &array_id, int op_type, Node *node_depend, 
 
 }
 
-//定义决定执行阵列类型,**,
+//先验方式决定？
+//TODO：DSE,决定阵列的执行类型
 int decide_array_type(int op_type, int design_target) {
     int decide_array_type = 0;
-    if (1 <= op_type && op_type <= 4 || op_type == 11) {
-        decide_array_type = 1;//移位，比较，选择lut
-    } else if (op_type == 8) {
-        decide_array_type = 3;
-    } else if (op_type == 9) {
-        decide_array_type = 2;
-    } else {
-        switch (design_target) {
-            case 0://速度，lut
-                //需要综合考虑数据搬移和直接执行的速度比较
-                decide_array_type = 1;
-                break;
-            case 1://面积，magic
-                decide_array_type = 3;
-                break;
-            case 2://功耗，sa
-                //需要考虑数据搬移和直接执行的功耗比较
-                decide_array_type = 2;
-                break;
-            default:
-                break;
-        }
+    if (1 <= op_type && op_type <= 3 || op_type == 12 || op_type == 13) {
+        decide_array_type = 1;//比较，乘法,除法 直接用lut
     }
+//    else
+//    {
+//        decide_array_type=2;
+//    }
+    //DSE决定
+
     return decide_array_type;
 }
 
 //定义执行阵列的id
+//这里的id 是开始id
 int decide_array_id(int op_type, int bit_num_operand, Node* node_now,vector<Node> &nodes, int decide_array_type, \
                     vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, \
                     int input1_type, int input1_id, int input2_type, int input2_id) {
@@ -604,9 +481,9 @@ vector<int> find_no_using(int op_type, vector<Node> &nodes, int decide_array_typ
                 if (!i.is_using)//空闲，算子不可用，但是还有空间，可以添加算子
                 {
                     if (i.op_type.find(op_type) != i.op_type.end() ||
-                        i.op_type.empty() && (op_type < 5 || op_type > 9) ||
+                        i.op_type.empty() && (op_type < 6 || op_type > 10) ||
                         (i.op_type.find(op_type) == i.op_type.end() &&
-                         i.op_type.size() < 3 && op_type <= 9 && op_type >= 5)
+                         i.op_type.size() < 4 && op_type <= 10 && op_type >= 6)
                             ) {
                         find_no_using.push_back(i.array_id);
 
@@ -658,9 +535,9 @@ vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_arra
                 if (i.is_using)//不空闲
                 {
                     if (i.op_type.find(op_type) != i.op_type.end() ||
-                        i.op_type.empty() && (op_type < 5 || op_type>9) ||
+                        i.op_type.empty() && (op_type < 6 || op_type>10) ||
                         i.op_type.find(op_type) == i.op_type.end() &&
-                        i.op_type.size() < 3 && op_type <= 9 && op_type >= 5
+                        i.op_type.size() < 4 && op_type <= 10 && op_type >= 6
                             ) {
                         pq.push(i);
                     }
@@ -893,11 +770,15 @@ int op_row_need(int op_type, int decide_array_type, int bit_num_operand) {
     switch (decide_array_type) {
         case 1://LUT输出需要的LUT数量
         {
-            return 0;   //LUT应该和阵列级联以及位数有关，要具体分析，待定
+            //TODO:DSE,lut_type
+            int lut_type=6;//4--6
+//            int lut_type=4;
+            int lut_num=lut_num_op(op_type,bit_num_operand,lut_type);
+            return lut_num;   //LUT应该和阵列级联以及位数有关，要具体分析，待定
         }
         case 2://SA
         {
-            if (op_type == 7)//这里表示需要写回
+            if (op_type == 8)//这里表示需要写回
                 return 0;
             //待定
             return 1;//先假设至少需要1
@@ -906,9 +787,9 @@ int op_row_need(int op_type, int decide_array_type, int bit_num_operand) {
         {
             if (op_type == 0)
                 return 1;
-            if (op_type == 10)
+            if (op_type == 11)
                 return 5;//A B C L S
-            if (op_type == 7)//not
+            if (op_type == 8)//not
                 return 2;
             return 3;//其余的一律返回3
 
@@ -1193,10 +1074,10 @@ void op_sa(int op_type, int decide_array_id, Node *now, vector<sa_arr> &array_li
     now->finish_id = decide_array_id;//模块调用怎么写？
 }
 
-//sa执行逻辑
+//magic执行逻辑
 void op_magic(int op_type, int decide_array_id, Node *now, vector<magic_arr> &array_list3) {
-    now->do_type = 1;
-    now->finish_id = decide_array_id;//模块调用怎么写？
+    now->do_type = 3;
+    now->finish_id = decide_array_id;//模块调用怎么写？对操作进行拆解
 }
 
 //更新节点的出度
@@ -1208,9 +1089,14 @@ void out_degree(Node *now) {
     if (now->control)
         now->control->out_degree--;
 }
+//写覆盖,执行写操作时候
+//更新项：节点的、阵列的。
+//哪些可以更新：出度为0的节点可以更新，在多个阵列中存储的出度不为0的节点也可以更新
+void write_cover()
+{
 
 
-
+}
 
 
 

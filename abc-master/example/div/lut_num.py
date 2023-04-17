@@ -65,9 +65,13 @@ def group_luts(blif_file):
                 
     lut_groups = topo_sort(graph)
     res=0
+    level=0
     for p in lut_groups:
         res+=p
+        if p!=0:
+           level+=1 
     lut_groups.append(res)
+    lut_groups.append(level)
     return lut_groups
   
 

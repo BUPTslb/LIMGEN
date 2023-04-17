@@ -97,7 +97,7 @@ void out_degree(Node *now);
 //出度为0的节点对应阵列的擦除,更新节点的写回表和阵列的存储节点
 //void erase_array(Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
-//写覆盖
+//TODO:写覆盖
 void write_cover();
 
 
@@ -120,26 +120,3 @@ unsigned int arr_size(int logic_type, unsigned int bit_num_operand);
 
 //查找表
 //AES中的乘法
-class Lut {
-public:
-    double Burn_cycle(char type, int bl, int wl);//烧录时间
-    double Burn_power(char type, int bl, int wl);//烧录功耗
-
-};
-
-class Magic {
-public:
-    //需要输入进行该操作的数字的输入个数、位宽
-    //单位执行周期函数
-    int Magic_cycle(int type);
-    double Magic_power(int type, int bl, int wl);
-
-};
-
-class SA {
-public:
-    bool sa_using;//SA占用情况，读写执行都要占用最下方的SA
-    int SA_cycle(int type);
-    double SA_power(int type, int bl, int wl);
-
-};

@@ -31,6 +31,19 @@ struct Node {
     //存储节点写回的位置,0:register,1:lut,2:sa,3:ma
 };
 
+struct Lut_Record{
+    int op_type;//操作类型
+    int data_bits;//操作数位数
+    int lut4_num;
+    int lut4_level;
+    int lut6_num;
+    int lut6_level;
+};
+vector<Lut_Record> lut_records();//获得lut的参数
+vector<Lut_Record> lut_record= lut_records();//全局变量
+//定义函数，输入操作类型，操作数位数，lut类型，输出数量和级数
+int lut_num_op(int op_type,int data_bits,int lut_type);
+int lut_level_op(int op_type,int data_bits,int lut_type);
 //阵列基类
 class Array {
 public:

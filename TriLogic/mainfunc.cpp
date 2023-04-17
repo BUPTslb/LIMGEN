@@ -20,6 +20,7 @@ std::string l_or="HdlOpType.OR";
 std::string l_not="HdlOpType.NEG";//非
 std::string l_mul="HdlOpType.MUL";//乘法
 std::string l_add="HdlOpType.ADD";//加法
+std::string l_div="HdlOpType.DIV";//除法，应该不会使用
 
 int Type2node(std::string type){
     if(type==op)
@@ -139,7 +140,52 @@ int op2int(string operation){
     if (operation == l_xor)         return 10;//sa ma
     if (operation == l_add)         return 11;
     if (operation == l_mul)         return 12;
+    if (operation == l_div)         return 13;
     return -1;
+}
+
+//database
+vector<Lut_Record> lut_records()
+{
+    std::ifstream infile("database_lut.txt");
+    std::vector<Lut_Record> records; // 存储所有记录的向量
+    std::string line;
+    while (std::getline(infile, line)) { // 逐行读取文件内容
+        size_t pos = 0;
+        std::string token;
+        int count = 0;
+        Lut_Record item{};
+        while (infile >> item.op_type >> item.data_bits >> item.lut4_num >> item.lut4_level >> item.lut6_num >> item.lut6_level){
+            records.push_back(item);
+        }
+    }
+    return records;
+}
+int lut_num_op(int op_type,int data_bits,int lut_type)
+{
+    for (auto i : lut_record) {
+        if (i.op_type==op_type && i.data_bits==data_bits)
+        {
+            if (lut_type==4)
+                return i.lut4_num;
+            if (lut_type==6)
+                return i.lut6_num;
+        }
+    }
+    return data_bits;//其他按位操作
+
+}
+int lut_level_op(int op_type,int data_bits,int lut_type){
+    for (auto i : lut_record) {
+        if (i.op_type==op_type && i.data_bits==data_bits)
+        {
+            if (lut_type==4)
+                return i.lut4_level;
+            if (lut_type==6)
+                return i.lut6_level;
+        }
+    }
+    return 1;//未定义的操作
 }
 
 //out the report
