@@ -689,14 +689,12 @@ int cap_array_cover(int decide_array_type, int decide_array_id, vector<Node> &no
             //op类型被存入只有一种可能：存入的是立即数，SA只会存入一个立即数
 //根据store_node,计算实际容量,有修改空间
             for (int i = 0; i < array_list2[decide_array_id].store_node.size(); ++i) {
-                if (find_node_by_number(nodes, array_list2[decide_array_id].store_node[i])->out_degree ==
-                    0) //节点出度为0，不再被需要
+                if (find_node_by_number(nodes, array_list2[decide_array_id].store_node[i])->out_degree == 0) //节点出度为0，不再被需要
                 {
                     cap_array++;
 //等被覆盖的时候再擦除，无意义的擦除浪费资源
                 }
-                if (find_node_by_number(nodes, array_list2[decide_array_id].store_node[i])->out_degree >
-                    1) //节点出度>1，在多个阵列中存储的都有，也可以被覆盖
+                if (find_node_by_number(nodes, array_list2[decide_array_id].store_node[i])->out_degree > 1) //节点出度>1，在多个阵列中存储的都有，也可以被覆盖
                 {
                     //DSE,擦除还是不擦除，都可能影响整体的性能
                     cap_array++;
