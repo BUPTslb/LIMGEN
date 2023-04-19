@@ -11,5 +11,10 @@ add_executable(Synthesis
         TriLogic/mainfunc.h
         TriLogic/dse.cpp
         TriLogic/rapidjson/document.h
+        TriLogic/decide_array.cpp
+        TriLogic/time.cpp
+        TriLogic/cap_array.cpp
+        TriLogic/do_logic.cpp
+        TriLogic/pre_array_list.cpp
 
         )

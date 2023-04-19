@@ -73,6 +73,36 @@ build CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o: CXX_COMPILER__Synthesis_Debug
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
 
+build CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/decide_array.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/time.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/time.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/time.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/cap_array.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/cap_array.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/cap_array.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/do_logic.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/do_logic.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/do_logic.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/pre_array_list.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/pre_array_list.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/pre_array_list.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Synthesis
@@ -81,7 +111,7 @@ build CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o: CXX_COMPILER__Synthesis_Debug
 #############################################
 # Link the executable Synthesis
 
-build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o
+build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/time.cpp.o CMakeFiles/Synthesis.dir/TriLogic/cap_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/do_logic.cpp.o CMakeFiles/Synthesis.dir/TriLogic/pre_array_list.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   POST_BUILD = :

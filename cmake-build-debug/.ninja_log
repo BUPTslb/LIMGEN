@@ -1,6 +1,6 @@
 # ninja log v5
 1	822	1681202469877204495	CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o	b0e54db608eb1673
 1	967	1681202100126654532	CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o	1c841ffe7a684517
-0	13	1681269346328042287	build.ninja	194ba025626653d1
+0	13	1681895104384269367	build.ninja	194ba025626653d1
 1208	1279	1681202556904380665	Synthesis	e4e30529ee8994bf
 0	1208	1681202556832381185	CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o	6df5071918445db1

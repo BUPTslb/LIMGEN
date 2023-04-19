@@ -14,6 +14,14 @@
 #include <set>
 
 using namespace std;
+//设计目标
+const int design_target = 2;//1速度，2面积，3功耗
+//设计空间探索的限制
+const double cycle_limit = 500;//运行时间(速度)限制，单位：周期
+const double area_limit = 1000;//面积限制，单位：
+const double power_limit = 10;//功耗限制，单位：
+//定义数据的位数，这个后期要修改，从CDFG中得到
+const int bit_num_operand = 32;//操作数的位数，全局变量，暂时定义为32
 //定义节点类型
 struct Node {
     int node_id;//节点ID,用来代表节点
@@ -40,39 +48,39 @@ struct Lut_Record{
     int lut6_level;
 };
 vector<Lut_Record> lut_records();//获得lut的参数
-vector<Lut_Record> lut_record= lut_records();//全局变量
+vector<Lut_Record> lut_record= lut_records();//全局
 //定义函数，输入操作类型，操作数位数，lut类型，输出数量和级数
-int lut_num_op(int op_type,int data_bits,int lut_type);
-int lut_level_op(int op_type,int data_bits,int lut_type);
+int lut_num_op(int op_type,int lut_type);
+int lut_level_op(int op_type,int lut_type);
 //阵列基类
 class Array {
 public:
     int array_id;
     bool is_using;//当前正在使用
-    int array_type;//阵列的类型
     int row_num;//大小，行数
     int col_num;//大小，列数
     double read_number;//读次数，以操作数数量为计数单位
     double write_number;//写次数，以行数为计数单位
-    double start_time;//存储两个变量，开始时间：s,结束时间：o,o可以更新
+    double start_time;
     double over_time;
 };
 
 //继承
 struct lut_arr : public Array {
-    bool lut_m;//是否用作存储
     int lut_latch;//记录当前输出
     set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
-    //当LUT用作存储时，这个这个表用来存节点操作数
-};
-
-struct magic_arr : public Array {
-    vector<int> store_node;//存储的节点操作数ID
+    int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
+    int lut_level;
+    //TODO:使用模块时，增大lut阵列的尺寸，使其专用化，一个阵列直接完成功能
 };
 
 struct sa_arr : public Array {
     int sa_buffer;//sa暂存当前输出
     int sa_direct;//接收直接输入
+    vector<int> store_node;//存储的节点操作数ID
+};
+
+struct magic_arr : public Array {
     vector<int> store_node;//存储的节点操作数ID
 };
 

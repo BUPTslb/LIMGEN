@@ -3,14 +3,7 @@
 
 using namespace rapidjson;
 using namespace std;
-//设计目标
-int design_target = 2;//1速度，2面积，3功耗
-//设计空间探索的限制
-double cycle_limit = 500;//运行时间(速度)限制，单位：周期
-double area_limit = 1000;//面积限制，单位：
-double power_limit = 10;//功耗限制，单位：
-//定义数据的位数，这个后期要修改，从CDFG中得到
-unsigned int bit_num_operand = 32;//暂时定义为32
+
 int main() {
     //三种阵列使用的数量
     int Anum_magic;
@@ -132,7 +125,8 @@ int main() {
             Node *con_node = find_node_by_number(nodes, con);//条件节点的指针
             int sizeofT = d[i]["Statement_when_true"].Size();//T的节点数目
             int sizeofF = d[i]["Statement_when_false"].Size();//F的节点数目
-            con_node->out_degree = max(sizeofF, sizeofT);//更新条件节点的出度
+            //TODO：HOW do control node?
+            con_node->out_degree = sizeofF+sizeofT;//更新条件节点的出度,让其相加
 
             cout << "分支节点依赖" << endl << "条件节点:" << con << "  size of true:" << sizeofT << endl;
             cout << "T：";
@@ -352,9 +346,9 @@ int main() {
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
             int type_operation = op2int(controlstep2[i][j]->operator_name);
             //运算阵列的大小，可能不对
-            unsigned int lut_size = arr_size(1, bit_num_operand);
-            unsigned int sa_size = arr_size(2, bit_num_operand);
-            unsigned int magic_size = arr_size(3, bit_num_operand);
+            unsigned int lut_size = arr_size();
+            unsigned int sa_size = arr_size();
+            unsigned int magic_size = arr_size();
             //数据位数，bit_num_operand
             //先不管立即数
             //多种方式遍历，然后再剪枝
@@ -384,7 +378,7 @@ int main() {
                     double time = time_now(0, array_list1, array_list2, array_list3, controlstep2[i][j]);
 //update the time of do_array
                     time_update(0, controlstep2[i][j]->do_type, controlstep2[i][j]->finish_id, time,
-                                controlstep2[i][j], array_list1, array_list2, array_list3, bit_num_operand);
+                                controlstep2[i][j], array_list1, array_list2, array_list3);
                     //不更新wb_pos,等写回到阵列中再更新
                     continue;//进行下一个循环
                 }
@@ -398,7 +392,7 @@ int main() {
                 double time = time_now(0, array_list1, array_list2, array_list3, controlstep2[i][j]);
 //update the time of do_array
                 time_update(0, controlstep2[i][j]->depend1->do_type, controlstep2[i][j]->finish_id, time,
-                            controlstep2[i][j], array_list1, array_list2, array_list3, bit_num_operand);
+                            controlstep2[i][j], array_list1, array_list2, array_list3);
                 //如果操作数来自MAGIC阵列,写回阵列中
                 if (controlstep2[i][j]->depend1->do_type == 3) {
                     //节点行为
@@ -445,7 +439,7 @@ int main() {
                 do_array_type == 3 && array_list3.empty())
                 do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
             //决定执行阵列的id
-            do_array_id = decide_array_id(type_operation, bit_num_operand, controlstep2[i][j], nodes, do_array_type,
+            do_array_id = decide_array_id(type_operation,controlstep2[i][j], nodes, do_array_type,
                                           array_list1, array_list2, array_list3, input1_type, input1_id, input2_type,
                                           input2_id);
             cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name：" << controlstep2[i][j]->operator_name

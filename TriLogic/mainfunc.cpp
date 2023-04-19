@@ -161,10 +161,11 @@ vector<Lut_Record> lut_records()
     }
     return records;
 }
-int lut_num_op(int op_type,int data_bits,int lut_type)
+//使用的lut数量
+int lut_num_op(int op_type,int lut_type)
 {
     for (auto i : lut_record) {
-        if (i.op_type==op_type && i.data_bits==data_bits)
+        if (i.op_type==op_type && i.data_bits==bit_num_operand)
         {
             if (lut_type==4)
                 return i.lut4_num;
@@ -172,12 +173,13 @@ int lut_num_op(int op_type,int data_bits,int lut_type)
                 return i.lut6_num;
         }
     }
-    return data_bits;//其他按位操作
+    return bit_num_operand;//其他按位操作
 
 }
-int lut_level_op(int op_type,int data_bits,int lut_type){
+//使用的lut级别数
+int lut_level_op(int op_type,int lut_type){
     for (auto i : lut_record) {
-        if (i.op_type==op_type && i.data_bits==data_bits)
+        if (i.op_type==op_type && i.data_bits==bit_num_operand)
         {
             if (lut_type==4)
                 return i.lut4_level;
