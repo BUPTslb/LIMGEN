@@ -20,11 +20,12 @@ double time_now(int op_type, vector<lut_arr> &array_list1, vector<sa_arr> &array
 //update the time of do_array
 void time_update(int op_type,int array_type, int array_id, double time_now,Node *node_now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
-//time lib
-double lut_time_lib(int op_type);
-double sa_time_lib(int op_type,int sa_type);
-double ma_time_lib(int op_type);
+//update the energy of array
+void read_energy_update(int op_type, int array_type, int array_id, Node *node_now,
+                        vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
+void energy_update(int op_type,int array_type, int array_id,Node *node_now,
+                     vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
 /*中层：阵列行为*/
 void find_input(int &array_type, int &array_id, int op_type,
@@ -114,17 +115,6 @@ int num_node_position(Node *now);
 void write_cover();
 
 
-//LUT计算函数：
-void com_lut(int type_operation, int op_num, vector<lut_arr> &array_list1,
-             vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
-
-//sa计算函数
-void com_sa(int type_operation, int op_num, vector<lut_arr> &array_list1,
-            vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
-
-//magic计算函数
-void com_magic(int type_operation, int op_num, vector<lut_arr> &array_list1,
-               vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
 
 //阵列尺寸设定函数，一定是方形的

@@ -39,6 +39,8 @@ struct Node {
     //存储节点写回的位置,0:register,1:lut,2:sa,3:ma
 };
 
+
+
 struct Lut_Record{
     int op_type;//操作类型
     int data_bits;//操作数位数
@@ -47,8 +49,12 @@ struct Lut_Record{
     int lut6_num;
     int lut6_level;
 };
+
+
 vector<Lut_Record> lut_records();//获得lut的参数
 vector<Lut_Record> lut_record= lut_records();//全局
+
+
 //定义函数，输入操作类型，操作数位数，lut类型，输出数量和级数
 int lut_num_op(int op_type,int lut_type);
 int lut_level_op(int op_type,int lut_type);
@@ -63,6 +69,7 @@ public:
     double write_number;//写次数，以行数为计数单位
     double start_time;
     double over_time;
+    double energy;
 };
 
 //继承

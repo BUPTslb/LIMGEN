@@ -62,6 +62,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now1.lut_num= lut_num_op(op_type,6);//lut-6数量
             now1.lut_level= lut_level_op(op_type,6);//执行但前运算需要的级别数
             now1.array_id = array_list1.size();
+            now1.energy=0;
             array_list1.push_back(now1);
             build = array_list1.size() - 1;
 
@@ -72,6 +73,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now2.row_num=bit_num_operand;
             now2.col_num=bit_num_operand;
             now2.array_id = array_list2.size();
+            now2.energy=0;
             array_list2.push_back(now2);
             build = array_list2.size() - 1;
 
@@ -82,6 +84,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now3.row_num=bit_num_operand;
             now3.col_num=bit_num_operand;
             now3.array_id = array_list3.size();
+            now3.energy=0;
             array_list3.push_back(now3);
             build = array_list3.size() - 1;
 
