@@ -1,4 +1,9 @@
 #include "mainfunc.h"
+// 1 GHz
+// 1 ns
+// 1 mm^2
+// 1 pJ
+// 1 uW
 struct RRAM{
     double read_time;
     double write_time;
@@ -8,21 +13,24 @@ struct RRAM{
 };
 RRAM rram={10.0,10.0,0.02,0.10,1e12};//RRAM参数 全局 ns pj
 
+//
 struct REG{
     double reg_read_time;//ns
-    double reg_write_time;
+    double reg_write_time;//ns
     double reg_read_energy;//pj
     double reg_write_energy;
+    double reg_area;//mm2 1KB=1024*8 bits = 64 * 64 * 2
 };
-REG reg={1,1,1,1};//TODO:
+REG reg={1,1,0.48,0.48,0.002};//TODO:
 
 struct BUFFER{
     double buffer_read_time;//ns
     double buffer_write_time;
     double buffer_read_energy;//pj
     double buffer_write_energy;
+    double buffer_area;//mm2
 };
-BUFFER buffer={1,1,1,1};//TODO:
+BUFFER buffer={1,1,0.15,0.15,0.0001375};//TODO:这里仅限1bit,数据来源：PUMA
 
 struct Sa_op {
     int op_type;
@@ -54,14 +62,16 @@ Sa_op DSA_add = {11, 0.12, 25.84};
 vector<Sa_op> dsa = {DSA_and,DSA_or,DSA_not,DSA_nor,DSA_xor,DSA_add};
 SA DSA={0.09,10.01,dsa};
 
+//VTEAM model
 struct Ma_op{
     int op_type;
     double op_time;
     double op_energy;
 };
 
+//需要写spice仿真一下
 Ma_op ma_seq={0,rram.write_time,rram.write_energy};
-Ma_op ma_and={6,0,0};
+Ma_op ma_and={6,0,0.073};//data from: FELIX AND3
 Ma_op ma_or={7,0,0};
 Ma_op ma_not={8,0,0};
 Ma_op ma_nor={9,0,0};
