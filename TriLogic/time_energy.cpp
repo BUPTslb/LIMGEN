@@ -2,6 +2,7 @@
 #include "parameter.h"
 
 //现在已经决定了从哪里找操作数，在哪里执行，可以直接进行时间更新
+//TODO:时间更新策略有问题
 double
 time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, Node *node_now) {
     //函数执行的操作：

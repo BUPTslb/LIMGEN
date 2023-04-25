@@ -134,7 +134,7 @@ int op_row_need(int op_type, int decide_array_type,Node *node_now) {
 
 }
 
-
+//TODO:关于buffer的问题，判断何时使用buffer,使用buffer时对时间能量进行更新,判断sa lut是否是直接输出
 //定义数据读函数,SA、lUT需要比较是否是当前输出
 void data_read(int input_type, int input_id, int decide_array_type, int decide_array_id,
                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
