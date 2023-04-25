@@ -21,7 +21,7 @@ int decide_array_id(int op_type, Node *node_now, vector<Node> &nodes, int decide
  * 如果暂时都在使用，则新建一个阵列
  * 方案二：等待阵列执行完毕，寻找一个阵列执行，这样可以提供好面积利用率，待补充
  * */
-    double time = time_now(op_type, array_list1, array_list2, array_list3, node_now);//update is_using of array_list
+    double time = time_now(array_list1, array_list2, array_list3, node_now);//update is_using of array_list
     vector<int> array_id;
 
     int row_need = op_row_need(op_type, decide_array_type, node_now);//执行当前操作需要的资源数,此时假设操作数都在阵列中

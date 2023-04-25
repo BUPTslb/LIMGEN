@@ -136,11 +136,12 @@ int op_row_need(int op_type, int decide_array_type,Node *node_now) {
 
 
 //定义数据读函数,SA、lUT需要比较是否是当前输出
-void data_read(int input_type, int input_id, int decide_array_type, int decide_array_id, int *Register, \
+void data_read(int input_type, int input_id, int decide_array_type, int decide_array_id,
                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     if (input_type == 5 || input_type == 4 || input_type == -1)//S-BUFFER || lut-out ||register
     {
-        Register[0]++;//寄存器读++
+        //寄存器读++
+        Reg_sum.read_num_sum++;
         //读数
         return;
     }

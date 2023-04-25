@@ -1,6 +1,9 @@
+#ifndef SYNTHESIS_LOGIC_FUNC_H
+#define SYNTHESIS_LOGIC_FUNC_H
+
 //#pragma once //只被编译一次
 #include<string>
-#include <vector>
+//#include <vector>
 #include "mainfunc.h"
 #include <set>
 
@@ -15,13 +18,13 @@ using namespace std;
 
 //流水线
 //时间特性,更新阵列的开始时间，结束时间
-double time_now(int op_type, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                vector<magic_arr> &array_list3, Node *node_now);
+double
+time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, Node *node_now);
 //update the time of do_array
 void time_update(int op_type,int array_type, int array_id, double time_now,Node *node_now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 //update the energy of array
-void read_energy_update(int op_type, int array_type, int array_id, Node *node_now,
+void read_energy_update(int array_type, int array_id, Node *node_now,
                         vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
 void energy_update(int op_type,int array_type, int array_id,Node *node_now,
@@ -76,7 +79,7 @@ int op_row_need(int op_type, int decide_array_type, Node * node_now);
 //数据读函数,输入：各阵列表，执行的运算节点
 //目的：找到输入数据依赖的“阵列“，完成数据搬移：需要增加读就读++，需要移动写就写++
 // 操作：修改阵列读写和时间参数
-void data_read(int input_type, int input_id, int decide_array_type, int decide_array_id, int *Register,
+void data_read(int input_type, int input_id, int decide_array_type, int decide_array_id,
                vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
 //判断节点的写回表中有当前阵列：目的是判断阵列存储中是否有数据
@@ -85,8 +88,7 @@ bool is_in_wb(int array_type, int array_id, Node *node_now);
 //写入逻辑
 void
 input_logic(int input1_type, int input1_id, int input2_type, int input2_id, int decide_array_type, int decide_array_id,
-            Node *now, int *Register, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-            vector<magic_arr> &array_list3);
+            Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
 //输出逻辑
 void output_logic(int decide_array_type, int decide_array_id, int op_type, Node *now,
@@ -123,3 +125,5 @@ unsigned int arr_size();
 
 //查找表
 //AES中的乘法
+
+#endif

@@ -1,4 +1,7 @@
-#include "mainfunc.h"
+#ifndef SYNTHESIS_PARAMETER_H
+#define SYNTHESIS_PARAMETER_H
+#include <vector>
+//#include "mainfunc.h"
 // 1 GHz
 // 1 ns
 // 1 mm^2
@@ -9,11 +12,13 @@ struct RRAM{
     double write_time;
     double read_energy;
     double write_energy;
+//    double set_energy;//0.22pj
+//    double reset_energy;//0.03pj
     double write_max;
 };
-RRAM rram={10.0,10.0,0.02,0.10,1e12};//RRAM参数 全局 ns pj
+extern RRAM rram;
 
-//
+//单个Reg 1KB
 struct REG{
     double reg_read_time;//ns
     double reg_write_time;//ns
@@ -21,8 +26,18 @@ struct REG{
     double reg_write_energy;
     double reg_area;//mm2 1KB=1024*8 bits = 64 * 64 * 2
 };
-REG reg={1,1,0.48,0.48,0.002};//TODO:
+extern REG reg;
 
+//计算整体的reg参数
+struct Register{
+    int write_num_sum;
+    int read_num_sum;
+    double write_energy_sum;
+    double read_energy_sum;
+};
+extern Register Reg_sum;
+
+//单个buffer的参数
 struct BUFFER{
     double buffer_read_time;//ns
     double buffer_write_time;
@@ -30,7 +45,16 @@ struct BUFFER{
     double buffer_write_energy;
     double buffer_area;//mm2
 };
-BUFFER buffer={1,1,0.15,0.15,0.0001375};//TODO:这里仅限1bit,数据来源：PUMA
+extern BUFFER buffer;
+
+//计算整体的buffer参数,主要是sa\lut的输出buffer
+struct Buffer{
+    int buffer_read_sum;
+    int buffer_write_sum;
+    double buffer_read_energy;
+    double buffer_write_energy;
+};
+extern Buffer buffer_sum;
 
 struct Sa_op {
     int op_type;
@@ -41,27 +65,25 @@ struct Sa_op {
 struct SA {
     double read_time;
     double read_energy;
-    vector<Sa_op> sa_op;
+    std::vector<Sa_op> sa_op;
 };
+extern Sa_op CSA_and;
+extern Sa_op CSA_or;
+extern Sa_op CSA_not;
+extern Sa_op CSA_nor;
+extern Sa_op CSA_xor;
+extern Sa_op CSA_add;
+extern std::vector<Sa_op> csa;
+extern SA CSA;
 
-Sa_op CSA_and = {6, 0.03, 28.63};//ns pj
-Sa_op CSA_or = {7, 0.04, 22.02};
-Sa_op CSA_not = {8, 0.04, 16.79};
-Sa_op CSA_nor = {9, 0.08, 38.81}; //or + not
-Sa_op CSA_xor = {10, 0.17, 40.37};
-Sa_op CSA_add = {11, 0.21, 69.0};//add 1bit
-vector<Sa_op> csa = {CSA_and,CSA_or,CSA_not,CSA_nor,CSA_xor,CSA_add};
-SA CSA={0.04,16.79,csa};
-
-Sa_op DSA_and = {6, 0.07, 14.71};//ns pj
-Sa_op DSA_or = {7, 0.09, 10.08};
-Sa_op DSA_not = {8, 0.09, 10.08};
-Sa_op DSA_nor = {9, 0.18, 20.16}; //or + not
-Sa_op DSA_xor = {10, 0.10, 25.21};
-Sa_op DSA_add = {11, 0.12, 25.84};
-vector<Sa_op> dsa = {DSA_and,DSA_or,DSA_not,DSA_nor,DSA_xor,DSA_add};
-SA DSA={0.09,10.01,dsa};
-
+extern Sa_op DSA_and;
+extern Sa_op DSA_or;
+extern Sa_op DSA_not;
+extern Sa_op DSA_nor;
+extern Sa_op DSA_xor;
+extern Sa_op DSA_add;
+extern std::vector<Sa_op> dsa;
+extern SA DSA;
 //VTEAM model
 struct Ma_op{
     int op_type;
@@ -69,22 +91,40 @@ struct Ma_op{
     double op_energy;
 };
 
-//需要写spice仿真一下
-Ma_op ma_seq={0,rram.write_time,rram.write_energy};
-Ma_op ma_and={6,0,0.073};//data from: FELIX AND3
-Ma_op ma_or={7,0,0};
-Ma_op ma_not={8,0,0};
-Ma_op ma_nor={9,0,0};
-Ma_op ma_xor={10,0,0};
-Ma_op ma_add={11,0,0};
 
 struct Ma_Record{
     double read_energy;
     double write_energy;
-    vector<Ma_op> magic_op;
+    std::vector<Ma_op> magic_op;
 };
-vector<Ma_op> magic_op={ma_seq,ma_and,ma_or,ma_not,ma_nor,ma_xor,ma_add};
-Ma_Record magic_record={rram.read_energy,rram.write_energy,magic_op};
+extern Ma_op ma_seq;
+extern Ma_op ma_nor;
+//FELIX
+extern Ma_op ma_and;
+extern Ma_op ma_or;
+extern Ma_op ma_not;
+extern Ma_op ma_xor;
+//一共写4.5次
+extern Ma_op ma_add;
+extern std::vector<Ma_op> magic_op;
+extern Ma_Record magic_record;
+
+
+
+
+struct Lut_Record{
+    int op_type;//操作类型
+    int data_bits;//操作数位数
+    int lut4_num;
+    int lut4_level;
+    int lut6_num;
+    int lut6_level;
+};
+
+
+std::vector<Lut_Record> lut_records();//获得lut的参数
+extern std::vector<Lut_Record> lut_record;//全局
+
 
 double lut_latency(int op_type);
 double lut_energy(int op_type);
@@ -97,8 +137,5 @@ double ma_energy(int op_type);
 //
 // Created by shenlibo on 23-4-20.
 //
-
-#ifndef SYNTHESIS_SA_PARAMETER_H
-#define SYNTHESIS_SA_PARAMETER_H
 
 #endif //SYNTHESIS_SA_PARAMETER_H

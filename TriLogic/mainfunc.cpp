@@ -1,4 +1,6 @@
 #include "mainfunc.h"
+#include "parameter.h"
+
 using namespace std;
 //定义函数，判断节点的类型
 /*节点中包含的字符串，用作匹配*/
@@ -145,6 +147,7 @@ int op2int(string operation){
 }
 
 //database
+vector<Lut_Record> lut_record= lut_records();
 vector<Lut_Record> lut_records()
 {
     std::ifstream infile("database_lut.txt");

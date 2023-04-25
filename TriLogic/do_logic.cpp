@@ -1,10 +1,8 @@
 #include "logic_func.h"
 
 //写入逻辑
-void
-input_logic(int input1_type, int input1_id, int input2_type, int input2_id, int decide_array_type, int decide_array_id, \
-        Node *now, int *Register, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-            vector<magic_arr> &array_list3) {
+void input_logic(int input1_type, int input1_id, int input2_type, int input2_id, int decide_array_type, int decide_array_id,
+        Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     switch (decide_array_type) {
         case 1://LUT
             return;//LUT输入无需写入

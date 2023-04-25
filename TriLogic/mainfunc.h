@@ -9,7 +9,8 @@
 #include<typeinfo>
 #include <algorithm>
 #include"rapidjson/document.h"
-#include <vector>
+#include "parameter.h"
+//#include <vector>
 #include <queue>
 #include <set>
 
@@ -40,21 +41,6 @@ struct Node {
 };
 
 
-
-struct Lut_Record{
-    int op_type;//操作类型
-    int data_bits;//操作数位数
-    int lut4_num;
-    int lut4_level;
-    int lut6_num;
-    int lut6_level;
-};
-
-
-vector<Lut_Record> lut_records();//获得lut的参数
-vector<Lut_Record> lut_record= lut_records();//全局
-
-
 //定义函数，输入操作类型，操作数位数，lut类型，输出数量和级数
 int lut_num_op(int op_type,int lut_type);
 int lut_level_op(int op_type,int lut_type);
@@ -74,7 +60,8 @@ public:
 
 //继承
 struct lut_arr : public Array {
-    int lut_latch;//记录当前输出
+    int lut_latch;//记录buffer锁存
+    int lut_out;//当前的输出
     set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
     int lut_level;
@@ -84,6 +71,7 @@ struct lut_arr : public Array {
 struct sa_arr : public Array {
     int sa_buffer;//sa暂存当前输出
     int sa_direct;//接收直接输入
+    int sa_out;//当前sa的输出
     vector<int> store_node;//存储的节点操作数ID
 };
 

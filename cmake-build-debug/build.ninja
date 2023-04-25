@@ -79,8 +79,8 @@ build CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o: CXX_COMPILER__Synthe
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
 
-build CMakeFiles/Synthesis.dir/TriLogic/time.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/time.cpp || cmake_object_order_depends_target_Synthesis
-  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/time.cpp.o.d
+build CMakeFiles/Synthesis.dir/TriLogic/time_energy.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/time_energy.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/time_energy.cpp.o.d
   FLAGS = -g -std=gnu++14
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
@@ -117,7 +117,7 @@ build CMakeFiles/Synthesis.dir/TriLogic/parameter.cpp.o: CXX_COMPILER__Synthesis
 #############################################
 # Link the executable Synthesis
 
-build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/time.cpp.o CMakeFiles/Synthesis.dir/TriLogic/cap_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/do_logic.cpp.o CMakeFiles/Synthesis.dir/TriLogic/pre_array_list.cpp.o CMakeFiles/Synthesis.dir/TriLogic/parameter.cpp.o
+build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/time_energy.cpp.o CMakeFiles/Synthesis.dir/TriLogic/cap_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/do_logic.cpp.o CMakeFiles/Synthesis.dir/TriLogic/pre_array_list.cpp.o CMakeFiles/Synthesis.dir/TriLogic/parameter.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   POST_BUILD = :

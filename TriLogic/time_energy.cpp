@@ -2,8 +2,8 @@
 #include "parameter.h"
 
 //现在已经决定了从哪里找操作数，在哪里执行，可以直接进行时间更新
-double time_now(int op_type, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                vector<magic_arr> &array_list3, Node *node_now) {
+double
+time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, Node *node_now) {
     //函数执行的操作：
     //执行阵列：更新开始时间和结束时间，将使用的阵列置为is_using=true
     //其他阵列，如果当前执行阵列的开始时间比其结束时间要大,将is_using置为false
@@ -94,7 +94,23 @@ void time_update(int op_type, int decide_array_type, int decide_array_id, double
 void read_energy_update(int array_type, int array_id, Node *node_now,
                    vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3)
 {
+
     switch (array_type) {
+        case -1://REG
+        {
+            Reg_sum.read_energy_sum+=reg.reg_read_energy;
+        }
+            break;
+        case 4://sa buffer
+        {
+            buffer_sum.buffer_read_energy+=buffer.buffer_read_energy*bit_num_operand;
+        }
+            break;
+        case 5://lut buffer
+        {
+            buffer_sum.buffer_read_energy+=buffer.buffer_read_energy*bit_num_operand;
+        }
+            break;
         case 1: {
             array_list1[array_id].energy += bit_num_operand * rram.read_energy;
         }
@@ -117,48 +133,46 @@ void read_energy_update(int array_type, int array_id, Node *node_now,
 
 
 //TODO:，每次写、执行都得调用这个函数来更新其能量
-void energy_update(int op_type, int array_type, int array_id, Node *node_now,
+void energy_update(int op_type,int array_type, int array_id, Node *node_now,
                    vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
-    if (!op_type) //read
-    {
-        switch (array_type) {
-            case 1: {
-                array_list1[array_id].energy += bit_num_operand * rram.read_energy;
-            }
-                break;
-            case 2: {
-                //TODO:sa_type
-                array_list2[array_id].energy += bit_num_operand*rram.read_energy+ sa_energy(op_type,1);
-            }
-                break;
-            case 3: {
-                array_list3[array_id].energy += bit_num_operand * rram.read_energy;
-            }
-                break;
-            default:
-                break;
-        }
 
-    } else {
-        switch (array_type) {
-            case 1: {
-                array_list1[array_id].energy += bit_num_operand * rram.read_energy;
-            }
-                break;
-            case 2: {
-                //TODO:sa_type
-                array_list2[array_id].energy += bit_num_operand * rram.read_energy;
-            }
-                break;
-            case 3: {
-                array_list3[array_id].energy += bit_num_operand * rram.read_energy;
-            }
-                break;
-            default:
-                break;
+    switch (array_type) {
+        case -1://REG
+        {
+            Reg_sum.write_energy_sum+=reg.reg_write_energy;
         }
-
+            break;
+        case 4://sa buffer
+        {
+            buffer_sum.buffer_write_energy+=buffer.buffer_write_energy*bit_num_operand;
+        }
+            break;
+        case 5://lut buffer
+        {
+            buffer_sum.buffer_write_energy+=buffer.buffer_write_energy*bit_num_operand;
+        }
+            break;
+        case 1: //lut执行
+        {
+            array_list1[array_id].energy += lut_energy(op_type);
+        }
+            break;
+        case 2: //sa
+        {
+            //TODO:sa_type
+            array_list2[array_id].energy += sa_energy(op_type,1);
+        }
+            break;
+        case 3: //magic
+        {
+            array_list3[array_id].energy += ma_energy(op_type);
+        }
+            break;
+        default:
+            break;
     }
+
+
 
 
 }

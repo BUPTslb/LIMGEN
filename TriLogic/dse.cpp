@@ -84,7 +84,7 @@ void evaluate(const vector<double>& params, double& area, double& time, double& 
     energy = min_energy + (max_energy - min_energy) * static_cast<double>(rand()) / RAND_MAX;
 }
 // 定义遗传算法的主函数
-int main() {
+int des() {
     // 初始化随机种子
     srand(time(0));
 

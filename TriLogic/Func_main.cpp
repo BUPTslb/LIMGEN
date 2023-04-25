@@ -126,7 +126,7 @@ int main() {
             int sizeofT = d[i]["Statement_when_true"].Size();//T的节点数目
             int sizeofF = d[i]["Statement_when_false"].Size();//F的节点数目
             //TODO：HOW do control node?
-            con_node->out_degree = sizeofF+sizeofT;//更新条件节点的出度,让其相加
+            con_node->out_degree = sizeofF + sizeofT;//更新条件节点的出度,让其相加
 
             cout << "分支节点依赖" << endl << "条件节点:" << con << "  size of true:" << sizeofT << endl;
             cout << "T：";
@@ -333,7 +333,6 @@ int main() {
     vector<lut_arr> array_list1;//lut阵列表
     vector<sa_arr> array_list2;//sa阵列表
     vector<magic_arr> array_list3;//magic阵列表
-    int Register[2] = {0, 0};//用寄存器的读写次数 0:read 1:write
 
     //先判断设计目标，按照设计目标来循环给约束
 
@@ -367,7 +366,7 @@ int main() {
             {
                 //如果没有依赖，交给寄存器
                 if (controlstep2[i][j]->depend1 == nullptr) {
-                    Register[1]++;//寄存器写
+                    Reg_sum.write_num_sum++;//寄存器写
                     controlstep2[i][j]->do_type = -1;
                     controlstep2[i][j]->finish_id = -1;//证明写到了寄存器中
                     cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name："
@@ -375,10 +374,12 @@ int main() {
                     cout << "do_type： " << -1 << "  finish_id：" << -1 << endl;
                     //更新出度
                     out_degree(controlstep2[i][j]);
-                    double time = time_now(0, array_list1, array_list2, array_list3, controlstep2[i][j]);
+                    double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
 //update the time of do_array
                     time_update(0, controlstep2[i][j]->do_type, controlstep2[i][j]->finish_id, time,
                                 controlstep2[i][j], array_list1, array_list2, array_list3);
+                    //update the energy of reg
+                    energy_update(0, -1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
                     //不更新wb_pos,等写回到阵列中再更新
                     continue;//进行下一个循环
                 }
@@ -389,7 +390,7 @@ int main() {
                      << endl;
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id;
                 cout << "finish_id of depend1:" << controlstep2[i][j]->depend1->finish_id << endl;
-                double time = time_now(0, array_list1, array_list2, array_list3, controlstep2[i][j]);
+                double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
 //update the time of do_array
                 time_update(0, controlstep2[i][j]->depend1->do_type, controlstep2[i][j]->finish_id, time,
                             controlstep2[i][j], array_list1, array_list2, array_list3);
@@ -397,26 +398,28 @@ int main() {
                 if (controlstep2[i][j]->depend1->do_type == 3) {
                     //节点行为
                     controlstep2[i][j]->do_type = 3;
-                    controlstep2[i][j]->wb_pos[2].push_back(controlstep2[i][j]->finish_id);//将阵列加入写回表
+                    controlstep2[i][j]->finish_id=controlstep2[i][j]->depend1->finish_id;
+                    controlstep2[i][j]->wb_pos[2].push_back(controlstep2[i][j]->depend1->finish_id);//将阵列加入写回表
                     //阵列行为：写++，添加存储节点
-                    array_list3[controlstep2[i][j]->finish_id].write_number++;
-                    array_list3[controlstep2[i][j]->finish_id].store_node.push_back(controlstep2[i][j]->node_id);
+                    array_list3[controlstep2[i][j]->depend1->finish_id].write_number++;
+                    array_list3[controlstep2[i][j]->depend1->finish_id].store_node.push_back(controlstep2[i][j]->node_id);
 
                 }
                 if (controlstep2[i][j]->depend1->do_type == 2)//SA
                 {
-                    Register[1]++;//寄存器写
+                    //TODO：先假设其执行类型为sa buffer,但是不更新时间能量，到再次使用时候再更新
+                    //目前这个节点的写回表是空的
                     controlstep2[i][j]->do_type = 5;//SA BUFFER
                     //阵列行为：
-                    array_list2[controlstep2[i][j]->finish_id].sa_buffer = controlstep2[i][j]->node_id;
+                    array_list2[controlstep2[i][j]->depend1->finish_id].sa_out=controlstep2[i][j]->node_id;
                 }
                 if (controlstep2[i][j]->depend1->do_type == 1)//LUT
                 {
-                    Register[1]++;//lut-out中的锁存器件写
+                    //TODO：先假设其执行类型为lut buffer,但是不更新时间能量，到再次使用时候再更新
                     //node
                     controlstep2[i][j]->do_type = 4;//LUT-OUT
                     //array
-                    array_list1[controlstep2[i][j]->finish_id].lut_latch = controlstep2[i][j]->node_id;
+                    array_list1[controlstep2[i][j]->depend1->finish_id].lut_out = controlstep2[i][j]->node_id;
                 }
                 cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name："
                      << controlstep2[i][j]->operator_name << endl;
@@ -424,7 +427,6 @@ int main() {
                      << endl;
                 //更新出度
                 out_degree(controlstep2[i][j]);
-
 
                 continue;//进行下一个循环
             }//下面的操作没有=了
@@ -439,7 +441,7 @@ int main() {
                 do_array_type == 3 && array_list3.empty())
                 do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
             //决定执行阵列的id
-            do_array_id = decide_array_id(type_operation,controlstep2[i][j], nodes, do_array_type,
+            do_array_id = decide_array_id(type_operation, controlstep2[i][j], nodes, do_array_type,
                                           array_list1, array_list2, array_list3, input1_type, input1_id, input2_type,
                                           input2_id);
             cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name：" << controlstep2[i][j]->operator_name
@@ -451,13 +453,13 @@ int main() {
              *  阵列的内容修改：
             * */
             //从阵列中将数据读出，修改阵列/寄存器的读参数
-            data_read(input1_type, input1_id, do_array_type, do_array_id, Register, array_list1, array_list2,
+            data_read(input1_type, input1_id, do_array_type, do_array_id, array_list1, array_list2,
                       array_list3);
-            data_read(input2_type, input2_id, do_array_type, do_array_id, Register, array_list1, array_list2,
+            data_read(input2_type, input2_id, do_array_type, do_array_id, array_list1, array_list2,
                       array_list3);
             //将数据输入到执行阵列：input逻辑
             input_logic(input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
-                        Register, array_list1, array_list2, array_list3);
+                        array_list1, array_list2, array_list3);
             //执行运算,要更新finish_id
             output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
