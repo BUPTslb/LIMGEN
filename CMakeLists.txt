@@ -18,5 +18,6 @@ add_executable(Synthesis
         TriLogic/pre_array_list.cpp
         TriLogic/parameter.h
         TriLogic/parameter.cpp
+        TriLogic/write_in.cpp
 
         )

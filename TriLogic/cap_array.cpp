@@ -1,6 +1,6 @@
 #include "logic_func.h"
 //计算当前还剩下多少能用,返回其数字：计算立即数
-int cap_array_lost(int decide_array_type, int decide_array_id, vector<Node> &nodes, vector<lut_arr> &array_list1, \
+int cap_array_lost(int decide_array_type, int decide_array_id, vector<lut_arr> &array_list1, \
                             vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     int cap_array = 0;
     switch (decide_array_type) {
@@ -41,7 +41,7 @@ int cap_array_lost(int decide_array_type, int decide_array_id, vector<Node> &nod
 
 //可覆盖容量,立即数也被算在内，因为OP类型只有立即数会被存入，ASS可以直接=立即数
 //对于多步骤的运算，其容量不能单纯的由操作数的个数决定：如add需要使用5行
-int cap_array_cover(int decide_array_type, int decide_array_id, vector<Node> &nodes, vector<lut_arr> &array_list1, \
+int cap_array_cover(int decide_array_type, int decide_array_id, vector<lut_arr> &array_list1, \
                             vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     int cap_array = 0;
     switch (decide_array_type) {
@@ -151,7 +151,7 @@ int cap_array_cover(int decide_array_type, int decide_array_id, vector<Node> &no
     return cap_array;
 }
 //不管是否出度为0，只要存在阵列中，没有被消除，就计算面积占用
-int capped_now(int decide_array_type, int decide_array_id, vector<Node> &nodes, vector<lut_arr> &array_list1,
+int capped_now(int decide_array_type, int decide_array_id, vector<lut_arr> &array_list1,
                vector<sa_arr> &array_list2, vector<magic_arr> &array_list3)
 {
     int capped_now=0;

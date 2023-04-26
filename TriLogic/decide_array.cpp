@@ -12,7 +12,7 @@ int decide_array_type(int op_type, int design_target) {
 
 //定义执行阵列的id
 //这里的id 是开始id
-int decide_array_id(int op_type, Node *node_now, vector<Node> &nodes, int decide_array_type, \
+int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, \
                     int input1_type, int input1_id, int input2_type, int input2_id) {
 /*当前的寻找策略

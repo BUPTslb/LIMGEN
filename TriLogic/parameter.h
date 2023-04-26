@@ -23,7 +23,7 @@ struct REG{
     double reg_read_time;//ns
     double reg_write_time;//ns
     double reg_read_energy;//pj
-    double reg_write_energy;
+    double reg_write_energy;//更新不需要乘以位数
     double reg_area;//mm2 1KB=1024*8 bits = 64 * 64 * 2
 };
 extern REG reg;

@@ -32,13 +32,16 @@ struct Node {
     Node *control = NULL;//控制依赖
     double start_time;//开始时间
     double end_time;//结束时间
-    int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-OUT 5 SA-BUFFER
+    //TODO:规定：写回buffer时候要更新end_time,第一次写回阵列时候也要更新end_time
+    int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-latch 5 SA-BUFFER
     int finish_id;//节点执行完（输出）的位置
     int out_degree;//出度
     //节点存储表,结构体中不能对向量对象进行初始化
     vector<vector<int>> wb_pos;//存储节点执行完的位置
-    //存储节点写回的位置,0:register,1:lut,2:sa,3:ma
+    //存储节点写回的位置,0:register,1:lut,2:sa,3:ma,4:lut_latch,5:sa-buffer
 };
+
+extern vector<Node> nodes;//节点类型的向量，里面可以放下一个个节点
 
 
 //定义函数，输入操作类型，操作数位数，lut类型，输出数量和级数
@@ -55,7 +58,7 @@ public:
     double write_number;//写次数，以行数为计数单位
     double start_time;
     double over_time;
-    double energy;
+    double energy;//在RRAM/lux上消耗的能量
 };
 
 //继承
@@ -69,7 +72,7 @@ struct lut_arr : public Array {
 };
 
 struct sa_arr : public Array {
-    int sa_buffer;//sa暂存当前输出
+    vector<int> sa_buffer;//sa暂存当前输出
     int sa_direct;//接收直接输入
     int sa_out;//当前sa的输出
     vector<int> store_node;//存储的节点操作数ID

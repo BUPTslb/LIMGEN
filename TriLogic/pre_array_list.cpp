@@ -1,7 +1,7 @@
 #include "logic_func.h"
 //当前能用的阵列表,针对当前type,如果为空，证明都用不了
 //此时sa和magic不用考虑容量，让决定id的去考虑，只需要把可用的放进队列去
-vector<int> find_no_using(int op_type, vector<Node> &nodes, int decide_array_type, vector<lut_arr> &array_list1,
+vector<int> find_no_using(int op_type, int decide_array_type, vector<lut_arr> &array_list1,
                           vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     vector<int> find_no_using;
     switch (decide_array_type) {
@@ -65,7 +65,7 @@ vector<int> find_no_using(int op_type, vector<Node> &nodes, int decide_array_typ
 
 //阵列等待表,front是等待时间最短的,按照等待时间排序
 //只以等待时间来排序，容量的事由后续的函数考虑
-vector<int> waiting_array_list(int op_type, vector<Node> &nodes, int decide_array_type, vector<lut_arr> &array_list1,
+vector<int> waiting_array_list(int op_type, int decide_array_type, vector<lut_arr> &array_list1,
                                vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     vector<int> waiting_array_list;
     priority_queue<Array, vector<Array>, CompareArray> pq;//优先队列，小顶堆

@@ -28,7 +28,6 @@ int main() {
     int num_assign = 0;
     int num_loop = 0;
     int num_branch = 0;
-    vector<Node> nodes;//节点类型的向量，里面可以放下一个个节点
     //定义控制步
     vector<vector<Node>> controlstep;
 
@@ -42,9 +41,9 @@ int main() {
     map<int, int> inDegree;//入度表，记录每个节点的入度，id对应入度，数据1、2+直接控制，最大为3
     //1.先读一个节点让其输出
     ifstream file("../hdlAst/hdlast2.json");
-    stringstream buffer;
-    buffer << file.rdbuf();
-    string content(buffer.str());
+    stringstream hdlast;
+    hdlast << file.rdbuf();
+    string content(hdlast.str());
     // 解析 JSON 数据
     Document d;
     d.Parse(content.c_str());
@@ -69,7 +68,7 @@ int main() {
             Node n;
             n.node_id = d[i]["Node_ID"].GetInt();
             n.operator_name = d[i]["Operation"].GetString();
-            n.wb_pos.resize(3);//节点存储表，初始化为3，其中0：LUT,1：SA，2：MA
+            n.wb_pos.resize(6);//节点存储表，初始化为3，其中0：Reg,1：lut，2：sa, 3:magic,4:lut-buffer,5:sa-buffer
             n.out_degree = 0;//初始化出度
             inDegree[n.node_id] = 0;//初始化节点的入度
             nodes.push_back(n);//将节点加入节点向量
@@ -380,7 +379,8 @@ int main() {
                                 controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
                     energy_update(0, -1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
-                    //不更新wb_pos,等写回到阵列中再更新
+                    //更新wb_pos,表示写到了寄存器中
+                    controlstep2[i][j]->wb_pos[0].push_back(-1);
                     continue;//进行下一个循环
                 }
 
@@ -399,9 +399,11 @@ int main() {
                     //节点行为
                     controlstep2[i][j]->do_type = 3;
                     controlstep2[i][j]->finish_id=controlstep2[i][j]->depend1->finish_id;
-                    controlstep2[i][j]->wb_pos[2].push_back(controlstep2[i][j]->depend1->finish_id);//将阵列加入写回表
+                    controlstep2[i][j]->wb_pos[3].push_back(controlstep2[i][j]->depend1->finish_id);//将阵列加入写回表,magic
                     //阵列行为：写++，添加存储节点
                     array_list3[controlstep2[i][j]->depend1->finish_id].write_number++;
+                    //阵列写，但是不用能量更新，因为magic执行时直接写了，这里的写能量被算在执行能量中
+//                    energy_update(type_operation,3,controlstep2[i][j]->depend1->finish_id, controlstep2[i][j],array_list1, array_list2, array_list3);
                     array_list3[controlstep2[i][j]->depend1->finish_id].store_node.push_back(controlstep2[i][j]->node_id);
 
                 }
@@ -411,6 +413,21 @@ int main() {
                     //目前这个节点的写回表是空的
                     controlstep2[i][j]->do_type = 5;//SA BUFFER
                     //阵列行为：
+                    //现在的sa-out是谁？
+                    if (array_list2[controlstep2[i][j]->depend1->finish_id].sa_out)
+                        {
+                        int sa_out_now=array_list2[controlstep2[i][j]->depend1->finish_id].sa_out;
+                        //判断其出度,假设出度不为0,并且没有被写回，将被覆盖掉，要找个地方写回
+                        //先写回，再执行当前的=操作
+                            if (find_node_by_number(nodes,sa_out_now)->out_degree>0 && find_node_by_number(nodes,sa_out_now)->wb_pos.empty())
+                            {
+                                //TODO：需要一个写回函数
+
+                                    write_back(2,controlstep2[i][j],array_list1,array_list2,array_list3);//写回当前阵列
+
+                            }
+                    }
+
                     array_list2[controlstep2[i][j]->depend1->finish_id].sa_out=controlstep2[i][j]->node_id;
                 }
                 if (controlstep2[i][j]->depend1->do_type == 1)//LUT
