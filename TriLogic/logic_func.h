@@ -119,7 +119,7 @@ int num_node_position(Node *now);
 void write_cover(int op_type,Node *now,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
 //from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-void write_back(int from_type,Node *now,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3,int back_type=-2,int back_id=-2);
+void write_back(int from_type,int from_id,Node *now,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3,int back_type=-2,int back_id=-2);
 
 //阵列尺寸设定函数，一定是方形的
 unsigned int arr_size();

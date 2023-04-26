@@ -9,7 +9,7 @@ void write_cover(int op_type,Node *now,vector<lut_arr> &array_list1, vector<sa_a
 
 //写回 from_type表示写回的类型 -1:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
 //back-type应该和wb_pos对应 0:reg 1:lut 2:sa 3:ma 4:lut-latch 5.sa-buffer
-void write_back(int from_type,Node *now,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3,int back_type,int back_id)
+void write_back(int from_type,int from_id,Node *now,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3,int back_type,int back_id)
 {
 //TODO:可以写回多个地方：buffer/reg/ma/sa,DSE决定吧,所有的ready
 //写到buffer中，如果buffer中已经有数据了如何处理？
@@ -47,8 +47,8 @@ void write_back(int from_type,Node *now,vector<lut_arr> &array_list1, vector<sa_
                         {
                             //最好写回本阵列
                             //如果本阵列的容量+可覆盖量!=0，可以写入
-                            int cap=cap_array_lost(2,now->depend1->finish_id,nodes,array_list1,array_list2,array_list3)+
-                                    cap_array_cover(2,now->depend1->finish_id,nodes,array_list1,array_list2,array_list3);
+                            int cap=cap_array_lost(2,now->depend1->finish_id,array_list1,array_list2,array_list3)+
+                                    cap_array_cover(2,now->depend1->finish_id,array_list1,array_list2,array_list3);
                             if (cap>0)
                             {
                                 write_back(2,now,array_list1,array_list2,array_list3,buffer_chosen,int back_id);

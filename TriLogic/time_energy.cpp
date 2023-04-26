@@ -54,7 +54,7 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
             if ((time_do_array>time1||time3 > time1) && wb_empty(node_now->depend1)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back(node_now->depend1->do_type, node_now, array_list1, array_list2, array_list3);
+                write_back(node_now->depend1->do_type,node_now->depend1->finish_id, node_now, array_list1, array_list2, array_list3);
                 time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
@@ -78,9 +78,8 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
             if ((time_do_array>time1||time3 > time1) && wb_empty(node_now->depend1)) //控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back(node_now->depend1->do_type, node_now, array_list1, array_list2, array_list3);
-                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
-                                  decide_array_id);//更新时间
+                write_back(node_now->depend1->do_type,node_now->depend1->finish_id, node_now, array_list1, array_list2, array_list3);
+                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,decide_array_id);//更新时间
             }
 
             time_n = max(time1, time_n);
@@ -99,7 +98,7 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
             if ((time_do_array>time2||time3 > time2) && wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back(node_now->depend2->do_type, node_now, array_list1, array_list2, array_list3);
+                write_back(node_now->depend2->do_type,node_now->depend2->finish_id, node_now, array_list1, array_list2, array_list3);
                 time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
@@ -117,14 +116,14 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
         if (ft() == 1) //2
         {
             //存储其中一个节点，write_in
-            write_back(node_now->depend2->do_type, node_now, array_list1, array_list2, array_list3);//不确定写到哪了
+            write_back(node_now->depend2->do_type,node_now->depend2->finish_id, node_now, array_list1, array_list2, array_list3);//不确定写到哪了
             //更新时间
             time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
         }
         if (ft() == 2) //2
         {
             //存储其中一个节点，write_in
-            write_back(node_now->depend1->do_type, node_now, array_list1, array_list2, array_list3);//不确定写到哪了
+            write_back(node_now->depend1->do_type, node_now->depend2->finish_id,node_now, array_list1, array_list2, array_list3);//不确定写到哪了
             //更新时间
             time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
         }
