@@ -26,16 +26,12 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
 
     int row_need = op_row_need(op_type, decide_array_type, node_now);//执行当前操作需要的资源数,此时假设操作数都在阵列中
 
-    vector<int> array_no_using = find_no_using(op_type, nodes, decide_array_type, array_list1, array_list2,
-                                               array_list3);
-    vector<int> array_wait = waiting_array_list(op_type, nodes, decide_array_type, array_list1, array_list2,
-                                                array_list3);
+    vector<int> array_no_using = find_no_using(op_type, decide_array_type, array_list1, array_list2, array_list3);
+    vector<int> array_wait = waiting_array_list(op_type, decide_array_type, array_list1, array_list2, array_list3);
     //定义总容量的匿名函数
     auto cap = [&](int array_id) {
-        return cap_array_lost(decide_array_type, array_id, nodes, array_list1, array_list2,
-                              array_list3) +
-               cap_array_cover(decide_array_type, array_id, nodes, array_list1, array_list2,
-                               array_list3);
+        return cap_array_lost(decide_array_type, array_id, array_list1, array_list2,array_list3) +
+               cap_array_cover(decide_array_type, array_id, array_list1, array_list2,array_list3);
     };
 
     if (input2_type == 0)//如果只有一个操作数,基本上执行的都是not操作

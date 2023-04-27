@@ -110,7 +110,7 @@ int main() {
         //Branch和loop没有input
         //如果有“Input”，得到input的数量
         type_id = Type2node(d[i]["Type"].GetString());
-        Node *c = find_node_by_number(nodes, i + 1);//c表示当前节点
+        Node *c = find_node_by_number( i + 1);//c表示当前节点
         map<int, bool> input_depend;//每次i都构建hash表，存储当前输入（最多两个），如果前面找到了前驱依赖，值为true
         if (d[i].HasMember("Input")) {
             num_input = d[i]["Input"].IsArray() ? d[i]["Input"].Size() : 1;
@@ -121,7 +121,7 @@ int main() {
             //对互斥表进行清空重建
             TvsF.clear();
             int con = d[i]["condition"].GetInt();//条件节点的位置,其类型是op
-            Node *con_node = find_node_by_number(nodes, con);//条件节点的指针
+            Node *con_node = find_node_by_number( con);//条件节点的指针
             int sizeofT = d[i]["Statement_when_true"].Size();//T的节点数目
             int sizeofF = d[i]["Statement_when_false"].Size();//F的节点数目
             //TODO：HOW do control node?
@@ -132,7 +132,7 @@ int main() {
 
             for (int there = 0; there < sizeofT; there++) {
                 cout << d[i]["Statement_when_true"][there].GetInt() << "   ";
-                Node *a = find_node_by_number(nodes, d[i]["Statement_when_true"][there].GetInt());
+                Node *a = find_node_by_number( d[i]["Statement_when_true"][there].GetInt());
 //a不是空节点,且当前控制节点没有指向
                 if (a != NULL && (a->control == NULL || a->control->node_id < con)) {
                     if (a->control == NULL)//如果是第一次设置控制节点
@@ -146,7 +146,7 @@ int main() {
             cout << endl << "F：";
             for (int there = 0; there < sizeofF; there++) {
                 cout << d[i]["Statement_when_false"][there].GetInt() << "   ";
-                Node *b = find_node_by_number(nodes, d[i]["Statement_when_false"][there].GetInt());
+                Node *b = find_node_by_number( d[i]["Statement_when_false"][there].GetInt());
 
                 if (b != NULL && (b->control == NULL || b->control->node_id < con))//b不是空节点,且当前控制节点没有指向
                 {
@@ -164,7 +164,7 @@ int main() {
             //loop的依赖比较独特，即需要依赖前面的执行结果，又需要依赖循环内对数据的改变结果
             //先输出控制依赖
             int con = d[i]["Condition"].GetInt();//条件节点的位置
-            Node *con_node = find_node_by_number(nodes, con);
+            Node *con_node = find_node_by_number( con);
 
             cout << "loop节点依赖" << endl << "条件节点：" << con << endl;
             int sizeofL = d[i]["Statement_loop"].Size();//LOOP节点数目
@@ -176,7 +176,7 @@ int main() {
                 //1.该节点可能是OP，没有Dst，所以要先对类型进行判断
                 //2.条件节点判断的输入也可能有多个，最好写成函数，直接套用OP之间的依赖
                 //问题：there_id可能根本不在nodes中，nodes的依赖可能有很多，需要找到他的直接依赖
-                Node *a = find_node_by_number(nodes, there_id);
+                Node *a = find_node_by_number( there_id);
                 if (a != NULL && (a->control == NULL || a->control->node_id < con))//a不是空节点，且a当前控制节点没有指向或者是更大一级别的
                 {
                     if (a->control == NULL)//如果第一次设置控制节点
@@ -213,7 +213,7 @@ int main() {
                         string name_in2 = d[i]["Input"][1].GetString();
                         if (dst_id[name_in1] && (!input_depend[0]) && (dst_id[name_in1] < i + 1))//存在且未被输出且节点对应关系正确
                         {
-                            Node *a = find_node_by_number(nodes, dst_id[name_in1]);//当前输入依赖的节点1
+                            Node *a = find_node_by_number( dst_id[name_in1]);//当前输入依赖的节点1
                             if (a != nullptr)
                                 a->out_degree++;//依赖的节点的出度++
 
@@ -227,7 +227,7 @@ int main() {
                         }
                         if (dst_id[name_in2] && (!input_depend[1]) && (dst_id[name_in2] < i + 1))//存在
                         {
-                            Node *b = find_node_by_number(nodes, dst_id[name_in2]);//当前输入依赖的节点2
+                            Node *b = find_node_by_number( dst_id[name_in2]);//当前输入依赖的节点2
                             if (b != nullptr)
                                 b->out_degree++;
 
@@ -245,7 +245,7 @@ int main() {
 
                         if (dst_id[input_name] && (dst_id[input_name] < i + 1) && (!input_depend[0]))//存在且值比i+1小且没输出过
                         {
-                            Node *a = find_node_by_number(nodes, dst_id[input_name]);//指向输入依赖
+                            Node *a = find_node_by_number( dst_id[input_name]);//指向输入依赖
                             if (a != nullptr)
                                 a->out_degree++;
 
@@ -264,7 +264,7 @@ int main() {
 
                     //如果input是ID，则直接输出
                     if (d[i]["Input"].IsInt() && !input_depend[0]) {
-                        Node *a = find_node_by_number(nodes, d[i]["Input"].GetInt());
+                        Node *a = find_node_by_number( d[i]["Input"].GetInt());
                         if (a != nullptr)
                             a->out_degree++;
 
@@ -279,7 +279,7 @@ int main() {
                     if (d[i]["Input"].IsString() && !input_depend[0]) {
                         input_depend[0] = true;
                         string input_name = d[i]["Input"].GetString();
-                        Node *a = find_node_by_number(nodes, dst_id[input_name]);
+                        Node *a = find_node_by_number( dst_id[input_name]);
                         c->depend1 = a;
                         if (a != nullptr)
                             a->out_degree++;
@@ -306,7 +306,7 @@ int main() {
     for (int i = 0; i < controlstep.size(); ++i) {
         vector<Node *> stepnow;//当前控制步，存放节点指针
         for (int j = 0; j < controlstep[i].size(); ++j) {
-            stepnow.push_back(find_node_by_number(nodes, controlstep[i][j].node_id));//换成真正的依赖关系
+            stepnow.push_back(find_node_by_number( controlstep[i][j].node_id));//换成真正的依赖关系
         }
         controlstep2.push_back(stepnow);
     }
@@ -360,6 +360,7 @@ int main() {
 
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
+            //TODO:规定，不存在A=B这种赋值操作
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
@@ -368,9 +369,9 @@ int main() {
                     Reg_sum.write_num_sum++;//寄存器写
                     controlstep2[i][j]->do_type = -1;
                     controlstep2[i][j]->finish_id = -1;//证明写到了寄存器中
-                    cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name："
-                         << controlstep2[i][j]->operator_name << endl;
-                    cout << "do_type： " << -1 << "  finish_id：" << -1 << endl;
+//                    cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name："
+//                         << controlstep2[i][j]->operator_name << endl;
+//                    cout << "do_type： " << -1 << "  finish_id：" << -1 << endl;
                     //更新出度
                     out_degree(controlstep2[i][j]);
                     double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
@@ -378,19 +379,19 @@ int main() {
                     time_update(0, controlstep2[i][j]->do_type, controlstep2[i][j]->finish_id, time,
                                 controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
-                    energy_update(0, -1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
+                    energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                     //更新wb_pos,表示写到了寄存器中
                     controlstep2[i][j]->wb_pos[0].push_back(-1);
                     continue;//进行下一个循环
                 }
 
-                //有依赖,假设不会出现A=B这种直接赋值，则依赖一定来自OP, from array
+                //有依赖,则依赖一定来自OP, from array
                 //统一，更改节点的执行结束id和do_type
-                cout << "depend1 of  " << controlstep2[i][j]->node_id << " = " << controlstep2[i][j]->depend1->node_id
-                     << endl;
-                controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id;
-                cout << "finish_id of depend1:" << controlstep2[i][j]->depend1->finish_id << endl;
-                double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
+//                cout << "depend1 of  " << controlstep2[i][j]->node_id << " = " << controlstep2[i][j]->depend1->node_id
+//                     << endl;
+//                cout << "finish_id of depend1:" << controlstep2[i][j]->depend1->finish_id << endl;
+                controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
+                double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
 //update the time of do_array
                 time_update(0, controlstep2[i][j]->depend1->do_type, controlstep2[i][j]->finish_id, time,
                             controlstep2[i][j], array_list1, array_list2, array_list3);
@@ -398,43 +399,68 @@ int main() {
                 if (controlstep2[i][j]->depend1->do_type == 3) {
                     //节点行为
                     controlstep2[i][j]->do_type = 3;
-                    controlstep2[i][j]->finish_id=controlstep2[i][j]->depend1->finish_id;
+                    controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id;
                     controlstep2[i][j]->wb_pos[3].push_back(controlstep2[i][j]->depend1->finish_id);//将阵列加入写回表,magic
                     //阵列行为：写++，添加存储节点
                     array_list3[controlstep2[i][j]->depend1->finish_id].write_number++;
                     //阵列写，但是不用能量更新，因为magic执行时直接写了，这里的写能量被算在执行能量中
 //                    energy_update(type_operation,3,controlstep2[i][j]->depend1->finish_id, controlstep2[i][j],array_list1, array_list2, array_list3);
-                    array_list3[controlstep2[i][j]->depend1->finish_id].store_node.push_back(controlstep2[i][j]->node_id);
+                    array_list3[controlstep2[i][j]->depend1->finish_id].store_node.push_back(
+                            controlstep2[i][j]->node_id);
 
                 }
                 if (controlstep2[i][j]->depend1->do_type == 2)//SA
                 {
-                    //TODO：先假设其执行类型为sa buffer,但是不更新时间能量，到再次使用时候再更新
+                    //TODO：先假设其执行类型为sa-out,不更新时间能量，到再次使用时候再更新
                     //目前这个节点的写回表是空的
-                    controlstep2[i][j]->do_type = 5;//SA BUFFER
+                    controlstep2[i][j]->do_type = 2;//sa_out?
                     //阵列行为：
                     //现在的sa-out是谁？
-                    if (array_list2[controlstep2[i][j]->depend1->finish_id].sa_out)
+                    if (array_list2[controlstep2[i][j]->depend1->finish_id].sa_out) {
+                        int sa_out_now = array_list2[controlstep2[i][j]->depend1->finish_id].sa_out;
+                        //现在的sa_out就是当前=的op
+                        if (sa_out_now==controlstep2[i][j]->depend1->node_id)
                         {
-                        int sa_out_now=array_list2[controlstep2[i][j]->depend1->finish_id].sa_out;
+                            //更新sa_out
+                            array_list2[controlstep2[i][j]->depend1->finish_id].sa_out=controlstep2[i][j]->node_id;
+                        }
                         //判断其出度,假设出度不为0,并且没有被写回，将被覆盖掉，要找个地方写回
                         //先写回，再执行当前的=操作
-                            if (find_node_by_number(nodes,sa_out_now)->out_degree>0 && find_node_by_number(nodes,sa_out_now)->wb_pos.empty())
-                            {
-                                //TODO：需要一个写回函数
-
-                                    write_back(2,controlstep2[i][j],array_list1,array_list2,array_list3);//写回当前阵列
-
-                            }
+                        else if (find_node_by_number( sa_out_now)->out_degree > 0 &&
+                            wb_empty(find_node_by_number( sa_out_now))) {
+                            //TODO:设置优先级，buffer只能写回本阵列，sa优先写回本阵列
+                            write_back(2, find_node_by_number( sa_out_now)->finish_id, controlstep2[i][j],
+                                       array_list1, array_list2, array_list3);//写回当前阵列
+                        }
                     }
-
+                    //处理本节点
                     array_list2[controlstep2[i][j]->depend1->finish_id].sa_out=controlstep2[i][j]->node_id;
+
                 }
                 if (controlstep2[i][j]->depend1->do_type == 1)//LUT
                 {
-                    //TODO：先假设其执行类型为lut buffer,但是不更新时间能量，到再次使用时候再更新
+                    //TODO：先假设其执行类型为lut-out,但是不更新时间能量，到再次使用时候再更新
                     //node
-                    controlstep2[i][j]->do_type = 4;//LUT-OUT
+                    controlstep2[i][j]->do_type = 1;//LUT-OUT
+                    //对现在的lut-out进行处理
+                    if (array_list1[controlstep2[i][j]->depend1->finish_id].lut_out) {
+                        int lut_out_now = array_list1[controlstep2[i][j]->depend1->finish_id].lut_out;
+                        //现在的lut_out就是当前=的op
+                        if (lut_out_now==controlstep2[i][j]->depend1->node_id)
+                        {
+                            //更新lut_out
+                            array_list1[controlstep2[i][j]->depend1->finish_id].lut_out=controlstep2[i][j]->node_id;
+                        }
+                            //判断其出度,假设出度不为0,并且没有被写回，将被覆盖掉，要找个地方写回
+                            //先写回，再执行当前的=操作
+                        else if (find_node_by_number( lut_out_now)->out_degree > 0 &&
+                                 wb_empty(find_node_by_number( lut_out_now))) {
+                            //TODO:设置优先级，buffer只能写回本阵列
+                            write_back(1, find_node_by_number( lut_out_now)->finish_id, controlstep2[i][j],
+                                       array_list1, array_list2, array_list3);//写回当前阵列
+                        }
+                    }
+
                     //array
                     array_list1[controlstep2[i][j]->depend1->finish_id].lut_out = controlstep2[i][j]->node_id;
                 }
@@ -458,9 +484,9 @@ int main() {
                 do_array_type == 3 && array_list3.empty())
                 do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
             //决定执行阵列的id
-            do_array_id = decide_array_id(type_operation, controlstep2[i][j], nodes, do_array_type,
-                                          array_list1, array_list2, array_list3, input1_type, input1_id, input2_type,
-                                          input2_id);
+            do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type,array_list1,
+                                 array_list2, array_list3, input1_type, input1_id, input2_type,input2_id);
+
             cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name：" << controlstep2[i][j]->operator_name
                  << endl;
             cout << "do_type： " << do_array_type << "  finish_id：" << do_array_id << endl;

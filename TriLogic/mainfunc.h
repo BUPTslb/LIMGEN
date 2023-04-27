@@ -63,7 +63,7 @@ public:
 
 //继承
 struct lut_arr : public Array {
-    int lut_latch;//记录buffer锁存
+    vector<int> lut_latch;//记录buffer锁存
     int lut_out;//当前的输出
     set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
@@ -75,15 +75,15 @@ struct sa_arr : public Array {
     vector<int> sa_buffer;//sa暂存当前输出
     int sa_direct;//接收直接输入
     int sa_out;//当前sa的输出
-    vector<int> store_node;//存储的节点操作数ID
+    vector<int> store_node;//存储的节点操作数ID,规定：只存储=
 };
 
 struct magic_arr : public Array {
-    vector<int> store_node;//存储的节点操作数ID
+    vector<int> store_node;//存储的节点操作数ID，规定：只存储=
 };
 
 int Type2node(string type);//Type2node函数的声明
-Node *find_node_by_number(std::vector<Node> &nodes, int node_id);//寻找节点指针的函数声明
+Node *find_node_by_number(int node_id);//寻找节点指针的函数声明
 //topo排序
 void topologicalSort(vector<Node> nodes, map<int, int> &inDegree, \
                         vector<vector<Node>> &controlstep, \

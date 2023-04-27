@@ -186,22 +186,22 @@ bool is_in_wb(int array_type, int array_id, Node *node_now) {
     //array_type 1 2 3
     switch (array_type) {
         case 1: {
-            for (int i = 0; i < node_now->wb_pos[0].size(); ++i) {
-                if (node_now->wb_pos[0][i] == array_id)
+            for (int i : node_now->wb_pos[0]) {
+                if (i == array_id)
                     return true;
             }
             return false;
         }
         case 2: {
-            for (int i = 0; i < node_now->wb_pos[1].size(); ++i) {
-                if (node_now->wb_pos[1][i] == array_id)
+            for (int i : node_now->wb_pos[1]) {
+                if (i == array_id)
                     return true;
             }
             return false;
         }
         case 3: {
-            for (int i = 0; i < node_now->wb_pos[2].size(); ++i) {
-                if (node_now->wb_pos[2][i] == array_id)
+            for (int i : node_now->wb_pos[2]) {
+                if (i == array_id)
                     return true;
             }
             return false;
@@ -244,6 +244,19 @@ int num_node_position(Node *now) {
             num += i.size();
     }
     return num;
+}
+
+void array_add_node(int array_type, int array_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                    vector<magic_arr> &array_list3) {
+    if (is_in_wb(array_type,array_id, now)) return;
+    else{
+        if (array_type == 2) {
+            array_list2[array_id].store_node.push_back(now->node_id);
+        }
+        if (array_type == 3) {
+            array_list3[array_id].store_node.push_back(now->node_id);
+        }
+    }
 
 }
 

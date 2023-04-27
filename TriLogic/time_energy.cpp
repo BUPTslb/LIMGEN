@@ -4,18 +4,19 @@
 //现在已经决定了从哪里找操作数，在哪里执行，可以直接进行时间更新
 //TODO:时间更新策略有问题
 //注意，现在只是获取开始的时间
+//这里只根据依赖的阵列、节点来获取时间，对reg,buffer更新不需要调用，直接在节点上更改
 double
 time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, Node *node_now,
          int decide_array_type, int decide_array_id) {
     //函数执行的操作：
     //执行阵列：更新开始时间和结束时间，将使用的阵列置为is_using=true
     //其他阵列，如果当前执行阵列的开始时间比其结束时间要大,将is_using置为false
-    double time_n = 0;
+    double time_n = node_now->end_time ? node_now->end_time : 0;//可能有初始时间
     double time1 = 0;
     double time2 = 0;
     double time3 = 0;
     double time_do_array = 0;
-    //假设确定了使用的阵列，那时间就是使用阵列的结束时间
+    //假设确定了使用的阵列，那节点开始执行的时间就是使用阵列的结束时间
     //虽然操作并行可能会让op类型比=先执行，但时间和能量均不影响
     switch (decide_array_type) {
         case 1:
@@ -51,10 +52,12 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
                 node_now->depend1->do_type == 5)
                 time1 = node_now->depend1->end_time;
 
-            if ((time_do_array>time1||time3 > time1) && wb_empty(node_now->depend1)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
+            if ((time_do_array > time1 || time3 > time1) &&
+                wb_empty(node_now->depend1)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back(node_now->depend1->do_type,node_now->depend1->finish_id, node_now, array_list1, array_list2, array_list3);
+                write_back(node_now->depend1->do_type, node_now->depend1->finish_id, node_now, array_list1, array_list2,
+                           array_list3);
                 time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
@@ -75,11 +78,14 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
             if (node_now->depend1->do_type == 4 ||
                 node_now->depend1->do_type == 5)
                 time1 = node_now->depend1->end_time;
-            if ((time_do_array>time1||time3 > time1) && wb_empty(node_now->depend1)) //控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
+            if ((time_do_array > time1 || time3 > time1) &&
+                wb_empty(node_now->depend1)) //控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back(node_now->depend1->do_type,node_now->depend1->finish_id, node_now, array_list1, array_list2, array_list3);
-                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,decide_array_id);//更新时间
+                write_back(node_now->depend1->do_type, node_now->depend1->finish_id, node_now, array_list1, array_list2,
+                           array_list3);
+                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
+                                  decide_array_id);//更新时间
             }
 
             time_n = max(time1, time_n);
@@ -95,10 +101,12 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
             if (node_now->depend2->do_type == 4 ||
                 node_now->depend2->do_type == 5)
                 time2 = node_now->depend2->end_time;
-            if ((time_do_array>time2||time3 > time2) && wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
+            if ((time_do_array > time2 || time3 > time2) &&
+                wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back(node_now->depend2->do_type,node_now->depend2->finish_id, node_now, array_list1, array_list2, array_list3);
+                write_back(node_now->depend2->do_type, node_now->depend2->finish_id, node_now, array_list1, array_list2,
+                           array_list3);
                 time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
@@ -116,14 +124,16 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
         if (ft() == 1) //2
         {
             //存储其中一个节点，write_in
-            write_back(node_now->depend2->do_type,node_now->depend2->finish_id, node_now, array_list1, array_list2, array_list3);//不确定写到哪了
+            write_back(node_now->depend2->do_type, node_now->depend2->finish_id, node_now, array_list1, array_list2,
+                       array_list3);//不确定写到哪了
             //更新时间
             time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
         }
         if (ft() == 2) //2
         {
             //存储其中一个节点，write_in
-            write_back(node_now->depend1->do_type, node_now->depend2->finish_id,node_now, array_list1, array_list2, array_list3);//不确定写到哪了
+            write_back(node_now->depend1->do_type, node_now->depend2->finish_id, node_now, array_list1, array_list2,
+                       array_list3);//不确定写到哪了
             //更新时间
             time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
         }
@@ -149,18 +159,29 @@ time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic
 
 }
 
-//TODO:设置时间库，直接引用
+//TODO:缺一个read_time_update只能每次手动更新，寄存器和buffer的读写时间都加到节点身上
 void time_update(int op_type, int decide_array_type, int decide_array_id, double time_now, Node *node_now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //set start time of node
     node_now->start_time = time_now;
-    if (decide_array_id == -1 && decide_array_type == -1) //写到寄存器中
-    {
-        //TODO:设置为写到寄存器中的时间
-        node_now->end_time = time_now + reg.reg_write_time;//寄存器写
-        return;
-    }
+
     switch (decide_array_type) {
+        case -1://REG
+        {
+            //TODO:设置为写到寄存器中的时间
+            node_now->end_time = time_now + reg.reg_write_time;//寄存器写
+        }
+            break;
+        case 4://lut buffer
+        {
+            node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
+        }
+            break;
+        case 5://sa buffer
+        {
+            node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
+        }
+            break;
         case 1://lut
         {
             double time_up = lut_latency(op_type);//使用lut执行当前操作，所需的时间
@@ -189,6 +210,55 @@ void time_update(int op_type, int decide_array_type, int decide_array_id, double
             array_list3[decide_array_id].over_time = node_now->end_time;
             //set is_using
             array_list3[decide_array_id].is_using = true;
+        }
+            break;
+        default:
+            break;
+
+    }
+}
+
+//每次读取都得调用这个函数更新时间
+//读，主要更新的是阵列的时间。阵列的时间对节点的时间产生连锁反应
+//TODO:now应该是一个数字“=”类型
+void read_time_update(int array_type, int array_id, double time_now,Node *now, vector<lut_arr> &array_list1,
+                      vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
+
+    switch (array_type) {
+        case -1://REG
+        {
+            //寄存器读时间++,将其加到节点上
+            now->end_time=max(now->end_time,time_now)+reg.reg_read_time;
+        }
+            break;
+        case 4://lut buffer
+        {
+            now->end_time=max(now->end_time,time_now)+buffer.buffer_read_time;
+        }
+            break;
+        case 5://sa buffer
+        {
+            now->end_time=max(now->end_time,time_now)+buffer.buffer_read_time;
+        }
+            break;
+        case 2://SA
+        {
+            array_list2[array_id].start_time = max(array_list2[array_id].start_time,time_now);
+            double time_up = CSA.read_time;//TODO:dse change sa type
+            now->end_time = time_now + time_up;
+            array_list2[array_id].over_time = now->end_time;
+//set is_using
+            array_list2[array_id].is_using = true;
+        }
+            break;
+        case 3://MAGIC
+        {
+            array_list3[array_id].start_time = max(array_list3[array_id].start_time,time_now);
+            double time_up = rram.read_time;
+            now->end_time = time_now + time_up;
+            array_list3[array_id].over_time =now->end_time;
+//set is_using
+            array_list3[array_id].is_using = true;
         }
             break;
         default:
@@ -240,43 +310,48 @@ void read_energy_update(int array_type, int array_id, Node *node_now,
 
 
 //TODO:，每次写、执行都得调用这个函数来更新其能量
-void energy_update(int op_type, int array_type, int array_id, Node *node_now,
-                   vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
+void energy_update(int op_type, int array_type, int array_id, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                   vector<magic_arr> &array_list3) {
+    if (op_type == 0) //写的操作
+    {
+        switch (array_type) {
+            case -1://REG
+            {
+                Reg_sum.write_energy_sum += reg.reg_write_energy;
+            }
+                break;
+            case 4://sa buffer
+            {
+                buffer_sum.buffer_write_energy += buffer.buffer_write_energy * bit_num_operand;
+            }
+                break;
+            case 5://lut buffer
+            {
+                buffer_sum.buffer_write_energy += buffer.buffer_write_energy * bit_num_operand;
+            }
+                break;
+            case 1: //lut执行
+            {
+                array_list1[array_id].energy += lut_energy(op_type);
+            }
+                break;
+            case 2: //sa
+            {
+                //TODO:sa_type
+                array_list2[array_id].energy += sa_energy(op_type, 1);
+            }
+                break;
+            case 3: //magic
+            {
+                array_list3[array_id].energy += ma_energy(op_type);
+            }
+                break;
+            default:
+                break;
+        }
+    } else //TODO：执行操作
+    {
 
-    switch (array_type) {
-        case -1://REG
-        {
-            Reg_sum.write_energy_sum += reg.reg_write_energy;
-        }
-            break;
-        case 4://sa buffer
-        {
-            buffer_sum.buffer_write_energy += buffer.buffer_write_energy * bit_num_operand;
-        }
-            break;
-        case 5://lut buffer
-        {
-            buffer_sum.buffer_write_energy += buffer.buffer_write_energy * bit_num_operand;
-        }
-            break;
-        case 1: //lut执行
-        {
-            array_list1[array_id].energy += lut_energy(op_type);
-        }
-            break;
-        case 2: //sa
-        {
-            //TODO:sa_type
-            array_list2[array_id].energy += sa_energy(op_type, 1);
-        }
-            break;
-        case 3: //magic
-        {
-            array_list3[array_id].energy += ma_energy(op_type);
-        }
-            break;
-        default:
-            break;
     }
 
 

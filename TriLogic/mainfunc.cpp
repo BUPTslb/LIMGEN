@@ -36,7 +36,7 @@ int Type2node(std::string type){
     return 0;
 }
 //根据节点id，返回节点指针，好像和id_pos功能冲突了
-Node * find_node_by_number(std::vector<Node>& nodes, int node_id) {
+Node * find_node_by_number(int node_id) {
     auto it = std::find_if(nodes.begin(), nodes.end(),
                            [node_id](const Node& node) {
                                return node.node_id == node_id;
