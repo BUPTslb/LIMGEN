@@ -1,7 +1,7 @@
 #ifndef SYNTHESIS_PARAMETER_H
 #define SYNTHESIS_PARAMETER_H
 #include <vector>
-//#include "mainfunc.h"
+#include "mainfunc.h"
 // 1 GHz
 // 1 ns
 // 1 mm^2
@@ -132,6 +132,7 @@ double sa_latency(int op_type,int sa_type);
 double sa_energy(int op_type,int sa_type);
 double ma_latency(int op_type);
 double ma_energy(int op_type);
+
 
 
 //

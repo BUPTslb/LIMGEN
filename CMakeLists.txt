@@ -19,5 +19,11 @@ add_executable(Synthesis
         TriLogic/parameter.h
         TriLogic/parameter.cpp
         TriLogic/write_in.cpp
-
+        TriLogic/wb_table.cpp
+        TriLogic/array_node.cpp
+        TriLogic/topoSort.cpp
+        TriLogic/control_step.cpp
+        TriLogic/only_lut.cpp
+        TriLogic/only_sa.cpp
+        TriLogic/only_magic.cpp
         )

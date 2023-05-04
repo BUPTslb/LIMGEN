@@ -115,6 +115,48 @@ build CMakeFiles/Synthesis.dir/TriLogic/write_in.cpp.o: CXX_COMPILER__Synthesis_
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
 
+build CMakeFiles/Synthesis.dir/TriLogic/wb_table.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/wb_table.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/wb_table.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/array_node.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/array_node.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/array_node.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/topoSort.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/topoSort.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/topoSort.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/control_step.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/control_step.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/control_step.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/only_lut.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/only_lut.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/only_lut.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/only_sa.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/only_sa.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/only_sa.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
+build CMakeFiles/Synthesis.dir/TriLogic/only_magic.cpp.o: CXX_COMPILER__Synthesis_Debug /home/shenlibo/CLionProjects/Synthesis/TriLogic/only_magic.cpp || cmake_object_order_depends_target_Synthesis
+  DEP_FILE = CMakeFiles/Synthesis.dir/TriLogic/only_magic.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Synthesis.dir
+  OBJECT_FILE_DIR = CMakeFiles/Synthesis.dir/TriLogic
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Synthesis
@@ -123,7 +165,7 @@ build CMakeFiles/Synthesis.dir/TriLogic/write_in.cpp.o: CXX_COMPILER__Synthesis_
 #############################################
 # Link the executable Synthesis
 
-build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/time_energy.cpp.o CMakeFiles/Synthesis.dir/TriLogic/cap_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/do_logic.cpp.o CMakeFiles/Synthesis.dir/TriLogic/pre_array_list.cpp.o CMakeFiles/Synthesis.dir/TriLogic/parameter.cpp.o CMakeFiles/Synthesis.dir/TriLogic/write_in.cpp.o
+build Synthesis: CXX_EXECUTABLE_LINKER__Synthesis_Debug CMakeFiles/Synthesis.dir/TriLogic/Func_main.cpp.o CMakeFiles/Synthesis.dir/TriLogic/logic_func.cpp.o CMakeFiles/Synthesis.dir/TriLogic/mainfunc.cpp.o CMakeFiles/Synthesis.dir/TriLogic/dse.cpp.o CMakeFiles/Synthesis.dir/TriLogic/decide_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/time_energy.cpp.o CMakeFiles/Synthesis.dir/TriLogic/cap_array.cpp.o CMakeFiles/Synthesis.dir/TriLogic/do_logic.cpp.o CMakeFiles/Synthesis.dir/TriLogic/pre_array_list.cpp.o CMakeFiles/Synthesis.dir/TriLogic/parameter.cpp.o CMakeFiles/Synthesis.dir/TriLogic/write_in.cpp.o CMakeFiles/Synthesis.dir/TriLogic/wb_table.cpp.o CMakeFiles/Synthesis.dir/TriLogic/array_node.cpp.o CMakeFiles/Synthesis.dir/TriLogic/topoSort.cpp.o CMakeFiles/Synthesis.dir/TriLogic/control_step.cpp.o CMakeFiles/Synthesis.dir/TriLogic/only_lut.cpp.o CMakeFiles/Synthesis.dir/TriLogic/only_sa.cpp.o CMakeFiles/Synthesis.dir/TriLogic/only_magic.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/Synthesis.dir
   POST_BUILD = :

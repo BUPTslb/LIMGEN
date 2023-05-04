@@ -1,9 +1,13 @@
 #include "logic_func.h"
 
 //先验方式决定？
-//TODO：DSE,决定阵列的执行类型
 int decide_array_type(int op_type, int design_target) {
-    int decide_array_type = 0;
+    unsigned seed = time(0);
+    srand(seed);
+    int dse = rand() % 3;
+    vector<int> type_list = {1, 2, 3};
+    //TODO：DSE,决定阵列的执行类型
+    int decide_array_type = type_list[dse];
     if (1 <= op_type && op_type <= 3 || op_type == 12 || op_type == 13) {
         decide_array_type = 1;//比较，乘法,除法 直接用lut
     }
@@ -21,21 +25,36 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
  * 如果暂时都在使用，则新建一个阵列
  * 方案二：等待阵列执行完毕，寻找一个阵列执行，这样可以提供好面积利用率，待补充
  * */
-    double time = time_now(array_list1, array_list2, array_list3, node_now);//update is_using of array_list
+    int operand_num = 2;
+    if (op_type == 0 || op_type == 8) {
+        operand_num = 1;
+    }
+    //可以选择的阵列
     vector<int> array_id;
+    //执行当前操作需要的资源数,此时假设操作数都在阵列中
+    int row_need = op_row_need(op_type, decide_array_type);//后续要更改
 
-    int row_need = op_row_need(op_type, decide_array_type, node_now);//执行当前操作需要的资源数,此时假设操作数都在阵列中
-
+    cout << "op_row_need函数没有问题" << endl;
+    //未使用的阵列和等待的阵列,这里没有
     vector<int> array_no_using = find_no_using(op_type, decide_array_type, array_list1, array_list2, array_list3);
+    cout << "array_no_using函数没有问题" << endl;
     vector<int> array_wait = waiting_array_list(op_type, decide_array_type, array_list1, array_list2, array_list3);
+    //检验越界
+    cout << "array_wait函数没有问题" << endl;
+    //如果都是空的，或者lut的功能不匹配,则需要新建阵列
+    if (array_no_using.empty() && array_wait.empty())
+    {
+        array_id.push_back(build(decide_array_type, op_type,array_list1,array_list2, array_list3));
+    }
     //定义总容量的匿名函数
     auto cap = [&](int array_id) {
-        return cap_array_lost(decide_array_type, array_id, array_list1, array_list2,array_list3) +
-               cap_array_cover(decide_array_type, array_id, array_list1, array_list2,array_list3);
+        return cap_array_lost(decide_array_type, array_id, array_list1, array_list2, array_list3) +
+               cap_array_cover(decide_array_type, array_id, array_list1, array_list2, array_list3);
     };
 
-    if (input2_type == 0)//如果只有一个操作数,基本上执行的都是not操作
+    if (operand_num == 1)//如果只有一个操作数,基本上执行的都是not操作
     {
+        //看这一个操作数来自哪里
         if (input1_type == -1) {
             switch (decide_array_type) {
                 case 1://LUT NOT
@@ -60,22 +79,20 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     if (!array_no_using.empty()) {
                         for (int i: array_no_using) //随便找一个能用的
                         {
-                            if (cap(i) > row_need) {
+                            if (cap(i) >= row_need) {
                                 array_id.push_back(i);
                                 break;
                             }
                         }
-
                     }
                     if (!array_wait.empty()) {
                         for (int i: array_wait) //随便找一个能用的
                         {
-                            if (cap(i) > row_need) {
+                            if (cap(i) >= row_need) {
                                 array_id.push_back(i);
                                 break;
                             }
                         }
-
                     }
                     if (array_id.empty())//找不到可用的，新建
                     {
@@ -89,7 +106,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     if (!array_no_using.empty()) {
                         for (int i: array_no_using) //随便找一个能用的
                         {
-                            if (cap(i) > row_need + 1) {
+                            if (cap(i) >= row_need + 1) {
                                 array_id.push_back(i);
                                 break;
                             }
@@ -98,7 +115,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     if (!array_wait.empty())//no_using找不到
                     {
                         for (auto i: array_wait) {
-                            if (cap(i) > row_need + 1) {
+                            if (cap(i) >= row_need + 1) {
                                 array_id.push_back(i);
                                 break;
                             }
@@ -115,9 +132,14 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     break;
 
             }
-        } else//不是立即数
+        } else//来自阵列 A= NOT B
         {
-            if (input1_type == decide_array_type)//类型same
+            if (input1_type == 1 && decide_array_type == 1 ||
+                input1_type == 4 && decide_array_type == 1 ||
+                input1_type == 2 && decide_array_type == 2 ||
+                input1_type == 5 && decide_array_type == 2 ||
+                input1_type == 6 && decide_array_type == 2 ||
+                input1_type == 3 && decide_array_type == 3 )//类型same
             {
                 //如果是lut,还是需要判断,尽量在本阵列执行
                 if (decide_array_type == 1) {
@@ -215,11 +237,17 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
         }
     } else//two operands
     {
-        if (input1_type == decide_array_type)//看能否在1中运行
+        if (input1_type == 1 && decide_array_type == 1 ||
+            input1_type == 4 && decide_array_type == 1 ||
+            input1_type == 2 && decide_array_type == 2 ||
+            input1_type == 5 && decide_array_type == 2 ||
+            input1_type == 6 && decide_array_type == 2 ||
+            input1_type == 3 && decide_array_type == 3 )//类型same，看能否在1中运行
         {
             if (decide_array_type == 1)//LUT,无关，但还是尽量在本节点进行
             {
-                if (array_list1[input1_id].op_type.find(op_type) != array_list1[input1_id].op_type.end())//1算子支持
+                //1算子支持 或者 算子不支持但是可以加进去
+                if (array_list1[input1_id].op_type.find(op_type) != array_list1[input1_id].op_type.end())
                     array_id.push_back(input1_id);
             } else //SA\magic
             {
@@ -227,10 +255,14 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                 if ((decide_array_type == 2 && cap(input1_id) >= row_need) ||
                     (decide_array_type == 3 && cap(input1_id) >= row_need + 1))
                     array_id.push_back(input1_id);
-
             }
         }
-        if (input2_type == decide_array_type) //看能否在2中运行
+        if (input2_type == 1 && decide_array_type == 1 ||
+            input2_type == 4 && decide_array_type == 1 ||
+            input2_type == 2 && decide_array_type == 2 ||
+            input2_type == 5 && decide_array_type == 2 ||
+            input2_type == 6 && decide_array_type == 2 ||
+            input2_type == 3 && decide_array_type == 3 )//类型same//看能否在2中运行
         {
             if (decide_array_type == 1)//LUT,无关，但还是尽量在本节点进行
             {
@@ -246,7 +278,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
             }
 
         }
-        //other array not1 not2
+        //other array not1 not2 找个能用的即可
         if (decide_array_type == 1) {
             if (!array_no_using.empty()) {
                 array_id.insert(array_id.end(), array_no_using.begin(), array_no_using.end());//加入备选列表
@@ -262,6 +294,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
 
         } else//sa和magic,要保证剩余空间充足
         {
+            cout<<"两个操作数,在sa或者magic中执行"<<endl;
             //array no using is not empty
             if (!array_no_using.empty()) {
                 for (int i: array_no_using) //随便找一个能用的
@@ -286,13 +319,12 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                 int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
                 array_id.push_back(new_array);
             }
-
         }
-
     }
 
     //TODO:DSE,find a id from array_id [front > back]
-    int decide_array_id = array_id.front();
+
+    int decide_array_id = array_id[rand() % array_id.size()];//使用随机数
 
     if (decide_array_type == 1) {
         //给lut添加功能
@@ -300,8 +332,9 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
             array_list1[decide_array_id].op_type.insert(op_type);
     }
 
-
-    time_update(op_type, decide_array_type, decide_array_id, time, node_now, array_list1, array_list2, array_list3);
+    cout<<"decide_array_id运行正常"<<endl;
+    //只是寻找节点id,应该不需要执行时间更新
+//    time_update(op_type, decide_array_type, decide_array_id, time_n, node_now, array_list1, array_list2, array_list3);
     return decide_array_id;
 }
 

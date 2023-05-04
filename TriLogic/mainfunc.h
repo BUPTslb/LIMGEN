@@ -10,7 +10,6 @@
 #include <algorithm>
 #include"rapidjson/document.h"
 #include "parameter.h"
-//#include <vector>
 #include <queue>
 #include <set>
 
@@ -23,6 +22,7 @@ const double area_limit = 1000;//面积限制，单位：
 const double power_limit = 10;//功耗限制，单位：
 //定义数据的位数，这个后期要修改，从CDFG中得到
 const int bit_num_operand = 32;//操作数的位数，全局变量，暂时定义为32
+
 //定义节点类型
 struct Node {
     int node_id;//节点ID,用来代表节点
@@ -33,7 +33,7 @@ struct Node {
     double start_time;//开始时间
     double end_time;//结束时间
     //TODO:规定：写回buffer时候要更新end_time,第一次写回阵列时候也要更新end_time
-    int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-latch 5 SA-BUFFER
+    int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-latch 5 SA-BUFFER 6 SA存储
     int finish_id;//节点执行完（输出）的位置
     int out_degree;//出度
     //节点存储表,结构体中不能对向量对象进行初始化
@@ -73,6 +73,7 @@ struct lut_arr : public Array {
 
 struct sa_arr : public Array {
     vector<int> sa_buffer;//sa暂存当前输出
+    int sa_type; // 1,csa 2,dsa 在建立的时候就需要确定
     int sa_direct;//接收直接输入
     int sa_out;//当前sa的输出
     vector<int> store_node;//存储的节点操作数ID,规定：只存储=
@@ -85,18 +86,38 @@ struct magic_arr : public Array {
 int Type2node(string type);//Type2node函数的声明
 Node *find_node_by_number(int node_id);//寻找节点指针的函数声明
 //topo排序
-void topologicalSort(vector<Node> nodes, map<int, int> &inDegree, \
-                        vector<vector<Node>> &controlstep, \
-                        map<int, int> &id_pos);//函数声明
-void ComIndegree(queue<int> &nodeQueue, map<int, int> &inDegree, \
-                        vector<Node> &nodes, map<int, int> &id_pos);//子函数声明
+void topologicalSort(vector<Node> nodes, map<int, int> &inDegree,
+                     vector<vector<Node>> &controlstep,map<int, int> &id_pos);//函数声明
+void ComIndegree(queue<int> &nodeQueue, map<int, int> &inDegree,
+                 vector<Node> &nodes,map<int, int> &id_pos);//子函数声明
 //将算子转换成符号
 int op2int(string operation);
 
+//控制步处理函数
+void control_step(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                  vector<magic_arr> &array_list3);
+
+void only_lut(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                  vector<magic_arr> &array_list3);
+
+void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+              vector<magic_arr> &array_list3);
+
+void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+              vector<magic_arr> &array_list3);
 
 void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                         vector<magic_arr> &array_list3);
 
-void writeVectorToFile(const std::vector<int>& A) ;
+
+//全部运行完之后
+//计算架构性能参数
+//延迟,所有时间中的最大值
+double latency_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
+
+//面积，阵列+buffer+Reg
+double area_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
+//能耗,阵列+buffer+Reg
+double energy_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
 
 #endif //SYNTHESIS_MAINFUNC_H

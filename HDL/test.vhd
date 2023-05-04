@@ -1,7 +1,7 @@
 entity test is
 	port(
-		in1:  in bit_vector(7 downto 0);
-		in2:  in bit_vector(7 downto 0);
+		i1:  in bit_vector(7 downto 0);
+		i2:  in bit_vector(7 downto 0);
 		out1: in bit_vector(7 downto 0);
 		out2: in bit_vector(7 downto 0);
 		clk:  in bit
@@ -9,6 +9,8 @@ entity test is
 end test;
 
 architecture Behavioral of test is
+signal in1:bit_vector(7 downto 0);
+signal in1:bit_vector(7 downto 0);
 signal A: bit_vector(7 downto 0);
 signal B: bit_vector(7 downto 0);
 signal C: bit_vector(7 downto 0);
@@ -17,6 +19,8 @@ begin
 --当前只处理两个操作数的情况，多个呢？
 process(clk)
 begin
+    in1 <= i1;
+    in2 <= i2;
 	A <= in1 and in2;
 	A <= in1 * 2;
 	B <= in1 or in2;

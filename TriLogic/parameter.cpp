@@ -1,6 +1,6 @@
 #include "parameter.h"
 #include "mainfunc.h"
-
+//单位 ns pj mm^2
 RRAM rram={1.0,1.0,0.02,0.13,1e12};//RRAM参数 全局 ns pj
 REG reg={1,1,0.48,0.48,0.002};//单个reg的索引,数据来源：PUMA 1KB Reg
 Register Reg_sum={0,0,0,0};
@@ -14,7 +14,7 @@ Sa_op CSA_nor = {9, 0.08, 0.038}; //or + not
 Sa_op CSA_xor = {10, 0.32, 0.04};
 Sa_op CSA_add = {11, 0.38, 0.069};//add 1bit
 std::vector<Sa_op> csa = {CSA_and,CSA_or,CSA_not,CSA_nor,CSA_xor,CSA_add};
-SA CSA={0.04,16.79,csa};
+SA CSA={0.04,0.016,csa};
 
 Sa_op DSA_and = {6, 0.078, 0.015};//ns pj
 Sa_op DSA_or = {7, 0.09, 0.01};
@@ -23,9 +23,9 @@ Sa_op DSA_nor = {9, 0.18, 0.02}; //or + not
 Sa_op DSA_xor = {10, 0.10, 0.025};
 Sa_op DSA_add = {11, 0.12, 0.026};
 std::vector<Sa_op> dsa = {DSA_and,DSA_or,DSA_not,DSA_nor,DSA_xor,DSA_add};
-SA DSA={0.09,10.01,dsa};
+SA DSA={0.09,0.010,dsa};
 
-//需要写spice仿真一下
+//TODO:verilog-A仿真一下，magic能耗过高，时间太慢，参数都需要更新
 Ma_op ma_seq={0,rram.write_time,rram.write_energy};//用set reset平均（0.219+0.034）/2
 Ma_op ma_nor={9,2.3,0.18};//1.3ns 50fJ+0.13pJ
 //FELIX
@@ -73,7 +73,7 @@ double lut_energy(int op_type)
 double sa_latency(int op_type,int sa_type)
 {
     double sa_latency=0;
-    if (op_type==0) return rram.read_time;//write_back
+    if (op_type==0) return rram.write_time;//write_back
     if (sa_type==1) //CSA
     {
         //在CSA的参数表中找到延迟数据，并返回
@@ -107,12 +107,6 @@ double sa_latency(int op_type,int sa_type)
 double sa_energy(int op_type,int sa_type)
 {
     double sa_energy=0;
-//    if (!op_type)
-//    {
-//        if (sa_type==1) return bit_num_operand*CSA.read_energy;
-//        else    return bit_num_operand*DSA.read_energy;
-//    }
-
     if (op_type==0) return bit_num_operand*rram.write_energy;
     if (sa_type==1) //CSA
     {
@@ -161,6 +155,76 @@ double ma_energy(int op_type)
     }
     return ma_energy;
 
+}
+//计算架构性能参数
+//延迟,所有时间中的最大值
+double latency_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+{
+    double latency_all=0;
+    for (auto i:nodes) {
+        latency_all= max(latency_all,i.end_time);
+    }
+    for (auto i:array_list1) {
+        latency_all= max(latency_all,i.over_time);
+    }
+    for (auto i:array_list2) {
+        latency_all= max(latency_all,i.over_time);
+    }
+    for (auto i:array_list2) {
+        latency_all= max(latency_all,i.over_time);
+    }
+    return latency_all;
+
+}
+//面积，阵列+buffer+Reg
+//TODO：测量面积
+double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+{
+    double area_all=0;
+    //阵列的面积
+    for (auto i:array_list1) {
+        area_all+=0;
+    }
+    for (auto i:array_list2) {
+        if (i.sa_type==1)
+        {
+            //加上csa的面积
+
+        }
+        else
+        {
+            //加上dsa的面积
+
+        }
+
+    }
+    for (auto i:array_list3) {
+        area_all+=0;
+    }
+    //加上寄存器的面积
+
+
+
+
+}
+//能耗,阵列+buffer+Reg
+double energy_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+{
+    double energy_all=0;
+    for (auto i:array_list1) {
+        energy_all += i.energy;
+    }
+    for (auto i:array_list2) {
+        energy_all += i.energy;
+    }
+    for (auto i:array_list3) {
+        energy_all += i.energy;
+    }
+    energy_all+=Reg_sum.read_energy_sum;
+    energy_all+=Reg_sum.write_energy_sum;
+    energy_all+=buffer_sum.buffer_read_energy;
+    energy_all+=buffer_sum.buffer_write_energy;
+    return energy_all;
 }
 
 
