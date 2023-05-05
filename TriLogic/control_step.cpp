@@ -1,8 +1,23 @@
 #include "mainfunc.h"
 #include "logic_func.h"
 
-void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                  vector<magic_arr> &array_list3) {
+void control_step(vector<vector<Node*>> controlstep2,
+                  vector<lut_arr> array_list1,vector<sa_arr> array_list2,vector<magic_arr> array_list3)
+{
+
+    for (int i = 0; i < controlstep2.size(); i++) {
+        cout << "step：" << i << endl;
+        for (int j = 0; j < controlstep2[i].size(); ++j) {
+            cout << "node_id：" << controlstep2[i][j]->node_id << endl
+                 << " operator_name：" << controlstep2[i][j]->operator_name
+                 << "depend1：" << (controlstep2[i][j]->depend1 ? controlstep2[i][j]->depend1->node_id : 0) << "  "
+                 << "depend2：" << (controlstep2[i][j]->depend2 ? controlstep2[i][j]->depend2->node_id : 0) << endl;
+
+            //检验find_node_by_number能否对controlstep2产生改变
+            find_node_by_number(nodes2,controlstep2[i][j]->node_id)->wb_pos[0].push_back(2);
+        }
+    }
+
     for (int i = 0; i < controlstep2.size(); i++) {
         cout << "step：" << i << endl;
         for (int j = 0; j < controlstep2[i].size(); ++j) {
@@ -20,7 +35,7 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
 
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
-            //TODO:规定，不存在A=B这种赋值操作
+            //规定，不存在A=B这种赋值操作
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
@@ -31,36 +46,37 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                     controlstep2[i][j]->finish_id = -1;//证明写到了寄存器中
 
                     //更新出度
-                    out_degree(controlstep2[i][j]);
-                    double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
+                    out_degree(nodes2,controlstep2[i][j]);
+                    double time = time_now(nodes2,array_list1, array_list2, array_list3, controlstep2[i][j],-1,-1);
                     //update the time of do_array
-                    time_update(0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
+                    time_update(nodes2,0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
-                    energy_update(0, -1, -1, array_list1, array_list2, array_list3);
+                    energy_update(nodes2,0, -1, -1, array_list1, array_list2, array_list3);
                     //更新wb_pos,表示写到了寄存器中
                     controlstep2[i][j]->wb_pos[0].push_back(-1);
                     //输出：
-                    cout << "do_type: " << controlstep2[i][j]->do_type << "  finish_id: "
-                         << controlstep2[i][j]->finish_id << endl;
+                    cout << "do_type: " << controlstep2[i][j]->do_type
+                    << "  finish_id: " << controlstep2[i][j]->finish_id << endl;
+
+                    cout<<"节点： "<<controlstep2[i][j]->node_id<<" 的写回表寄存器数"<<controlstep2[i][j]->wb_pos[0].size()<<endl;
                     continue;//进行下一个循环
                 }
 
                 //有依赖,则依赖一定来自OP, from array
-                //TODO:分析一下，能否直接调用write_back函数？
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
-                double time_n = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
+                double time_n = time_now(nodes2,array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
                 //如果默认其为直接输出的out,则不会对其他产生任何影响，不需要进行time_update
                 //c=a op b || c=a op -1 || c = a
                 switch (controlstep2[i][j]->depend1->do_type) {
                     case -1:  //来自寄存器，不知到写回到哪里,直接赋值应该不用写的
                     {
-                        write_back(-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
+                        write_back(nodes2,-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
                     }
                         break;
                     case 1: //来自lut的执行结果
                     {
-                        //TODO：先假设其执行类型为lut-out,但是不更新时间能量，到再次使用时候再更新
+                        //先假设其执行类型为lut-out,但是不更新时间能量，到再次使用时候再更新
                         controlstep2[i][j]->end_time = time_n;//暂时设置时间
                         //node
                         controlstep2[i][j]->do_type = 1;//LUT-OUT
@@ -69,16 +85,15 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                         {
                             int lut_out_now = array_list1[controlstep2[i][j]->depend1->finish_id].lut_out;
                             //当前lut-out的节点的操作类型
-                            int on_op = op2int(find_node_by_number(lut_out_now)->operator_name);
+                            int on_op = op2int(find_node_by_number(nodes2,lut_out_now)->operator_name);
                             if (on_op > 0) //不是等号，直接更新lut-out
                                 array_list1[controlstep2[i][j]->depend1->finish_id].lut_out = controlstep2[i][j]->node_id;
                             else //否则判断一下其写回表和出度
                             {
-                                if (find_node_by_number(lut_out_now)->out_degree > 0 &&
-                                    wb_empty(find_node_by_number(lut_out_now))) {
-                                    //TODO:设置优先级，buffer只能写回本阵列
-                                    write_back(1, find_node_by_number(lut_out_now)->finish_id,
-                                               find_node_by_number(lut_out_now),
+                                if (wb_empty(find_node_by_number(nodes2,lut_out_now))) {
+                                    //设置优先级，buffer只能写回本阵列
+                                    write_back(nodes2,1, find_node_by_number(nodes2,lut_out_now)->finish_id,
+                                               find_node_by_number(nodes2,lut_out_now),
                                                array_list1, array_list2, array_list3);
                                 }
                             }
@@ -91,7 +106,7 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                         break;
                     case 2: //来自sa的执行结果
                     {
-                        //TODO：先假设其执行类型为sa-out,不更新时间能量，到再次使用时候再更新
+                        //先假设其执行类型为sa-out,不更新时间能量，到再次使用时候再更新
                         //目前这个节点的写回表是空的
                         controlstep2[i][j]->do_type = 2;
                         controlstep2[i][j]->end_time = time_n;//暂时设置时间
@@ -101,16 +116,15 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                         {
                             int sa_out_now = array_list2[controlstep2[i][j]->depend1->finish_id].sa_out;
                             //当前lut-out的节点的操作类型
-                            int on_op = op2int(find_node_by_number(sa_out_now)->operator_name);
+                            int on_op = op2int(find_node_by_number(nodes2,sa_out_now)->operator_name);
                             if (on_op > 0) //不是等号，直接更新lut-out
                                 array_list2[controlstep2[i][j]->depend1->finish_id].sa_out = controlstep2[i][j]->node_id;
                             else //否则判断一下其写回表和出度
                             {
-                                if (find_node_by_number(sa_out_now)->out_degree > 0 &&
-                                    wb_empty(find_node_by_number(sa_out_now))) {
-                                    //TODO:设置优先级，buffer只能写回本阵列
-                                    write_back(2, find_node_by_number(sa_out_now)->finish_id,
-                                               find_node_by_number(sa_out_now),
+                                if (wb_empty(find_node_by_number(nodes2,sa_out_now))) {
+                                    //设置优先级，buffer只能写回本阵列
+                                    write_back(nodes2,2, find_node_by_number(nodes2,sa_out_now)->finish_id,
+                                               find_node_by_number(nodes2,sa_out_now),
                                                array_list1, array_list2, array_list3);
                                 }
                             }
@@ -130,18 +144,18 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                         //阵列行为：写++，添加存储节点
                         array_list3[controlstep2[i][j]->depend1->finish_id].write_number++;
                         //阵列写，但是不用能量更新，因为magic执行时直接写了，这里的写能量被算在执行能量中
-                        //                    energy_update(type_operation,3,controlstep2[i][j]->depend1->finish_id, controlstep2[i][j],array_list1, array_list2, array_list3);
+                        //                    energy_update(nodes2,type_operation,3,controlstep2[i][j]->depend1->finish_id, controlstep2[i][j],array_list1, array_list2, array_list3);
                         //这里的写操作是否进行了覆盖？
                         //对depend1执行的阵列容量进行分析
-                        if (cap_array_lost(3, controlstep2[i][j]->depend1->finish_id, array_list1, array_list2,
+                        if (cap_array_lost(nodes2,3, controlstep2[i][j]->depend1->finish_id, array_list1, array_list2,
                                            array_list3) == 0) {
                             //剩余容量为0，需要进行写覆盖
-                            write_cover(0, controlstep2[i][j], 3, controlstep2[i][j]->depend1->finish_id, 1,
+                            write_cover(nodes2,0, controlstep2[i][j], 3, controlstep2[i][j]->depend1->finish_id, 1,
                                         array_list1, array_list2, array_list3);
                         }
 
                         //将该节点添加到阵列存储表中
-                        array_add_node(3, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
+                        array_add_node(nodes2,3, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
                                        array_list2, array_list3);
 
                     }
@@ -150,20 +164,20 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                     case 4: //操作数来自lut-buffer
                     {
                         //也是A=A的类型
-                        write_back(4, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
+                        write_back(nodes2,4, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
                                    array_list2, array_list3);
 
                     }
                         break;
                     case 5: //来自sa-buffer
                     {
-                        write_back(5, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
+                        write_back(nodes2,5, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
                                    array_list2, array_list3);
                     }
                         break;
                     case 6: //来自sa存储
                     {
-                        write_back(6, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
+                        write_back(nodes2,6, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
                                    array_list2, array_list3);
                     }
                         break;
@@ -177,7 +191,7 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                 cout << "do_type： " << controlstep2[i][j]->do_type << "  finish_id：" << controlstep2[i][j]->finish_id
                      << endl;
                 //更新出度
-                out_degree(controlstep2[i][j]);
+                out_degree(nodes2,controlstep2[i][j]);
 
                 continue;//进行下一个循环
             }//下面的操作没有=了
@@ -193,7 +207,7 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 //判断立即数
                 if (controlstep2[i][j]->depend1 != nullptr)
-                    find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
+                    find_input(nodes2,input1_type, input1_id, controlstep2[i][j]->depend1);
                 else {
                     //立即数
                     input1_type = -1;
@@ -203,14 +217,14 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
             {
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 if (controlstep2[i][j]->depend1 != nullptr)
-                    find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
+                    find_input(nodes2,input1_type, input1_id, controlstep2[i][j]->depend1);
                 else {
                     //立即数
                     input1_type = -1;
                     input1_id = -1;
                 }
                 if (controlstep2[i][j]->depend2 != nullptr)
-                    find_input(input2_type, input2_id, controlstep2[i][j]->depend2);
+                    find_input(nodes2,input2_type, input2_id, controlstep2[i][j]->depend2);
                 else {
                     //立即数
                     input2_type = -1;
@@ -232,12 +246,12 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
             if (do_array_type == 1 && array_list1.empty() ||
                 do_array_type == 2 && array_list2.empty() ||
                 do_array_type == 3 && array_list3.empty())
-                do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
+                do_array_id = build(nodes2,do_array_type, type_operation, array_list1, array_list2, array_list3);
             cout << "当前的决定执行阵列的位置为：" << do_array_id << endl;
             cout << "op类型的节点选择id之前的三种阵列个数为：" << endl
                  << array_list1.size() << " " << array_list2.size() << " " << array_list3.size() << endl;
             //决定执行阵列的id
-            do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
+            do_array_id = decide_array_id(nodes2,type_operation, controlstep2[i][j], do_array_type, array_list1,
                                           array_list2, array_list3, input1_type, input1_id, input2_type, input2_id);
 
             cout << "调用do_array_id后的执行阵列位置为：" << do_array_id << endl;
@@ -255,14 +269,14 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
             if (operand_num == 1) //只有一个操作数，读取
             {
                 cout << "操作数个数为1" << endl;
-                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read(nodes2,1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             } else //有两个操作数
             {
                 cout << "操作数个数为2" << endl;
-                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read(nodes2,1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
-                data_read(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read(nodes2,2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             }
             cout << "date_read运行正常" << endl;
@@ -270,11 +284,11 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
             //将数据输入到执行阵列：input逻辑
-            input_logic(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
+            input_logic(nodes2,operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
                         controlstep2[i][j],
                         array_list1, array_list2, array_list3);
             //执行运算,要更新finish_id
-            output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
+            output_logic(nodes2,do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
 
             cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
@@ -284,15 +298,17 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
             //设计DSE
 
             //更新出度
-            out_degree(controlstep2[i][j]);
+            out_degree(nodes2,controlstep2[i][j]);
 
 
         }
     }
 
     //遍历完控制步，输出延迟、能耗、面积信息
-    cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
+    cout << "整体架构的延迟为： " << latency_all(nodes2,array_list1, array_list2, array_list3) << "ns" << endl;
     cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
+
+    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
 }
 //
 // Created by shenlibo on 23-5-1.

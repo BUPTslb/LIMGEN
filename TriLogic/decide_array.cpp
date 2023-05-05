@@ -16,7 +16,7 @@ int decide_array_type(int op_type, int design_target) {
 
 //定义执行阵列的id
 //这里的id 是开始id
-int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
+int decide_array_id(vector<Node> &nodes2,int op_type, Node *node_now, int decide_array_type, \
                     vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3, \
                     int input1_type, int input1_id, int input2_type, int input2_id) {
 /*当前的寻找策略
@@ -36,20 +36,20 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
 
     cout << "op_row_need函数没有问题" << endl;
     //未使用的阵列和等待的阵列,这里没有
-    vector<int> array_no_using = find_no_using(op_type, decide_array_type, array_list1, array_list2, array_list3);
+    vector<int> array_no_using = find_no_using(nodes2,op_type, decide_array_type, array_list1, array_list2, array_list3);
     cout << "array_no_using函数没有问题" << endl;
-    vector<int> array_wait = waiting_array_list(op_type, decide_array_type, array_list1, array_list2, array_list3);
+    vector<int> array_wait = waiting_array_list(nodes2,op_type, decide_array_type, array_list1, array_list2, array_list3);
     //检验越界
     cout << "array_wait函数没有问题" << endl;
     //如果都是空的，或者lut的功能不匹配,则需要新建阵列
     if (array_no_using.empty() && array_wait.empty())
     {
-        array_id.push_back(build(decide_array_type, op_type,array_list1,array_list2, array_list3));
+        array_id.push_back(build(nodes2,decide_array_type, op_type,array_list1,array_list2, array_list3));
     }
     //定义总容量的匿名函数
     auto cap = [&](int array_id) {
-        return cap_array_lost(decide_array_type, array_id, array_list1, array_list2, array_list3) +
-               cap_array_cover(decide_array_type, array_id, array_list1, array_list2, array_list3);
+        return cap_array_lost(nodes2,decide_array_type, array_id, array_list1, array_list2, array_list3) +
+               cap_array_cover(nodes2,decide_array_type, array_id, array_list1, array_list2, array_list3);
     };
 
     if (operand_num == 1)//如果只有一个操作数,基本上执行的都是not操作
@@ -68,7 +68,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     }
                     if (array_id.empty()) //无可用的，新建，加入被选列表
                     {
-                        int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
+                        int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);
                         array_id.push_back(new_array);
                     }
 
@@ -96,7 +96,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     }
                     if (array_id.empty())//找不到可用的，新建
                     {
-                        int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);//新建
+                        int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);//新建
                         array_id.push_back(new_array);
                     }
                 }
@@ -123,7 +123,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     }
                     if (array_id.empty())//找不到可用的，新建
                     {
-                        int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);//新建
+                        int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);//新建
                         array_id.push_back(new_array);
                     }
                 }
@@ -154,7 +154,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     }
                     if (array_id.empty()) //无可用的，新建，加入被选列表
                     {
-                        int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
+                        int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);
                         array_id.push_back(new_array);
                     }
 
@@ -185,7 +185,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                         }
                         if (array_id.empty())//找不到可用的，新建
                         {
-                            int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
+                            int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);
                             array_id.push_back(new_array);
                         }
                     }
@@ -203,7 +203,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     }
                     if (array_id.empty()) //无可用的，新建，加入被选列表
                     {
-                        int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
+                        int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);
                         array_id.push_back(new_array);
                     }
                 } else//sa和magic,要保证剩余空间充足
@@ -228,7 +228,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
                     }
                     if (array_id.empty())//找不到可用的，新建
                     {
-                        int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
+                        int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);
                         array_id.push_back(new_array);
                     }
 
@@ -288,7 +288,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
             }
             if (array_id.empty()) //无可用的，新建，加入被选列表
             {
-                int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
+                int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);
                 array_id.push_back(new_array);
             }
 
@@ -316,7 +316,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
             }
             //1.empty no using 2.no cap is enough
             if (array_id.empty()) {
-                int new_array = build(decide_array_type, op_type, array_list1, array_list2, array_list3);
+                int new_array = build(nodes2,decide_array_type, op_type, array_list1, array_list2, array_list3);
                 array_id.push_back(new_array);
             }
         }

@@ -32,7 +32,7 @@ struct Node {
     Node *control = NULL;//控制依赖
     double start_time;//开始时间
     double end_time;//结束时间
-    //TODO:规定：写回buffer时候要更新end_time,第一次写回阵列时候也要更新end_time
+    //规定：写回buffer时候要更新end_time,第一次写回阵列时候也要更新end_time
     int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-latch 5 SA-BUFFER 6 SA存储
     int finish_id;//节点执行完（输出）的位置
     int out_degree;//出度
@@ -41,8 +41,8 @@ struct Node {
     //存储节点写回的位置,0:register,1:lut,2:sa,3:ma,4:lut_latch,5:sa-buffer
 };
 
-extern vector<Node> nodes;//节点类型的向量，里面可以放下一个个节点
-
+extern vector<Node> nodes;//节点类型的向量，里面可以放下一个个节点,节点的类型
+extern vector<Node> nodes2;//节点类型的向量，里面可以放下一个个节点,节点的类型
 
 //定义函数，输入操作类型，操作数位数，lut类型，输出数量和级数
 int lut_num_op(int op_type,int lut_type);
@@ -68,7 +68,7 @@ struct lut_arr : public Array {
     set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
     int lut_level;
-    //TODO:使用模块时，增大lut阵列的尺寸，使其专用化，一个阵列直接完成功能
+    //使用模块时，增大lut阵列的尺寸，使其专用化，一个阵列直接完成功能
 };
 
 struct sa_arr : public Array {
@@ -84,7 +84,8 @@ struct magic_arr : public Array {
 };
 
 int Type2node(string type);//Type2node函数的声明
-Node *find_node_by_number(int node_id);//寻找节点指针的函数声明
+Node *find_node_by_number(vector<Node> &nodes2,int node_id);//寻找节点指针的函数声明
+//Node &find_node_by_number(vector<Node> &nodes2,int node_id);//寻找节点指针的函数声明
 //topo排序
 void topologicalSort(vector<Node> nodes, map<int, int> &inDegree,
                      vector<vector<Node>> &controlstep,map<int, int> &id_pos);//函数声明
@@ -94,17 +95,14 @@ void ComIndegree(queue<int> &nodeQueue, map<int, int> &inDegree,
 int op2int(string operation);
 
 //控制步处理函数
-void control_step(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                  vector<magic_arr> &array_list3);
+void control_step(vector<vector<Node*>> controlstep2,
+                  vector<lut_arr> array_list1,vector<sa_arr> array_list2,vector<magic_arr> array_list3);
 
-void only_lut(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                  vector<magic_arr> &array_list3);
+void only_lut(vector<vector<Node>> controlstep);
 
-void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-              vector<magic_arr> &array_list3);
+void only_sa(vector<vector<Node>> controlstep);
 
-void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-              vector<magic_arr> &array_list3);
+void only_magic(vector<vector<Node>> controlstep);
 
 void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                         vector<magic_arr> &array_list3);
@@ -113,10 +111,10 @@ void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &ar
 //全部运行完之后
 //计算架构性能参数
 //延迟,所有时间中的最大值
-double latency_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
+double latency_all(vector<Node> &nodes2,std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
 
 //面积，阵列+buffer+Reg
-double area_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
+double area_all(vector<Node> &nodes2,std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
 //能耗,阵列+buffer+Reg
 double energy_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
 

@@ -5,6 +5,7 @@ using namespace rapidjson;
 using namespace std;
 vector<Node> nodes={};//节点类型的向量，里面可以放下一个个节点
 
+vector<Node> nodes2={};//节点类型的向量，里面可以放下一个个节点
 int main() {
     //三种阵列使用的数量
     int Anum_magic;
@@ -118,7 +119,7 @@ int main() {
         //Branch和loop没有input
         //如果有“Input”，得到input的数量
         type_id = Type2node(d[i]["Type"].GetString());
-        Node *c = find_node_by_number( i + 1);//c表示当前节点
+        Node *c = find_node_by_number( nodes,i + 1);//c表示当前节点
         map<int, bool> input_depend;//每次i都构建hash表，存储当前输入（最多两个），如果前面找到了前驱依赖，值为true
         if (d[i].HasMember("Input")) {
             num_input = d[i]["Input"].IsArray() ? d[i]["Input"].Size() : 1;
@@ -129,10 +130,10 @@ int main() {
             //对互斥表进行清空重建
             TvsF.clear();
             int con = d[i]["condition"].GetInt();//条件节点的位置,其类型是op
-            Node *con_node = find_node_by_number( con);//条件节点的指针
+            Node *con_node = find_node_by_number(nodes, con);//条件节点的指针
             int sizeofT = d[i]["Statement_when_true"].Size();//T的节点数目
             int sizeofF = d[i]["Statement_when_false"].Size();//F的节点数目
-            //TODO：HOW do control node?
+            //控制节点如何处理？
             con_node->out_degree = sizeofF + sizeofT;//更新条件节点的出度,让其相加
 
             cout << "分支节点依赖" << endl << "条件节点:" << con << "  size of true:" << sizeofT << endl;
@@ -140,7 +141,7 @@ int main() {
 
             for (int there = 0; there < sizeofT; there++) {
                 cout << d[i]["Statement_when_true"][there].GetInt() << "   ";
-                Node *a = find_node_by_number( d[i]["Statement_when_true"][there].GetInt());
+                Node *a = find_node_by_number( nodes,d[i]["Statement_when_true"][there].GetInt());
 //a不是空节点,且当前控制节点没有指向
                 if (a != NULL && (a->control == NULL || a->control->node_id < con)) {
                     if (a->control == NULL)//如果是第一次设置控制节点
@@ -154,7 +155,7 @@ int main() {
             cout << endl << "F：";
             for (int there = 0; there < sizeofF; there++) {
                 cout << d[i]["Statement_when_false"][there].GetInt() << "   ";
-                Node *b = find_node_by_number( d[i]["Statement_when_false"][there].GetInt());
+                Node *b = find_node_by_number( nodes,d[i]["Statement_when_false"][there].GetInt());
 
                 if (b != NULL && (b->control == NULL || b->control->node_id < con))//b不是空节点,且当前控制节点没有指向
                 {
@@ -172,7 +173,7 @@ int main() {
             //loop的依赖比较独特，即需要依赖前面的执行结果，又需要依赖循环内对数据的改变结果
             //先输出控制依赖
             int con = d[i]["Condition"].GetInt();//条件节点的位置
-            Node *con_node = find_node_by_number( con);
+            Node *con_node = find_node_by_number(nodes, con);
 
             cout << "loop节点依赖" << endl << "条件节点：" << con << endl;
             int sizeofL = d[i]["Statement_loop"].Size();//LOOP节点数目
@@ -184,7 +185,7 @@ int main() {
                 //1.该节点可能是OP，没有Dst，所以要先对类型进行判断
                 //2.条件节点判断的输入也可能有多个，最好写成函数，直接套用OP之间的依赖
                 //问题：there_id可能根本不在nodes中，nodes的依赖可能有很多，需要找到他的直接依赖
-                Node *a = find_node_by_number( there_id);
+                Node *a = find_node_by_number( nodes,there_id);
                 if (a != NULL && (a->control == NULL || a->control->node_id < con))//a不是空节点，且a当前控制节点没有指向或者是更大一级别的
                 {
                     if (a->control == NULL)//如果第一次设置控制节点
@@ -221,7 +222,7 @@ int main() {
                         string name_in2 = d[i]["Input"][1].GetString();
                         if (dst_id[name_in1] && (!input_depend[0]) && (dst_id[name_in1] < i + 1))//存在且未被输出且节点对应关系正确
                         {
-                            Node *a = find_node_by_number( dst_id[name_in1]);//当前输入依赖的节点1
+                            Node *a = find_node_by_number( nodes,dst_id[name_in1]);//当前输入依赖的节点1
                             if (a != nullptr)
                                 a->out_degree++;//依赖的节点的出度++
 
@@ -235,7 +236,7 @@ int main() {
                         }
                         if (dst_id[name_in2] && (!input_depend[1]) && (dst_id[name_in2] < i + 1))//存在
                         {
-                            Node *b = find_node_by_number( dst_id[name_in2]);//当前输入依赖的节点2
+                            Node *b = find_node_by_number( nodes,dst_id[name_in2]);//当前输入依赖的节点2
                             if (b != nullptr)
                                 b->out_degree++;
 
@@ -253,7 +254,7 @@ int main() {
 
                         if (dst_id[input_name] && (dst_id[input_name] < i + 1) && (!input_depend[0]))//存在且值比i+1小且没输出过
                         {
-                            Node *a = find_node_by_number( dst_id[input_name]);//指向输入依赖
+                            Node *a = find_node_by_number(  nodes,dst_id[input_name]);//指向输入依赖
                             if (a != nullptr)
                                 a->out_degree++;
 
@@ -272,7 +273,7 @@ int main() {
 
                     //如果input是ID，则直接输出
                     if (d[i]["Input"].IsInt() && !input_depend[0]) {
-                        Node *a = find_node_by_number( d[i]["Input"].GetInt());
+                        Node *a = find_node_by_number( nodes, d[i]["Input"].GetInt());
                         if (a != nullptr)
                             a->out_degree++;
 
@@ -287,7 +288,7 @@ int main() {
                     if (d[i]["Input"].IsString() && !input_depend[0]) {
                         input_depend[0] = true;
                         string input_name = d[i]["Input"].GetString();
-                        Node *a = find_node_by_number( dst_id[input_name]);
+                        Node *a = find_node_by_number( nodes, dst_id[input_name]);
                         c->depend1 = a;
                         if (a != nullptr)
                             a->out_degree++;
@@ -310,11 +311,13 @@ int main() {
      * 构建初始的控制步
      *******************************/
     topologicalSort(nodes, inDegree, controlstep, id_pos);//函数使用，现在得到了controlstep vector<vector<Node>>,但是没有依赖关系
+
+    nodes2=nodes;
     vector<vector<Node *>> controlstep2;
     for (int i = 0; i < controlstep.size(); ++i) {
         vector<Node *> stepnow;//当前控制步，存放节点指针
         for (int j = 0; j < controlstep[i].size(); ++j) {
-            stepnow.push_back(find_node_by_number( controlstep[i][j].node_id));//换成真正的依赖关系
+            stepnow.push_back(find_node_by_number(nodes2, controlstep[i][j].node_id));//换成真正的依赖关系
         }
         controlstep2.push_back(stepnow);
     }
@@ -330,6 +333,9 @@ int main() {
         }
     }
 
+
+
+
     /*开始新的循环
      * 在初始控制步中加入逻辑函数
      * 调度算子
@@ -337,14 +343,34 @@ int main() {
      * */
     //我们规定，只能使用4/6输入的LUT
     //VHDL中，逻辑操作都是按位的，需要由一位操作拼接
-    vector<lut_arr> array_list1={};//lut阵列表
-    vector<sa_arr> array_list2={};//sa阵列表
-    vector<magic_arr> array_list3={};//magic阵列表
 
     //先判断设计目标，按照设计目标来循环给约束
+    int model_chosen[4]={0,1,2,3};
+    int model=model_chosen[0];
+    switch (model) {
+        case 0:
+        {
+            vector<lut_arr> array_list1={};//lut阵列表
+            vector<sa_arr> array_list2={};//sa阵列表
+            vector<magic_arr> array_list3={};//magic阵列表
+            control_step(controlstep2,array_list1, array_list2,array_list3);
+        }
 
-    control_step(controlstep2, array_list1, array_list2,array_list3);
-    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
+            break;
+        case 1:
+            only_lut(controlstep);
+            break;
+        case 2:
+            only_sa(controlstep);
+            break;
+        case 3:
+            only_magic(controlstep);
+            break;
+        default:
+            break;
+    }
+
+
     return 0;
 }
 

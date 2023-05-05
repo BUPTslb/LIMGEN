@@ -37,20 +37,29 @@ int Type2node(std::string type){
     return 0;
 }
 //根据节点id，返回节点指针，好像和id_pos功能冲突了
-Node * find_node_by_number(int node_id) {
-    auto it = std::find_if(nodes.begin(), nodes.end(),
+Node * find_node_by_number(vector<Node> &nodes2,int node_id) {
+    auto it = std::find_if(nodes2.begin(), nodes2.end(),
                            [node_id](const Node& node) {
                                return node.node_id == node_id;
                            });
 
-    if (it != nodes.end()) {
+    if (it != nodes2.end()) {
         return &(*it);//返回指针指向的变量的地址
     } else {
         return nullptr;
     }
 }
+//Node & find_node_by_number(vector<Node> &nodes2,int node_id) {
+//    auto it = std::find_if(nodes2.begin(), nodes2.end(),
+//                           [node_id](const Node& node) {
+//                               return node.node_id == node_id;
+//                           });
+//
+//    if (it != nodes2.end()) {
+//        return *it;//返回指针指向的变量的地址
+//    } throw std::invalid_argument("Node not found");
+//}
 
-//TODO：把操作的数字都改一下
 int op2int(string operation){
     if (operation == seq)           return 0;//赋值，写操作
     if (operation == l_eq)          return 1;//相等

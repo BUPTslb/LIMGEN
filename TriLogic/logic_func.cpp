@@ -20,14 +20,15 @@ unsigned int arr_size() {
 //阵列中存储：要占用阵列，等阵列执行结束后才能开始
 //这里只是寻找，并不读取，所以不用更新时间和能量
 //在数据读的函数中更新时间和能量
-void find_input(int &array_type, int &array_id, Node *node_depend) {
+void find_input(vector<Node> &nodes2,int &array_type, int &array_id, Node *node_depend) {
 
     //存在依赖，这个依赖是一个节点
     cout << "数据依赖所在的节点： " << node_depend->node_id << endl
-         << "其算子类型: " << op2int(node_depend->operator_name) << endl
+         << "其算子类型: " << op2int(node_depend->operator_name) <<node_depend->operator_name<< endl
          << "其执行阵列的类型" << node_depend->do_type << endl
-         << "其存储位置的数量：" << num_node_position(node_depend) << endl
-         << "该依赖节点的结束时间为：" << node_depend->end_time << endl;
+         << "其存储位置的数量：" << num_node_position(nodes2,node_depend) << endl
+         << "该依赖节点的结束时间为：" << node_depend->end_time << endl
+         << "节点写回寄存器的个数： "<< node_depend->wb_pos[0].size()<<endl;
     //如果是out,看时间是否对等
     if (node_depend->do_type == 1 || node_depend->do_type == 2) {
         //判断当前的阵列输出是不是这个节点
@@ -66,8 +67,7 @@ void find_input(int &array_type, int &array_id, Node *node_depend) {
 
 
 //只有着一个函数可以建立阵列**定义建立逻辑，对于LUT,考虑加入操作
-//TODO:build时将阵列的大小也确定,操作数的位数应该是一个全局变量
-int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
+int build(vector<Node> &nodes2,int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
                 vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     int build;
     switch (decide_array_type) {
@@ -198,7 +198,7 @@ int op_row_need(int op_type, int decide_array_type) {
         {
             if (op_type == 11)
                 return 3;//C L S
-                //TODO:移位如何处理？shift
+                //不处理移位操作
             else
                 return 1; //S
         }
@@ -209,15 +209,15 @@ int op_row_need(int op_type, int decide_array_type) {
 
 }
 
-//TODO: 关于buffer的问题，判断何时使用buffer,使用buffer时对时间能量进行更新,判断sa lut是否是直接输出
+//关于buffer的问题，判断何时使用buffer,使用buffer时对时间能量进行更新,判断sa lut是否是直接输出
 //定义数据读函数,SA、lUT需要比较是否是当前输出
 //需要写入阵列的直接执行写入函数write_back()
-void data_read(int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Node *now,
+void data_read(vector<Node> &nodes2,int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Node *now,
                vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //如果当前操作数来自寄存器，需要调用寄存器读函数
     //时间和能量加在哪里？
     //根据当前节点，获取当前的时间
-    double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
+    double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
     cout << "data_read中的time_now运行正常" << endl;
     //从数据读取开始，op节点开始执行
     if (now->start_time == 0)
@@ -229,10 +229,10 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
         //更新读取次数
         Reg_sum.read_num_sum++;
         //更新时间
-        read_time_update(-1, -1, time_n, now, array_list1, array_list2, array_list3);
+        read_time_update(nodes2,-1, -1, time_n, now, array_list1, array_list2, array_list3);
         cout << "date_read中的read_time_update运行正常" << endl;
         //更新能量
-        read_energy_update(-1, -1, now, array_list1, array_list2, array_list3);
+        read_energy_update(nodes2,-1, -1, now, array_list1, array_list2, array_list3);
         cout << "date_read中的read_energy_update运行正常" << endl;
         //读数
         return;
@@ -250,18 +250,18 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                     && array_list1[input_id].lut_out != now->depend1->node_id)//对不上
                 {
                     //将out写回
-                    write_back(input_type, input_id, now->depend1, array_list1, array_list2, array_list3);
+                    write_back(nodes2,input_type, input_id, now->depend1, array_list1, array_list2, array_list3);
                     //写回到哪里从哪里接着读取
                     //重新调用find_input
                     if (now->depend1 != nullptr)
-                        find_input(input_type, input_id, now->depend1);
+                        find_input(nodes2,input_type, input_id, now->depend1);
                     else {
                         //立即数
                         input_type = -1;
                         input_id = -1;
                     }
                     //修改input_type和input_id继续调用函数
-                    data_read(1, input_type, input_id, decide_array_type, decide_array_id, now,
+                    data_read(nodes2,1, input_type, input_id, decide_array_type, decide_array_id, now,
                               array_list1, array_list2, array_list3);
 
                 }
@@ -273,9 +273,9 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                 //更新buffer的读次数
                 buffer_sum.buffer_read_sum++;
                 //更新时间
-                read_time_update(4, input_id, time_n, now, array_list1, array_list2, array_list3);
+                read_time_update(nodes2,4, input_id, time_n, now, array_list1, array_list2, array_list3);
                 //更新能量
-                read_energy_update(4, input_id, now, array_list1, array_list2, array_list3);
+                read_energy_update(nodes2,4, input_id, now, array_list1, array_list2, array_list3);
                 //读数
                 return;
             }
@@ -290,18 +290,18 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                     && array_list1[input_id].lut_out != now->depend2->node_id)//对不上
                 {
                     //将out写回
-                    write_back(input_type, input_id, now->depend2, array_list1, array_list2, array_list3);
+                    write_back(nodes2,input_type, input_id, now->depend2, array_list1, array_list2, array_list3);
                     //写回到哪里从哪里接着读取
                     //重新调用find_input
                     if (now->depend2 != nullptr)
-                        find_input(input_type, input_id, now->depend2);
+                        find_input(nodes2,input_type, input_id, now->depend2);
                     else {
                         //立即数
                         input_type = -1;
                         input_id = -1;
                     }
                     //修改input_type和input_id继续调用函数
-                    data_read(2, input_type, input_id, decide_array_type, decide_array_id, now,
+                    data_read(nodes2,2, input_type, input_id, decide_array_type, decide_array_id, now,
                               array_list1, array_list2, array_list3);
 
                 }
@@ -313,9 +313,9 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                 //更新次数
                 buffer_sum.buffer_read_sum++;
                 //更新时间
-                read_time_update(4, input_id, time_n, now, array_list1, array_list2, array_list3);
+                read_time_update(nodes2,4, input_id, time_n, now, array_list1, array_list2, array_list3);
                 //更新能量
-                read_energy_update(4, input_id, now, array_list1, array_list2, array_list3);
+                read_energy_update(nodes2,4, input_id, now, array_list1, array_list2, array_list3);
                 //读数
                 return;
             }
@@ -331,18 +331,18 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                     && array_list2[input_id].sa_out != now->depend1->node_id)//对不上
                 {
                     //将out写回
-                    write_back(input_type, input_id, now->depend1, array_list1, array_list2, array_list3);
+                    write_back(nodes2,input_type, input_id, now->depend1, array_list1, array_list2, array_list3);
                     //写回到哪里从哪里接着读取
                     //重新调用find_input
                     if (now->depend1 != nullptr)
-                        find_input(input_type, input_id, now->depend1);
+                        find_input(nodes2,input_type, input_id, now->depend1);
                     else {
                         //立即数
                         input_type = -1;
                         input_id = -1;
                     }
                     //修改input_type和input_id继续调用函数
-                    data_read(1, input_type, input_id, decide_array_type, decide_array_id, now,
+                    data_read(nodes2,1, input_type, input_id, decide_array_type, decide_array_id, now,
                               array_list1, array_list2, array_list3);
 
                 }
@@ -354,9 +354,9 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                 //更新buffer的读次数
                 buffer_sum.buffer_read_sum++;
                 //更新时间
-                read_time_update(5, input_id, time_n, now, array_list1, array_list2, array_list3);
+                read_time_update(nodes2,5, input_id, time_n, now, array_list1, array_list2, array_list3);
                 //更新能量
-                read_energy_update(5, input_id, now, array_list1, array_list2, array_list3);
+                read_energy_update(nodes2,5, input_id, now, array_list1, array_list2, array_list3);
                 //读数
                 return;
             }
@@ -366,9 +366,9 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                 if (decide_array_type != 2 || decide_array_id != input_id) {
                     array_list2[input_id].read_number++;
                     //更新时间
-                    read_time_update(6, input_id, time_n, now, array_list1, array_list2, array_list3);
+                    read_time_update(nodes2,6, input_id, time_n, now, array_list1, array_list2, array_list3);
                     //更新能量
-                    read_energy_update(6, input_id, now, array_list1, array_list2, array_list3);
+                    read_energy_update(nodes2,6, input_id, now, array_list1, array_list2, array_list3);
                     return;
 
                 }
@@ -381,18 +381,18 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                     && array_list2[input_id].sa_out != now->depend2->node_id)//对不上
                 {
                     //将out写回
-                    write_back(input_type, input_id, now->depend2, array_list1, array_list2, array_list3);
+                    write_back(nodes2,input_type, input_id, now->depend2, array_list1, array_list2, array_list3);
                     //写回到哪里从哪里接着读取
                     //重新调用find_input
                     if (now->depend2 != nullptr)
-                        find_input(input_type, input_id, now->depend2);
+                        find_input(nodes2,input_type, input_id, now->depend2);
                     else {
                         //立即数
                         input_type = -1;
                         input_id = -1;
                     }
                     //修改input_type和input_id继续调用函数
-                    data_read(2, input_type, input_id, decide_array_type, decide_array_id, now,
+                    data_read(nodes2,2, input_type, input_id, decide_array_type, decide_array_id, now,
                               array_list1, array_list2, array_list3);
 
                 }
@@ -404,9 +404,9 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                 //更新buffer的读次数
                 buffer_sum.buffer_read_sum++;
                 //更新时间
-                read_time_update(5, input_id, time_n, now, array_list1, array_list2, array_list3);
+                read_time_update(nodes2,5, input_id, time_n, now, array_list1, array_list2, array_list3);
                 //更新能量
-                read_energy_update(5, input_id, now, array_list1, array_list2, array_list3);
+                read_energy_update(nodes2,5, input_id, now, array_list1, array_list2, array_list3);
                 //读数
                 return;
 
@@ -417,9 +417,9 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
                 if (decide_array_type != 2 || decide_array_id != input_id) {
                     array_list2[input_id].read_number++;
                     //更新时间
-                    read_time_update(6, input_id, time_n, now, array_list1, array_list2, array_list3);
+                    read_time_update(nodes2,6, input_id, time_n, now, array_list1, array_list2, array_list3);
                     //更新能量
-                    read_energy_update(6, input_id, now, array_list1, array_list2, array_list3);
+                    read_energy_update(nodes2,6, input_id, now, array_list1, array_list2, array_list3);
                     return;
                 }
 
@@ -436,9 +436,9 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
         if (decide_array_type != input_type || decide_array_id != input_id) {
             array_list3[input_id].read_number++;
             //更新时间
-            read_time_update(input_type, input_id, time_n, now, array_list1, array_list2, array_list3);
+            read_time_update(nodes2,input_type, input_id, time_n, now, array_list1, array_list2, array_list3);
             //更新能量
-            read_energy_update(input_type, input_id, now, array_list1, array_list2, array_list3);
+            read_energy_update(nodes2,input_type, input_id, now, array_list1, array_list2, array_list3);
             return;
         }
     }
@@ -450,7 +450,7 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
 
 //更新节点的出度，一个节点入度最多是3，出度可以很大
 //这个节点执行完毕了，其依赖的节点的出度就都会-1
-void out_degree(Node *now) {
+void out_degree(vector<Node> &nodes2,Node *now) {
     if (now->depend1)
         now->depend1->out_degree--;
     if (now->depend2)
@@ -460,7 +460,7 @@ void out_degree(Node *now) {
 }
 
 //数据存储的位置有几个
-int num_node_position(Node *now) {
+int num_node_position(vector<Node> &nodes2,Node *now) {
     int num = 0;
     for (const auto &i: now->wb_pos) {
         if (!i.empty())
