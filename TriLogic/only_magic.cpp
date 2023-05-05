@@ -30,7 +30,7 @@ void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1
 
                     //更新出度
                     out_degree(controlstep2[i][j]);
-                    double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
+                    double time = time_only_magic(array_list1, array_list2, array_list3, controlstep2[i][j]);
                     //update the time of do_array
                     time_update(0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
@@ -47,13 +47,13 @@ void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1
                 //TODO:分析一下，能否直接调用write_back函数？
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
-                double time_n = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
+                double time_n = time_only_magic(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
                 //如果默认其为直接输出的out,则不会对其他产生任何影响，不需要进行time_update
                 //c=a op b || c=a op -1 || c = a
                 switch (controlstep2[i][j]->depend1->do_type) {
                     case -1:  //来自寄存器，不知到写回到哪里,直接赋值应该不用写的
                     {
-                        write_back(-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
+                        write_back_magic(-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
                     }
                         break;
                     case 3://如果操作数来自MAGIC阵列,写回阵列中
@@ -588,7 +588,7 @@ void write_back_magic(int from_type, int from_id, Node *now, vector<lut_arr> &ar
                     if (ready_array.empty())
                         ready_array.push_back(build( 3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back( -1, -1, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back_magic( -1, -1, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
             }
@@ -599,7 +599,7 @@ void write_back_magic(int from_type, int from_id, Node *now, vector<lut_arr> &ar
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back( 3, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back_magic( 3, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 3) //写回magic
                 {
@@ -607,7 +607,7 @@ void write_back_magic(int from_type, int from_id, Node *now, vector<lut_arr> &ar
                     if (ready_array.empty())
                         ready_array.push_back(build( 3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back( 3, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back_magic( 3, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
 

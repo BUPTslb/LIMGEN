@@ -84,8 +84,7 @@ void only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1,
                                 array_list1[controlstep2[i][j]->depend1->finish_id].lut_out = controlstep2[i][j]->node_id;
                             else //否则判断一下其写回表和出度
                             {
-                                if (find_node_by_number(lut_out_now)->out_degree > 0 &&
-                                    wb_empty(find_node_by_number(lut_out_now))) {
+                                if (wb_empty(find_node_by_number(lut_out_now))) {
                                     //TODO:设置优先级，buffer只能写回本阵列
                                     int back_type_ready[3] = {-1, 3, 4};
                                     int back_type = back_type_ready[rand() % 3];
@@ -737,7 +736,7 @@ void output_logic_lut(int decide_array_type, int decide_array_id, int op_type, N
 
 
 
-void write_back_lut_lut(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void write_back_lut(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     vector<magic_arr> &array_list3, int back_type, int back_id) {
 //只能写回lut和reg
     //先列出magic和sa所有能写的阵列，按照优先级进行排序
@@ -944,8 +943,7 @@ void write_back_lut_lut(int from_type, int from_id, Node *now, vector<lut_arr> &
                             }
 
                             //出度>0，写回表为空
-                            if (find_node_by_number( array_list1[back_id].lut_latch.back())->out_degree > 0 &&
-                                wb_empty(find_node_by_number( array_list1[back_id].lut_latch.back())))
+                            if (wb_empty(find_node_by_number( array_list1[back_id].lut_latch.back())))
                                 //找个地方写回，from_type=4,lut-buffer
                             {
                                 //从4.lut-buffer出去的，应该只能写回reg-sa-magic
