@@ -1,7 +1,7 @@
 #include "logic_func.h"
 //当前能用的阵列表,针对当前type,如果为空，证明都用不了
 //此时sa和magic不用考虑容量，让决定id的去考虑，只需要把可用的放进队列去
-vector<int> find_no_using(vector<Node> &nodes2,int op_type, int decide_array_type, vector<lut_arr> &array_list1,
+vector<int> find_no_using(int op_type, int decide_array_type, vector<lut_arr> &array_list1,
                           vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     vector<int> find_no_using={};
     switch (decide_array_type) {
@@ -20,7 +20,7 @@ vector<int> find_no_using(vector<Node> &nodes2,int op_type, int decide_array_typ
             for (auto i :array_list1)
                 if (!i.is_using)//空闲，算子不可用，但是还有空间，可以添加算子
                 {
-                    //模块调用 1 2 3 11 12 13
+                    //TODO:模块调用 1 2 3 11 12 13
                     if (op_type==1||op_type==2||op_type==3||op_type==11||op_type==12||op_type==13)
                         module_need=true;
                     //1. no module_need
@@ -56,7 +56,7 @@ vector<int> find_no_using(vector<Node> &nodes2,int op_type, int decide_array_typ
             //有sa阵列
             cout<<"当前sa阵列的个数为："<<array_list2.size()<<endl;
             for (auto i : array_list2) {
-//                if (cap_array_lost(nodes2,decide_array_type, i, nodes, array_list1, array_list2, array_list3) < 2)
+//                if (cap_array_lost(decide_array_type, i, nodes, array_list1, array_list2, array_list3) < 2)
 //                    continue; //判断空间是否够用放在外面
                 if (!i.is_using)//空闲
                     find_no_using.push_back(i.array_id);
@@ -72,18 +72,13 @@ vector<int> find_no_using(vector<Node> &nodes2,int op_type, int decide_array_typ
                 cout<<"当前没有magic阵列"<<endl;
                 return find_no_using;
             }
-            else
-            {
-                //有
-                cout<<"当前magic阵列的个数为："<<array_list3.size()<<endl;
-                for (auto i :array_list3) {
-                    if (!i.is_using)//空闲
-                        find_no_using.push_back(i.array_id);
-                    //没有可用的，跳过
-                }
+            //有
+            cout<<"当前magic阵列的个数为："<<array_list3.size()<<endl;
+            for (auto i :array_list3) {
+                if (!i.is_using)//空闲
+                    find_no_using.push_back(i.array_id);
+                //没有可用的，跳过
             }
-
-
         }
             break;
         default:
@@ -94,7 +89,7 @@ vector<int> find_no_using(vector<Node> &nodes2,int op_type, int decide_array_typ
 
 //阵列等待表,front是等待时间最短的,按照等待时间排序
 //只以等待时间来排序，容量的事由后续的函数考虑
-vector<int> waiting_array_list(vector<Node> &nodes2,int op_type, int decide_array_type, vector<lut_arr> &array_list1,
+vector<int> waiting_array_list(int op_type, int decide_array_type, vector<lut_arr> &array_list1,
                                vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     vector<int> waiting_array_list={};
     priority_queue<Array, vector<Array>, CompareArray> pq;//优先队列，小顶堆
@@ -155,7 +150,7 @@ vector<int> waiting_array_list(vector<Node> &nodes2,int op_type, int decide_arra
             break;
         case 3: {
 //第一步，判断有没有阵列
-            if (array_list3.empty())
+            if (array_list2.empty())
             {
                 cout<<"当前没有magic阵列"<<endl;
                 return waiting_array_list;

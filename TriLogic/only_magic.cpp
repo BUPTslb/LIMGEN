@@ -1,25 +1,10 @@
 #include "mainfunc.h"
 #include "logic_func.h"
-
 //对照实验，只选用magic实现功能
 //可以做存储的地方只有magic和reg
-void only_magic(vector<vector<Node>> controlstep) {
-    //建立全局变量nodes的副本，在之后的所有函数中都使用这个副本，可以确保nodes不会被破坏
-    vector<Node> nodes2=nodes;
-    vector<vector<Node *>> controlstep2;
-    for (int i = 0; i < controlstep.size(); ++i) {
-        vector<Node *> stepnow;//当前控制步，存放节点指针
-        for (int j = 0; j < controlstep[i].size(); ++j) {
-            stepnow.push_back(find_node_by_number(nodes2, controlstep[i][j].node_id));//换成真正的依赖关系
-        }
-        controlstep2.push_back(stepnow);
-    }
-
-    vector<lut_arr> array_list1={};//lut阵列表
-    vector<sa_arr> array_list2={};//sa阵列表
-    vector<magic_arr> array_list3={};//magic阵列表
-
-
+void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+              vector<magic_arr> &array_list3)
+{
     for (int i = 0; i < controlstep2.size(); i++) {
         cout << "step：" << i << endl;
         for (int j = 0; j < controlstep2[i].size(); ++j) {
@@ -33,7 +18,7 @@ void only_magic(vector<vector<Node>> controlstep) {
 
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
-            //规定，不存在A=B这种赋值操作
+            //TODO:规定，不存在A=B这种赋值操作
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
@@ -44,12 +29,12 @@ void only_magic(vector<vector<Node>> controlstep) {
                     controlstep2[i][j]->finish_id = -1;//证明写到了寄存器中
 
                     //更新出度
-                    out_degree(nodes2,controlstep2[i][j]);
-                    double time = time_only_magic(nodes2,array_list1, array_list2, array_list3, controlstep2[i][j]);
+                    out_degree(controlstep2[i][j]);
+                    double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
                     //update the time of do_array
-                    time_update(nodes2,0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
+                    time_update(0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
-                    energy_update(nodes2,0, -1, -1, array_list1, array_list2, array_list3);
+                    energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                     //更新wb_pos,表示写到了寄存器中
                     controlstep2[i][j]->wb_pos[0].push_back(-1);
                     //输出：
@@ -59,15 +44,16 @@ void only_magic(vector<vector<Node>> controlstep) {
                 }
 
                 //有依赖,则依赖一定来自OP, from array
+                //TODO:分析一下，能否直接调用write_back函数？
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
-                double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
+                double time_n = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
                 //如果默认其为直接输出的out,则不会对其他产生任何影响，不需要进行time_update
                 //c=a op b || c=a op -1 || c = a
                 switch (controlstep2[i][j]->depend1->do_type) {
                     case -1:  //来自寄存器，不知到写回到哪里,直接赋值应该不用写的
                     {
-                        write_back_magic(nodes2,-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
+                        write_back(-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
                     }
                         break;
                     case 3://如果操作数来自MAGIC阵列,写回阵列中
@@ -82,15 +68,15 @@ void only_magic(vector<vector<Node>> controlstep) {
                         //                    energy_update(type_operation,3,controlstep2[i][j]->depend1->finish_id, controlstep2[i][j],array_list1, array_list2, array_list3);
                         //这里的写操作是否进行了覆盖？
                         //对depend1执行的阵列容量进行分析
-                        if (cap_array_lost(nodes2,3, controlstep2[i][j]->depend1->finish_id, array_list1, array_list2,
+                        if (cap_array_lost(3, controlstep2[i][j]->depend1->finish_id, array_list1, array_list2,
                                            array_list3) == 0) {
                             //剩余容量为0，需要进行写覆盖
-                            write_cover(nodes2,0, controlstep2[i][j], 3, controlstep2[i][j]->depend1->finish_id, 1,
+                            write_cover(0, controlstep2[i][j], 3, controlstep2[i][j]->depend1->finish_id, 1,
                                         array_list1, array_list2, array_list3);
                         }
 
                         //将该节点添加到阵列存储表中
-                        array_add_node(nodes2,3, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
+                        array_add_node(3, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
                                        array_list2, array_list3);
 
                     }
@@ -105,7 +91,7 @@ void only_magic(vector<vector<Node>> controlstep) {
                 cout << "do_type： " << controlstep2[i][j]->do_type << "  finish_id：" << controlstep2[i][j]->finish_id
                      << endl;
                 //更新出度
-                out_degree(nodes2,controlstep2[i][j]);
+                out_degree(controlstep2[i][j]);
 
                 continue;//进行下一个循环
             }//下面的操作没有=了
@@ -121,7 +107,7 @@ void only_magic(vector<vector<Node>> controlstep) {
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 //判断立即数
                 if (controlstep2[i][j]->depend1 != nullptr)
-                    find_input(nodes2,input1_type, input1_id, controlstep2[i][j]->depend1);
+                    find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
                 else {
                     //立即数
                     input1_type = -1;
@@ -131,14 +117,14 @@ void only_magic(vector<vector<Node>> controlstep) {
             {
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 if (controlstep2[i][j]->depend1 != nullptr)
-                    find_input(nodes2,input1_type, input1_id, controlstep2[i][j]->depend1);
+                    find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
                 else {
                     //立即数
                     input1_type = -1;
                     input1_id = -1;
                 }
                 if (controlstep2[i][j]->depend2 != nullptr)
-                    find_input(nodes2,input2_type, input2_id, controlstep2[i][j]->depend2);
+                    find_input(input2_type, input2_id, controlstep2[i][j]->depend2);
                 else {
                     //立即数
                     input2_type = -1;
@@ -158,12 +144,12 @@ void only_magic(vector<vector<Node>> controlstep) {
                  << "do_type: " << controlstep2[i][j]->do_type << endl;
             //如果要执行的类型当前没有阵列，则建立
             if (array_list3.empty())
-                do_array_id = build(nodes2,do_array_type, type_operation, array_list1, array_list2, array_list3);
+                do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
             cout << "当前的决定执行阵列的位置为：" << do_array_id << endl;
             cout << "op类型的节点选择id之前的三种阵列个数为：" << endl
                  << array_list1.size() << " " << array_list2.size() << " " << array_list3.size() << endl;
             //决定执行阵列的id
-            do_array_id = decide_array_id(nodes2,type_operation, controlstep2[i][j], do_array_type, array_list1,
+            do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
                                           array_list2, array_list3, input1_type, input1_id, input2_type, input2_id);
 
             cout << "调用do_array_id后的执行阵列位置为：" << do_array_id << endl;
@@ -174,27 +160,27 @@ void only_magic(vector<vector<Node>> controlstep) {
             if (operand_num == 1) //只有一个操作数，读取
             {
                 cout << "操作数个数为1" << endl;
-                data_read_magic(nodes2,1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
-                                array_list1, array_list2, array_list3);
+                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                          array_list1, array_list2, array_list3);
             } else //有两个操作数
             {
                 cout << "操作数个数为2" << endl;
-                data_read_magic(nodes2,1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
-                                array_list1, array_list2, array_list3);
-                data_read_magic(nodes2,2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
-                                array_list1, array_list2, array_list3);
+                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                          array_list1, array_list2, array_list3);
+                data_read(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
+                          array_list1, array_list2, array_list3);
             }
             cout << "date_read运行正常" << endl;
             //现在已经知道了操作数的个数operand_num
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
             //将数据输入到执行阵列：input逻辑
-            input_logic_magic(nodes2,operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
-                              controlstep2[i][j],
-                              array_list1, array_list2, array_list3);
+            input_logic(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
+                        controlstep2[i][j],
+                        array_list1, array_list2, array_list3);
             //执行运算,要更新finish_id
-            output_logic_magic(nodes2,do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
-                               array_list3);
+            output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
+                         array_list3);
 
             cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
             //写回在最开始，不用在执行
@@ -203,20 +189,22 @@ void only_magic(vector<vector<Node>> controlstep) {
             //设计DSE
 
             //更新出度
-            out_degree(nodes2,controlstep2[i][j]);
+            out_degree(controlstep2[i][j]);
 
 
         }
     }
 
     //遍历完控制步，输出延迟、能耗、面积信息
-    cout<<"构建的计算阵列个数为: "<<array_list1.size()<<" 存储阵列的个数为："<<array_list3.size()<<" sa阵列为："<<array_list2.size()<<endl;
-    cout << "整体架构的延迟为： " << latency_all(nodes2,array_list1, array_list2, array_list3) << "ns" << endl;
-    cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ" << endl;
-    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
+    cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
+    cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
+
+
+
 }
 
-double time_only_magic(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+
+double time_only_magic(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                        vector<magic_arr> &array_list3, Node *node_now, int decide_array_type, int decide_array_id) {
     //函数执行的操作：
     //执行阵列：更新开始时间和结束时间，将使用的阵列置为is_using=true
@@ -256,9 +244,9 @@ double time_only_magic(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector
                     wb_empty(node_now->depend1)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
                 {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                    write_back_magic(nodes2,node_now->depend1->do_type, node_now->depend1->finish_id, node_now, array_list1,
+                    write_back_magic( node_now->depend1->do_type, node_now->depend1->finish_id, node_now, array_list1,
                                      array_list2, array_list3);
-                    time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                    time_n = time_only_magic( array_list1, array_list2, array_list3, node_now, decide_array_type,
                                              decide_array_id);//更新时间
                 }
             }
@@ -278,11 +266,11 @@ double time_only_magic(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:lut-buffer 5：sa-buffer 6:sa存储
                 if (node_now->depend1->do_type == 1 || node_now->depend1->do_type == 2) {
-                    write_back_magic(nodes2,node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
+                    write_back_magic( node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
                                      array_list1, array_list2, array_list3);
                 }
                 cout << "time_only_magic中的write_back没问题" << endl;
-                time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                time_n = time_only_magic( array_list1, array_list2, array_list3, node_now, decide_array_type,
                                          decide_array_id);//更新时间
             }
 
@@ -297,9 +285,9 @@ double time_only_magic(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector
                 wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back_magic(nodes2,node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2,
+                write_back_magic( node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2,
                                  array_list1, array_list2, array_list3);
-                time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                time_n = time_only_magic( array_list1, array_list2, array_list3, node_now, decide_array_type,
                                          decide_array_id);//更新时间
             }
             time_n = max(time_n, time2);
@@ -321,11 +309,11 @@ double time_only_magic(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector
         if (node_now->depend2 != nullptr) //将2存储起来，但是2可能是个立即数，也可能已经存了
         {
             if (ft() == 1) {
-                write_back_magic(nodes2,node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2,
+                write_back_magic( node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2,
                                  array_list1,
                                  array_list2, array_list3);//不确定写到哪了
                 //更新时间
-                time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                time_n = time_only_magic( array_list1, array_list2, array_list3, node_now, decide_array_type,
                                          decide_array_id);
 
             }
@@ -334,12 +322,12 @@ double time_only_magic(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector
         if (node_now->depend1 != nullptr) //2
         {
             if (ft() == 2) { //存储其中一个节点，write_in
-                write_back_magic(nodes2,node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
+                write_back_magic( node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
                                  array_list1,
                                  array_list2,
                                  array_list3);//不确定写到哪了
                 //更新时间
-                time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                time_n = time_only_magic( array_list1, array_list2, array_list3, node_now, decide_array_type,
                                          decide_array_id);
             }
         }
@@ -359,12 +347,12 @@ double time_only_magic(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector
 }
 
 void
-data_read_magic(vector<Node> &nodes2,int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Node *now,
+data_read_magic(int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Node *now,
                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //如果当前操作数来自寄存器，需要调用寄存器读函数
     //时间和能量加在哪里？
     //根据当前节点，获取当前的时间
-    double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
+    double time_n = time_only_magic( array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
     cout << "data_read中的time_only_magic运行正常" << endl;
     //从数据读取开始，op节点开始执行
     if (now->start_time == 0)
@@ -376,10 +364,10 @@ data_read_magic(vector<Node> &nodes2,int No_depend, int &input_type, int &input_
         //更新读取次数
         Reg_sum.read_num_sum++;
         //更新时间
-        read_time_update(nodes2,-1, -1, time_n, now, array_list1, array_list2, array_list3);
+        read_time_update( -1, -1, time_n, now, array_list1, array_list2, array_list3);
         cout << "date_read中的read_time_update运行正常" << endl;
         //更新能量
-        read_energy_update(nodes2,-1, -1, now, array_list1, array_list2, array_list3);
+        read_energy_update( -1, -1, now, array_list1, array_list2, array_list3);
         cout << "date_read中的read_energy_update运行正常" << endl;
         //读数
         return;
@@ -391,9 +379,9 @@ data_read_magic(vector<Node> &nodes2,int No_depend, int &input_type, int &input_
         if (decide_array_type != input_type || decide_array_id != input_id) {
             array_list3[input_id].read_number++;
             //更新时间
-            read_time_update(nodes2,input_type, input_id, time_n, now, array_list1, array_list2, array_list3);
+            read_time_update( input_type, input_id, time_n, now, array_list1, array_list2, array_list3);
             //更新能量
-            read_energy_update(nodes2,input_type, input_id, now, array_list1, array_list2, array_list3);
+            read_energy_update( input_type, input_id, now, array_list1, array_list2, array_list3);
             return;
         }
     }
@@ -402,7 +390,7 @@ data_read_magic(vector<Node> &nodes2,int No_depend, int &input_type, int &input_
 //以上都没有讨论直接连线的情况..
 }
 
-void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, int input1_id, int input2_type, int input2_id,
+void input_logic_magic(int operand_num, int input1_type, int input1_id, int input2_type, int input2_id,
                        int decide_array_type, int decide_array_id, Node *now,
                        vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     cout << "input_logic中的decide_array_type= " << decide_array_type << endl;
@@ -413,7 +401,7 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
         //不在一个阵列中，写入
         if (input1_type != 3 || input1_id != decide_array_id) {
             //获取现在的时间
-            double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, decide_array_type,
+            double time_n = time_only_magic( array_list1, array_list2, array_list3, now, decide_array_type,
                                             decide_array_id);
             cout << "input_logic中的time_only_magic正常运行" << endl;
             //更新阵列的写次数
@@ -421,8 +409,8 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
             //判断立即数
             if (now->depend1 != nullptr) {
                 //判断是否需要写覆盖
-                if (cap_array_lost(nodes2,3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,0, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
+                if (cap_array_lost( 3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover( 0, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
                 } else {
                     //更新阵列的存储节点表
                     array_list3[decide_array_id].store_node.push_back(now->depend1->node_id);
@@ -433,22 +421,22 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
                     //更新节点的finish_id
                     now->depend1->finish_id = decide_array_id;
                     //更新节点的时间、能量
-                    time_update(nodes2,0, decide_array_type, decide_array_id, time_n, now->depend1, array_list1, array_list2,
+                    time_update( 0, decide_array_type, decide_array_id, time_n, now->depend1, array_list1, array_list2,
                                 array_list3);
-                    energy_update(nodes2,0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                    energy_update( 0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
                 }
 
             } else //是立即数
             {
-                if (cap_array_lost(nodes2,3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,100, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
+                if (cap_array_lost( 3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover( 100, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
                 } else {
                     array_list3[decide_array_id].start_time = time_n;
                     double time_up = ma_latency(0);
                     array_list3[decide_array_id].over_time = time_n + time_up;
                     //set is_using
                     array_list3[decide_array_id].is_using = true;
-                    energy_update(nodes2,0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                    energy_update( 0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
                 }
 
             }
@@ -460,7 +448,7 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
         //1不在一个阵列中，写入
         if (input1_type != 3 || input1_id != decide_array_id) {
             //获取现在的时间
-            double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, decide_array_type,
+            double time_n = time_only_magic( array_list1, array_list2, array_list3, now, decide_array_type,
                                             decide_array_id);
             cout << "input_logic中的time_only_magic正常运行" << endl;
             //更新阵列的写次数
@@ -468,8 +456,8 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
             //判断立即数
             if (now->depend1 != nullptr) {
                 //判断是否需要写覆盖
-                if (cap_array_lost(nodes2,3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,0, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
+                if (cap_array_lost( 3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover( 0, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
                 } else {
                     //更新阵列的存储节点表
                     array_list3[decide_array_id].store_node.push_back(now->depend1->node_id);
@@ -480,22 +468,22 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
                     //更新节点的finish_id
                     now->depend1->finish_id = decide_array_id;
                     //更新节点的时间、能量
-                    time_update(nodes2,0, decide_array_type, decide_array_id, time_n, now->depend1, array_list1, array_list2,
+                    time_update( 0, decide_array_type, decide_array_id, time_n, now->depend1, array_list1, array_list2,
                                 array_list3);
-                    energy_update(nodes2,0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                    energy_update( 0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
                 }
 
             } else //是立即数
             {
-                if (cap_array_lost(nodes2,3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,100, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
+                if (cap_array_lost( 3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover( 100, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
                 } else {
                     array_list3[decide_array_id].start_time = time_n;
                     double time_up = ma_latency(0);
                     array_list3[decide_array_id].over_time = time_n + time_up;
                     //set is_using
                     array_list3[decide_array_id].is_using = true;
-                    energy_update(nodes2,0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                    energy_update( 0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
                 }
 
             }
@@ -505,7 +493,7 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
         //2不在一个阵列中，写入
         if (input2_type != 3 || input2_id != decide_array_id) {
             //获取现在的时间
-            double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, decide_array_type,
+            double time_n = time_only_magic( array_list1, array_list2, array_list3, now, decide_array_type,
                                             decide_array_id);
             cout << "input_logic中的time_only_magic正常运行" << endl;
             //更新阵列的写次数
@@ -513,8 +501,8 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
             //判断立即数
             if (now->depend2 != nullptr) {
                 //判断是否需要写覆盖
-                if (cap_array_lost(nodes2,3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,0, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
+                if (cap_array_lost( 3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover( 0, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
                 } else {
                     //更新阵列的存储节点表
                     array_list3[decide_array_id].store_node.push_back(now->depend2->node_id);
@@ -525,22 +513,22 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
                     //更新节点的finish_id
                     now->depend2->finish_id = decide_array_id;
                     //更新节点的时间、能量
-                    time_update(nodes2,0, decide_array_type, decide_array_id, time_n, now->depend2, array_list1, array_list2,
+                    time_update( 0, decide_array_type, decide_array_id, time_n, now->depend2, array_list1, array_list2,
                                 array_list3);
-                    energy_update(nodes2,0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                    energy_update( 0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
                 }
 
             } else //是立即数
             {
-                if (cap_array_lost(nodes2,3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,100, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
+                if (cap_array_lost( 3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover( 100, now, 3, decide_array_id, 1, array_list1, array_list2, array_list3);
                 } else {
                     array_list3[decide_array_id].start_time = time_n;
                     double time_up = ma_latency(0);
                     array_list3[decide_array_id].over_time = time_n + time_up;
                     //set is_using
                     array_list3[decide_array_id].is_using = true;
-                    energy_update(nodes2,0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                    energy_update( 0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
                 }
 
             }
@@ -552,32 +540,32 @@ void input_logic_magic(vector<Node> &nodes2,int operand_num, int input1_type, in
 
 }
 
-void output_logic_magic(vector<Node> &nodes2,int decide_array_type, int decide_array_id, int op_type, Node *now, \
+void output_logic_magic(int decide_array_type, int decide_array_id, int op_type, Node *now, \
                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //执行期间对阵列的影响
     //对节点：需要调用模块时，更新finish_id
     //时间参数的影响
     //1.是否需要调用模块 LUT SA MA 都有设计好的模块供调用
     //获取时间
-    double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
+    double time_n = time_only_magic( array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
     cout << "output_logic中的time_only_magic正常运行" << endl;
-    op_magic_only(nodes2,op_type, decide_array_id, now, time_n, array_list1, array_list2, array_list3);
+    op_magic_only( op_type, decide_array_id, now, time_n, array_list1, array_list2, array_list3);
 
 }
 
 
-void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void write_back_magic(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                       vector<magic_arr> &array_list3, int back_type, int back_id) {
 //TODO:可以写回多个地方：buffer/reg/ma,DSE决定吧,所有的ready
 //写到buffer中，如果buffer中已经有数据了如何处理？
 
     //先列出magic和sa所有能写的阵列，按照优先级进行排序
     auto cap = [&](int array_type, int array_id) {
-        return cap_array_lost(nodes2,array_type, array_id, array_list1, array_list2, array_list3) +
-               cap_array_cover(nodes2,array_type, array_id, array_list1, array_list2, array_list3);
+        return cap_array_lost( array_type, array_id, array_list1, array_list2, array_list3) +
+               cap_array_cover( array_type, array_id, array_list1, array_list2, array_list3);
     };
-    vector<int> ma_no_using = find_no_using(nodes2,0, 3, array_list1, array_list2, array_list3);
-    vector<int> ma_waiting = waiting_array_list(nodes2,0, 3, array_list1, array_list2, array_list3);
+    vector<int> ma_no_using = find_no_using( 0, 3, array_list1, array_list2, array_list3);
+    vector<int> ma_waiting = waiting_array_list( 0, 3, array_list1, array_list2, array_list3);
     vector<int> ma_list;
     for (auto i: ma_no_using) {
         if (cap(3, i) > 0)
@@ -598,9 +586,9 @@ void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now
                     //将所有能进行写入的阵列全部列出，进行DSE
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build( 3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,-1, -1, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back( -1, -1, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
             }
@@ -611,15 +599,15 @@ void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back(nodes2,3, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back( 3, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 3) //写回magic
                 {
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build( 3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,3, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back( 3, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
 
@@ -637,23 +625,23 @@ void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now
                 Reg_sum.read_num_sum++;
                 //将读取时间更新到节点身上
                 //使用读时间更新函数
-                double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
-                read_time_update(nodes2,-1, -1, time_n, now, array_list1, array_list2, array_list3);
+                double time_n = time_only_magic( array_list1, array_list2, array_list3, now, back_type, back_id);
+                read_time_update( -1, -1, time_n, now, array_list1, array_list2, array_list3);
 //                now->end_time += reg.reg_read_time;
                 //更新整体的Reg能量
-                read_energy_update(nodes2,-1, -1, now, array_list1, array_list2, array_list3);
+                read_energy_update( -1, -1, now, array_list1, array_list2, array_list3);
                 //判断是否需要写覆盖
                 if ((back_type == 3) &&
-                    cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                    cap_array_lost( back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover( 0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                     return;
                 }
                 // 更新阵列写时间
-                time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                time_n = time_only_magic( array_list1, array_list2, array_list3, now, back_type, back_id);
                 //更新时间,节点，阵列
-                time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                time_update( 0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                 //阵列写：更新阵列能量
-                energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                energy_update( 0, back_type, back_id, array_list1, array_list2, array_list3);
                 //更新写回表
                 now->wb_pos[back_type].push_back(back_id);
                 //更新阵列的结束(执行)类型和位置
@@ -662,7 +650,7 @@ void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now
                 if (back_type == 0) now->do_type = -1; //reg
                 now->finish_id = back_id;
                 //更新阵列存储节点
-                array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                array_add_node( back_type, back_id, now, array_list1, array_list2, array_list3);
 
             }
                 break;
@@ -674,17 +662,17 @@ void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //阵列读时间更新
-                        double time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(nodes2,3, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        double time_n = time_only_magic( array_list1, array_list2, array_list3, now, from_type, from_id);
+                        read_time_update( 3, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,3, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update( 3, from_id, now, array_list1, array_list2, array_list3);
                         //将数据写到寄存器中
                         Reg_sum.write_num_sum++;
                         //更新寄存器写时间
-                        time_n = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        time_update(nodes2,0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
+                        time_n = time_only_magic( array_list1, array_list2, array_list3, now, from_type, from_id);
+                        time_update( 0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
                         //更新寄存器能量
-                        energy_update(nodes2,0, -1, -1, array_list1, array_list2, array_list3);
+                        energy_update( 0, -1, -1, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = -1;//代表写回的是寄存器
                         now->finish_id = back_id;
@@ -696,34 +684,34 @@ void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now
                         //前提，两个magic不一样
                         if (from_id == back_id) break;
                         //判断是否需要写覆盖
-                        if (cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                        if (cap_array_lost( back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover( 0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //阵列读时间更新
-                        double time = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
+                        double time = time_only_magic( array_list1, array_list2, array_list3, now, from_type, from_id);
 
-                        read_time_update(nodes2,3, from_id, time, now, array_list1, array_list2, array_list3);
+                        read_time_update( 3, from_id, time, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,3, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update( 3, from_id, now, array_list1, array_list2, array_list3);
 
                         //阵列写次数++
                         array_list3[back_id].write_number++;
                         //时间
-                        time = time_only_magic(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        time = time_only_magic( array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time, now, array_list1, array_list2, array_list3);
+                        time_update( 0, back_type, back_id, time, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update( 0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 3;//代表写回的是magic
                         now->finish_id = back_id;
                         //更新节点的写回表
                         now->wb_pos[back_type].push_back(back_id);
                         //更新阵列的存储表
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node( back_type, back_id, now, array_list1, array_list2, array_list3);
 
                     }
                         break;
@@ -740,20 +728,25 @@ void write_back_magic(vector<Node> &nodes2,int from_type, int from_id, Node *now
 
 }
 
-void op_magic_only(vector<Node> &nodes2,int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
+void op_magic_only(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
                    vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     now->do_type = 3;
     now->finish_id = decide_array_id;//模块调用怎么写？对操作进行拆解
     int row_need = op_row_need(op_type, 3);
     //判断中间值和结果是否需要写覆盖
-    if (cap_array_lost(nodes2,3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
-        write_cover(nodes2,100, now, 3, decide_array_id, row_need, array_list1, array_list2, array_list3);
+    if (cap_array_lost( 3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+        write_cover( 100, now, 3, decide_array_id, row_need, array_list1, array_list2, array_list3);
     }
     //更新时间
-    time_update(nodes2,op_type, 3, decide_array_id, time_now, now, array_list1, array_list2, array_list3);
+    time_update( op_type, 3, decide_array_id, time_now, now, array_list1, array_list2, array_list3);
     //更新能量
-    energy_update(nodes2,op_type, 3, decide_array_id, array_list1, array_list2, array_list3);
+    energy_update( op_type, 3, decide_array_id, array_list1, array_list2, array_list3);
 }
+
+
+
+
+
 
 
 //

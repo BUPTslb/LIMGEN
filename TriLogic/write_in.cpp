@@ -3,19 +3,19 @@
 
 //magic和sa的写覆盖
 //应该将需要写覆盖多少行也加入，会出现只有一部分覆盖的情况
-void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int pos_id, int row_need,
+void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     deque<int> erase_node_list;//队列头部先擦除，pop_front()
     switch (pos_array) {
         case 2: {
             //先存储出度为0的，然后是其他地方存的有的（这个cap_array_cover函数中有）
             for (int i: array_list2[pos_id].store_node) {
-                if (find_node_by_number(nodes2,i)->out_degree == 0) //节点出度为0，不再被需要
+                if (find_node_by_number(i)->out_degree == 0) //节点出度为0，不再被需要
                 {
                     erase_node_list.push_front(i);
                 }
                 //出度不为0，但是多个地方存的都有
-                if (find_node_by_number(nodes2,i)->out_degree > 0 && num_node_position(nodes2,find_node_by_number(nodes2,i)) > 1) {
+                if (find_node_by_number(i)->out_degree > 0 && num_node_position(find_node_by_number(i)) > 1) {
                     erase_node_list.push_back(i);
                 }
             }
@@ -24,12 +24,12 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
         case 3: {
             //先存储出度为0的，然后是其他地方存的有的（这个cap_array_cover函数中有）
             for (int i: array_list3[pos_id].store_node) {
-                if (find_node_by_number(nodes2,i)->out_degree == 0) //节点出度为0，不再被需要
+                if (find_node_by_number(i)->out_degree == 0) //节点出度为0，不再被需要
                 {
                     erase_node_list.push_front(i);
                 }
                 //出度不为0，但是多个地方存的都有
-                if (find_node_by_number(nodes2,i)->out_degree > 0 && num_node_position(nodes2,find_node_by_number(nodes2,i)) > 1) {
+                if (find_node_by_number(i)->out_degree > 0 && num_node_position(find_node_by_number(i)) > 1) {
                     erase_node_list.push_back(i);
                 }
             }
@@ -50,23 +50,23 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
             //第一个出队
             erase_node_list.pop_front();
             //将该阵列从被擦除的节点的写回表中擦除
-            wb_erase(find_node_by_number(nodes2,erase_node), pos_array, pos_id);
+            wb_erase(find_node_by_number(erase_node), pos_array, pos_id);
             //更新do_type和finish_id
-            if (find_node_by_number(nodes2,erase_node)->do_type == 6 &&
-                find_node_by_number(nodes2,erase_node)->finish_id == pos_id) {
+            if (find_node_by_number(erase_node)->do_type == 6 &&
+                find_node_by_number(erase_node)->finish_id == pos_id) {
                 //写回表空了，初始化为0
-                if (wb_empty(find_node_by_number(nodes2,erase_node))) {
-                    find_node_by_number(nodes2,erase_node)->do_type = 0;
-                    find_node_by_number(nodes2,erase_node)->finish_id = 0;
-                    if (find_node_by_number(nodes2,erase_node)->out_degree > 0) {
-                        write_back(nodes2,pos_array, pos_id, find_node_by_number(nodes2,erase_node), array_list1, array_list2,
+                if (wb_empty(find_node_by_number(erase_node))) {
+                    find_node_by_number(erase_node)->do_type = 0;
+                    find_node_by_number(erase_node)->finish_id = 0;
+                    if (find_node_by_number(erase_node)->out_degree > 0) {
+                        write_back(pos_array, pos_id, find_node_by_number(erase_node), array_list1, array_list2,
                                    array_list3);
                     }
                 } else {
                     //更新do_type finish_id
                     vector<int> do_type_ready; //TODO:DSE
                     for (int i = 0; i < 6; ++i) {
-                        if (!find_node_by_number(nodes2,erase_node)->wb_pos[i].empty()) {
+                        if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                             switch (i) {
                                 case 0:
                                     do_type_ready.push_back(-1);
@@ -89,21 +89,21 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
                         }
                     }
                     int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                    int wb_i_size = find_node_by_number(nodes2,erase_node)->wb_pos[do_type_chosen].size();
-                    find_node_by_number(nodes2,erase_node)->do_type = do_type_chosen;
-                    find_node_by_number(nodes2,erase_node)->finish_id = find_node_by_number(nodes2,
+                    int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                    find_node_by_number(erase_node)->do_type = do_type_chosen;
+                    find_node_by_number(erase_node)->finish_id = find_node_by_number(
                             erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
                 }
             }
             //将此节点从阵列的存储节点中擦除
-            array_erase_node(nodes2,erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
+            array_erase_node(erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
             //更新阵列的存储节点表
-            array_add_node(nodes2,pos_array, pos_id, now, array_list1, array_list2, array_list3);
+            array_add_node(pos_array, pos_id, now, array_list1, array_list2, array_list3);
             //更新时间
-            double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, pos_array, pos_id);
-            time_update(nodes2,0, 6, pos_id, time_n, now, array_list1, array_list2, array_list3);
+            double time_n = time_now(array_list1, array_list2, array_list3, now, pos_array, pos_id);
+            time_update(0, 6, pos_id, time_n, now, array_list1, array_list2, array_list3);
             //更新能量
-            energy_update(nodes2,0, 6, pos_id, array_list1, array_list2, array_list3);
+            energy_update(0, 6, pos_id, array_list1, array_list2, array_list3);
             //更新节点的do_type,存储到sa阵列：6
             now->do_type = 6;
             //更新节点的finish_id
@@ -119,23 +119,23 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
             //第一个出队
             erase_node_list.pop_front();
             //将该阵列从此节点的写回表中擦除
-            wb_erase(find_node_by_number(nodes2,erase_node), pos_array, pos_id);
+            wb_erase(find_node_by_number(erase_node), pos_array, pos_id);
             //更新被擦除节点的参数 do_type和finish_id
-            if (find_node_by_number(nodes2,erase_node)->do_type == 3 &&
-                find_node_by_number(nodes2,erase_node)->finish_id == pos_id) {
+            if (find_node_by_number(erase_node)->do_type == 3 &&
+                find_node_by_number(erase_node)->finish_id == pos_id) {
                 //写回表空了，初始化为0
-                if (wb_empty(find_node_by_number(nodes2,erase_node))) {
-                    find_node_by_number(nodes2,erase_node)->do_type = 0;
-                    find_node_by_number(nodes2,erase_node)->finish_id = 0;
-                    if (find_node_by_number(nodes2,erase_node)->out_degree > 0) {
-                        write_back(nodes2,pos_array, pos_id, find_node_by_number(nodes2,erase_node), array_list1, array_list2,
+                if (wb_empty(find_node_by_number(erase_node))) {
+                    find_node_by_number(erase_node)->do_type = 0;
+                    find_node_by_number(erase_node)->finish_id = 0;
+                    if (find_node_by_number(erase_node)->out_degree > 0) {
+                        write_back(pos_array, pos_id, find_node_by_number(erase_node), array_list1, array_list2,
                                    array_list3);
                     }
                 } else {
                     //更新do_type finish_id
                     vector<int> do_type_ready; //TODO:DSE
                     for (int i = 0; i < 6; ++i) {
-                        if (!find_node_by_number(nodes2,erase_node)->wb_pos[i].empty()) {
+                        if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                             switch (i) {
                                 case 0:
                                     do_type_ready.push_back(-1);
@@ -158,21 +158,21 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
                         }
                     }
                     int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                    int wb_i_size = find_node_by_number(nodes2,erase_node)->wb_pos[do_type_chosen].size();
-                    find_node_by_number(nodes2,erase_node)->do_type = do_type_chosen;
-                    find_node_by_number(nodes2,erase_node)->finish_id = find_node_by_number(nodes2,
+                    int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                    find_node_by_number(erase_node)->do_type = do_type_chosen;
+                    find_node_by_number(erase_node)->finish_id = find_node_by_number(
                             erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
                 }
             }
             //将此节点从阵列的存储节点中擦除
-            array_erase_node(nodes2,erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
+            array_erase_node(erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
             //更新阵列的存储节点表
-            array_add_node(nodes2,pos_array, pos_id, now, array_list1, array_list2, array_list3);
+            array_add_node(pos_array, pos_id, now, array_list1, array_list2, array_list3);
             //更新时间
-            double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, pos_array, pos_id);
-            time_update(nodes2,op_type, pos_array, pos_id, time_n, now, array_list1, array_list2, array_list3);
+            double time_n = time_now(array_list1, array_list2, array_list3, now, pos_array, pos_id);
+            time_update(op_type, pos_array, pos_id, time_n, now, array_list1, array_list2, array_list3);
             //更新能量
-            energy_update(nodes2,op_type, pos_array, pos_id, array_list1, array_list2, array_list3);
+            energy_update(op_type, pos_array, pos_id, array_list1, array_list2, array_list3);
             //更新节点的do_type,存储到magic阵列：3
             now->do_type = 3;
             //更新节点的finish_id
@@ -191,23 +191,23 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
                 //第一个出队
                 erase_node_list.pop_front();
                 //将该阵列从被擦除的节点的写回表中擦除
-                wb_erase(find_node_by_number(nodes2,erase_node), pos_array, pos_id);
+                wb_erase(find_node_by_number(erase_node), pos_array, pos_id);
                 //更新被擦除节点的do_type和finish_id
-                if (find_node_by_number(nodes2,erase_node)->do_type == 6 &&
-                    find_node_by_number(nodes2,erase_node)->finish_id == pos_id) {
+                if (find_node_by_number(erase_node)->do_type == 6 &&
+                    find_node_by_number(erase_node)->finish_id == pos_id) {
                     //写回表空了，初始化为0
-                    if (wb_empty(find_node_by_number(nodes2,erase_node))) {
-                        find_node_by_number(nodes2,erase_node)->do_type = 0;
-                        find_node_by_number(nodes2,erase_node)->finish_id = 0;
-                        if (find_node_by_number(nodes2,erase_node)->out_degree > 0) {
-                            write_back(nodes2,pos_array, pos_id, find_node_by_number(nodes2,erase_node), array_list1, array_list2,
+                    if (wb_empty(find_node_by_number(erase_node))) {
+                        find_node_by_number(erase_node)->do_type = 0;
+                        find_node_by_number(erase_node)->finish_id = 0;
+                        if (find_node_by_number(erase_node)->out_degree > 0) {
+                            write_back(pos_array, pos_id, find_node_by_number(erase_node), array_list1, array_list2,
                                        array_list3);
                         }
                     } else {
                         //更新do_type finish_id
                         vector<int> do_type_ready; //TODO:DSE
                         for (int i = 0; i < 6; ++i) {
-                            if (!find_node_by_number(nodes2,erase_node)->wb_pos[i].empty()) {
+                            if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                                 switch (i) {
                                     case 0:
                                         do_type_ready.push_back(-1);
@@ -230,14 +230,14 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
                             }
                         }
                         int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                        int wb_i_size = find_node_by_number(nodes2,erase_node)->wb_pos[do_type_chosen].size();
-                        find_node_by_number(nodes2,erase_node)->do_type = do_type_chosen;
-                        find_node_by_number(nodes2,erase_node)->finish_id = find_node_by_number(nodes2,
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                        find_node_by_number(erase_node)->do_type = do_type_chosen;
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
                                 erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
                     }
                 }
                 //将此节点从阵列的存储节点中擦除
-                array_erase_node(nodes2,erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
+                array_erase_node(erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
             }
         }
         if (pos_array == 3) {
@@ -247,23 +247,23 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
                 //第一个出队
                 erase_node_list.pop_front();
                 //将该阵列从此节点的写回表中擦除
-                wb_erase(find_node_by_number(nodes2,erase_node), pos_array, pos_id);
+                wb_erase(find_node_by_number(erase_node), pos_array, pos_id);
                 //更新被擦除节点的参数 do_type和finish_id
-                if (find_node_by_number(nodes2,erase_node)->do_type == 3 &&
-                    find_node_by_number(nodes2,erase_node)->finish_id == pos_id) {
+                if (find_node_by_number(erase_node)->do_type == 3 &&
+                    find_node_by_number(erase_node)->finish_id == pos_id) {
                     //写回表空了，初始化为0
-                    if (wb_empty(find_node_by_number(nodes2,erase_node))) {
-                        find_node_by_number(nodes2,erase_node)->do_type = 0;
-                        find_node_by_number(nodes2,erase_node)->finish_id = 0;
-                        if (find_node_by_number(nodes2,erase_node)->out_degree > 0) {
-                            write_back(nodes2,pos_array, pos_id, find_node_by_number(nodes2,erase_node), array_list1, array_list2,
+                    if (wb_empty(find_node_by_number(erase_node))) {
+                        find_node_by_number(erase_node)->do_type = 0;
+                        find_node_by_number(erase_node)->finish_id = 0;
+                        if (find_node_by_number(erase_node)->out_degree > 0) {
+                            write_back(pos_array, pos_id, find_node_by_number(erase_node), array_list1, array_list2,
                                        array_list3);
                         }
                     } else {
                         //更新do_type finish_id
                         vector<int> do_type_ready; //TODO:DSE
                         for (int i = 0; i < 6; ++i) {
-                            if (!find_node_by_number(nodes2,erase_node)->wb_pos[i].empty()) {
+                            if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                                 switch (i) {
                                     case 0:
                                         do_type_ready.push_back(-1);
@@ -286,14 +286,14 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
                             }
                         }
                         int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                        int wb_i_size = find_node_by_number(nodes2,erase_node)->wb_pos[do_type_chosen].size();
-                        find_node_by_number(nodes2,erase_node)->do_type = do_type_chosen;
-                        find_node_by_number(nodes2,erase_node)->finish_id = find_node_by_number(nodes2,
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                        find_node_by_number(erase_node)->do_type = do_type_chosen;
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
                                 erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
                     }
                 }
                 //将此节点从阵列的存储节点中擦除
-                array_erase_node(nodes2,erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
+                array_erase_node(erase_node, pos_array, pos_id, array_list1, array_list2, array_list3);
             }
         }
 
@@ -305,18 +305,18 @@ void write_cover(vector<Node> &nodes2,int op_type, Node *now, int pos_array, int
 //写回 from_type表示写回的类型 -1:Reg 1:lut-out 2:sa-out 3:magic存储 4:lut-buffer 5：sa-buffer 6:sa存储
 //back-type应该和wb_pos对应 0:reg 1:lut 2:sa 3:ma 4:lut-latch 5.sa-buffer
 //更新：阵列的存储节点，时间，能量；节点的写回表，do_type,finish_id,时间
-void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                 vector<magic_arr> &array_list3, int back_type, int back_id) {
 //TODO:可以写回多个地方：buffer/reg/ma/sa,DSE决定吧,所有的ready
 //写到buffer中，如果buffer中已经有数据了如何处理？
 
     //先列出magic和sa所有能写的阵列，按照优先级进行排序
     auto cap = [&](int array_type, int array_id) {
-        return cap_array_lost(nodes2,array_type, array_id, array_list1, array_list2, array_list3) +
-               cap_array_cover(nodes2,array_type, array_id, array_list1, array_list2, array_list3);
+        return cap_array_lost(array_type, array_id, array_list1, array_list2, array_list3) +
+               cap_array_cover(array_type, array_id, array_list1, array_list2, array_list3);
     };
-    vector<int> sa_no_using = find_no_using(nodes2,0, 2, array_list1, array_list2, array_list3);
-    vector<int> sa_waiting = waiting_array_list(nodes2,0, 2, array_list1, array_list2, array_list3);
+    vector<int> sa_no_using = find_no_using(0, 2, array_list1, array_list2, array_list3);
+    vector<int> sa_waiting = waiting_array_list(0, 2, array_list1, array_list2, array_list3);
     vector<int> sa_list;
     for (auto i: sa_no_using) {
         if (cap(2, i) > 0)
@@ -326,8 +326,8 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
         if (cap(2, i) > 0)
             sa_list.push_back(i);
     }
-    vector<int> ma_no_using = find_no_using(nodes2,0, 3, array_list1, array_list2, array_list3);
-    vector<int> ma_waiting = waiting_array_list(nodes2,0, 3, array_list1, array_list2, array_list3);
+    vector<int> ma_no_using = find_no_using(0, 3, array_list1, array_list2, array_list3);
+    vector<int> ma_waiting = waiting_array_list(0, 3, array_list1, array_list2, array_list3);
     vector<int> ma_list;
     for (auto i: ma_no_using) {
         if (cap(3, i) > 0)
@@ -351,17 +351,17 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                     //TODO：想一想写回的优先级？
                     ready_array = sa_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,2, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,-1, -1, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back(-1, -1, now, array_list1, array_list2, array_list3, 2, pos);
                 }
                 if (write_type == 3) {
                     //将所有能进行写入的阵列全部列出，进行DSE
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,-1, -1, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back(-1, -1, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
             }
@@ -374,28 +374,28 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 4) //buffer,只写回自己阵列
                 {
-                    write_back(nodes2,1, from_id, now, array_list1, array_list2, array_list3, 4, from_id);
+                    write_back(1, from_id, now, array_list1, array_list2, array_list3, 4, from_id);
                 }
                 if (write_type == 2) {
                     //将所有能进行写入的阵列全部列出，进行DSE
                     //TODO：想一想写回的优先级？
                     ready_array = sa_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,2, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,1, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back(1, from_id, now, array_list1, array_list2, array_list3, 2, pos);
                 }
                 if (write_type == 3) {
                     //将所有能进行写入的阵列全部列出，进行DSE
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,1, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back(1, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
                 if (write_type == 0) //写回寄存器
                 {
-                    write_back(nodes2,1, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back(1, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
 
             }
@@ -408,7 +408,7 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 //选择要写回的类型，如果选择了buffer
                 if (write_type == 5) //buffer
                 {
-                    write_back(nodes2,2, from_id, now, array_list1, array_list2, array_list3, 5, from_id);
+                    write_back(2, from_id, now, array_list1, array_list2, array_list3, 5, from_id);
                 }
                 if (write_type == 2) //sa
                 {
@@ -416,22 +416,22 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                     //TODO：想一想写回的优先级？
                     ready_array = sa_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,2, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,2, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back(2, from_id, now, array_list1, array_list2, array_list3, 2, pos);
                 }
                 if (write_type == 3) //magic
                 {
                     //将所有能进行写入的阵列全部列出，进行DSE
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,2, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back(2, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
                 if (write_type == 0) //写回寄存器
                 {
-                    write_back(nodes2,2, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back(2, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
 
             }
@@ -442,24 +442,24 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back(nodes2,3, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back(3, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 2) //写回sa
                 {
                     ready_array = sa_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,2, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,3, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back(3, from_id, now, array_list1, array_list2, array_list3, 2, pos);
 
                 }
                 if (write_type == 3) //写回magic
                 {
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,3, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back(3, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
 
@@ -471,24 +471,24 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back(nodes2,4, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back(4, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 2) //写回sa
                 {
                     ready_array = sa_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,2, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,4, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back(4, from_id, now, array_list1, array_list2, array_list3, 2, pos);
 
                 }
                 if (write_type == 3) //写回magic
                 {
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,4, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back(4, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
             }
@@ -499,24 +499,24 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back(nodes2,5, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back(5, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 2) //写回sa
                 {
                     ready_array = sa_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,2, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,5, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back(5, from_id, now, array_list1, array_list2, array_list3, 2, pos);
 
                 }
                 if (write_type == 3) //写回magic
                 {
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,5, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back(5, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
 
@@ -529,24 +529,24 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back(nodes2,6, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back(6, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 2) //写回sa
                 {
                     ready_array = sa_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,2, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,6, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back(6, from_id, now, array_list1, array_list2, array_list3, 2, pos);
 
                 }
                 if (write_type == 3) //写回magic
                 {
                     ready_array = ma_list;
                     if (ready_array.empty())
-                        ready_array.push_back(build(nodes2,3, 0, array_list1, array_list2, array_list3));
+                        ready_array.push_back(build(3, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back(nodes2,6, from_id, now, array_list1, array_list2, array_list3, 3, pos);
+                    write_back(6, from_id, now, array_list1, array_list2, array_list3, 3, pos);
                 }
 
             }
@@ -563,23 +563,23 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 Reg_sum.read_num_sum++;
                 //将读取时间更新到节点身上
                 //使用读时间更新函数
-                double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
-                read_time_update(nodes2,-1, -1, time_n, now, array_list1, array_list2, array_list3);
+                double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
+                read_time_update(-1, -1, time_n, now, array_list1, array_list2, array_list3);
 //                now->end_time += reg.reg_read_time;
                 //更新整体的Reg能量
-                read_energy_update(nodes2,-1, -1, now, array_list1, array_list2, array_list3);
+                read_energy_update(-1, -1, now, array_list1, array_list2, array_list3);
                 //判断是否需要写覆盖
                 if ((back_type == 2 || back_type == 3) &&
-                    cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                    cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                     return;
                 }
                 // 更新阵列写时间
-                time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                 //更新时间,节点，阵列
-                time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                 //阵列写：更新阵列能量
-                energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                 //更新写回表
                 now->wb_pos[back_type].push_back(back_id);
                 //更新阵列的结束(执行)类型和位置
@@ -589,7 +589,7 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 if (back_type == 2) now->do_type = 6;   //sa存储
                 now->finish_id = back_id;
                 //更新阵列存储节点
-                array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
 
             }
                 break;
@@ -601,11 +601,11 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //更新寄存器写次数
                         Reg_sum.write_num_sum++;
                         //更新寄存器能量
-                        energy_update(nodes2,0, -1, -1, array_list1, array_list2, array_list3);
+                        energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                         //时间
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
                         //更新节点写回表
                         now->wb_pos[0].push_back(-1);
 
@@ -620,23 +620,23 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //阵列写次数++
                         array_list2[back_id].write_number++;
                         //判断是否需要写覆盖
-                        if (cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                        if (cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //时间
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新节点
                         //更新阵列的结束(执行)类型和位置
                         now->do_type = 6;//代表写回的是sa的存储中
                         now->finish_id = back_id;
                         //更新写回表
                         now->wb_pos[back_type].push_back(back_id);
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
                     }
                         break;
                     case 3: //写回magic
@@ -644,22 +644,22 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //阵列写次数++
                         array_list3[back_id].write_number++;
                         //判断是否需要写覆盖
-                        if (cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                        if (cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //时间
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新阵列的结束(执行)类型和位置
                         now->do_type = 3;//代表写回的是sa的存储中
                         now->finish_id = back_id;
                         //更新写回表
                         now->wb_pos[back_type].push_back(back_id);
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
 
                     }
                         break;
@@ -671,23 +671,23 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         if (!array_list1[back_id].lut_latch.empty() &&
                             (array_list1[back_id].lut_latch.back() != now->node_id)) {
                             //先将现在buffer对应的节点[不是now]的写回表中的这个buffer擦除掉
-                            wb_erase(find_node_by_number(nodes2,array_list1[back_id].lut_latch.back()), back_type, back_id);
+                            wb_erase(find_node_by_number(array_list1[back_id].lut_latch.back()), back_type, back_id);
                             //buffer被擦除了，do_type和finish_id是否也需要更新？
                             //如果其do_type和finish_id都是被擦除的，则将其do_type和finish_id都改为0
-                            if (find_node_by_number(nodes2,array_list1[back_id].lut_latch.back())->do_type==4
-                                &&find_node_by_number(nodes2,array_list1[back_id].lut_latch.back())->finish_id==back_id)
+                            if (find_node_by_number(array_list1[back_id].lut_latch.back())->do_type==4
+                                &&find_node_by_number(array_list1[back_id].lut_latch.back())->finish_id==back_id)
                             {
-                                find_node_by_number(nodes2,array_list1[back_id].lut_latch.back())->do_type = 0;
-                                find_node_by_number(nodes2,array_list1[back_id].lut_latch.back())->finish_id = 0;
+                                find_node_by_number(array_list1[back_id].lut_latch.back())->do_type = 0;
+                                find_node_by_number(array_list1[back_id].lut_latch.back())->finish_id = 0;
                             }
 
                             //出度>0，写回表为空
-                            if (find_node_by_number(nodes2,array_list1[back_id].lut_latch.back())->out_degree > 0 &&
-                                wb_empty(find_node_by_number(nodes2,array_list1[back_id].lut_latch.back())))
+                            if (find_node_by_number(array_list1[back_id].lut_latch.back())->out_degree > 0 &&
+                                wb_empty(find_node_by_number(array_list1[back_id].lut_latch.back())))
                                 //找个地方写回，from_type=4,lut-buffer
                             {
                                 //从4.lut-buffer出去的，应该只能写回reg-sa-magic
-                                write_back(nodes2,4, back_id, find_node_by_number(nodes2,array_list1[back_id].lut_latch.back()),
+                                write_back(4, back_id, find_node_by_number(array_list1[back_id].lut_latch.back()),
                                            array_list1, array_list2, array_list3);
                             }
                         }
@@ -696,10 +696,10 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //更新buffer
                         array_list1[back_id].lut_latch.push_back(now->node_id);//新的buffer输出
                         buffer_sum.buffer_write_sum++;//更新buffer写次数
-                        energy_update(nodes2,0, 4, back_id, array_list1, array_list2, array_list3); //更新buffer能量
+                        energy_update(0, 4, back_id, array_list1, array_list2, array_list3); //更新buffer能量
                         //更新节点的end_time
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
 
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 4;//代表写回的是lut-buffer
@@ -722,11 +722,11 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                     case 0://来自sa-out 2 写回寄存器 0/-1
                     {
                         Reg_sum.write_num_sum++;
-                        energy_update(nodes2,0, -1, -1, array_list1, array_list2, array_list3);
+                        energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                         //时间
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = -1;//代表写回的是寄存器
                         now->finish_id = back_id;
@@ -740,21 +740,21 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //阵列写次数++
                         array_list2[back_id].write_number++;
                         //判断是否需要写覆盖
-                        if (cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                        if (cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //时间
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 6;//代表写回的是sa存储
                         now->finish_id = back_id;
                         now->wb_pos[back_type].push_back(back_id);
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
                     }
                         break;
                     case 3: //来自sa-out 2 写回magic
@@ -762,21 +762,21 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //阵列写次数++
                         array_list3[back_id].write_number++;
                         //判断是否需要写覆盖
-                        if (cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                        if (cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //时间
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 3;//代表写回的是magic
                         now->finish_id = back_id;
                         now->wb_pos[back_type].push_back(back_id);
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
 
                     }
                         break;
@@ -788,20 +788,20 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         if (!array_list2[back_id].sa_buffer.empty() &&
                             (array_list2[back_id].sa_buffer.back() != now->node_id)) {
                             //先将现在buffer对应的节点[不是now]的写回表中的这个buffer擦除掉
-                            wb_erase(find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back()), back_type, back_id);
+                            wb_erase(find_node_by_number(array_list2[back_id].sa_buffer.back()), back_type, back_id);
                             //更改do_type和finish_id
-                            if (find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back())->do_type==5
-                                &&find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back())->finish_id==back_id)
+                            if (find_node_by_number(array_list2[back_id].sa_buffer.back())->do_type==5
+                                &&find_node_by_number(array_list2[back_id].sa_buffer.back())->finish_id==back_id)
                             {
-                                find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back())->do_type = 0;
-                                find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back())->finish_id = 0;
+                                find_node_by_number(array_list2[back_id].sa_buffer.back())->do_type = 0;
+                                find_node_by_number(array_list2[back_id].sa_buffer.back())->finish_id = 0;
                             }
                             //出度>0，写回表为空
-                            if (find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back())->out_degree > 0 &&
-                                wb_empty(find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back())))
+                            if (find_node_by_number(array_list2[back_id].sa_buffer.back())->out_degree > 0 &&
+                                wb_empty(find_node_by_number(array_list2[back_id].sa_buffer.back())))
                                 //找个地方写回，from_type=5,sa-buffer
                             {
-                                write_back(nodes2,5, back_id, find_node_by_number(nodes2,array_list2[back_id].sa_buffer.back()), array_list1, array_list2, array_list3);
+                                write_back(5, back_id, find_node_by_number(array_list2[back_id].sa_buffer.back()), array_list1, array_list2, array_list3);
                             }
 
                         }
@@ -810,10 +810,10 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //更新buffer
                         array_list2[back_id].sa_buffer.push_back(now->node_id);//新的buffer输出
                         buffer_sum.buffer_write_sum++;//更新buffer写次数
-                        energy_update(nodes2,0, 5, back_id, array_list1, array_list2, array_list3); //更新buffer能量
+                        energy_update(0, 5, back_id, array_list1, array_list2, array_list3); //更新buffer能量
                         //更新节点的end_time
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 5;//代表写回的是sa-buffer
                         now->finish_id = back_id;
@@ -835,17 +835,17 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //阵列读时间更新
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(nodes2,3, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
+                        read_time_update(3, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,3, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(3, from_id, now, array_list1, array_list2, array_list3);
                         //将数据写到寄存器中
                         Reg_sum.write_num_sum++;
                         //更新寄存器写时间
-                        time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        time_update(nodes2,0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
+                        time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
+                        time_update(0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
                         //更新寄存器能量
-                        energy_update(nodes2,0, -1, -1, array_list1, array_list2, array_list3);
+                        energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = -1;//代表写回的是寄存器
                         now->finish_id = back_id;
@@ -857,32 +857,32 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //判断是否需要写覆盖
-                        if (cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                        if (cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //阵列读时间更新
-                        double time = time_now(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        time = max(time, time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id));
-                        read_time_update(nodes2,3, from_id, time, now, array_list1, array_list2, array_list3);
+                        double time = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
+                        time = max(time, time_now(array_list1, array_list2, array_list3, now, back_type, back_id));
+                        read_time_update(3, from_id, time, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,3, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(3, from_id, now, array_list1, array_list2, array_list3);
 
                         //阵列写次数++
                         array_list2[back_id].write_number++;
                         //时间
-                        time = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        time = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 6;//代表写回的是sa阵列
                         now->finish_id = back_id;
                         //更新节点的写回表
                         now->wb_pos[back_type].push_back(back_id);
                         //更新阵列的存储表
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
                     }
                         break;
                     case 3: //来自magic 3 写回magic
@@ -890,34 +890,34 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //前提，两个magic不一样
                         if (from_id == back_id) break;
                         //判断是否需要写覆盖
-                        if (cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                        if (cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //阵列读时间更新
-                        double time = time_now(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
+                        double time = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
 
-                        read_time_update(nodes2,3, from_id, time, now, array_list1, array_list2, array_list3);
+                        read_time_update(3, from_id, time, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,3, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(3, from_id, now, array_list1, array_list2, array_list3);
 
                         //阵列写次数++
                         array_list3[back_id].write_number++;
                         //时间
-                        time = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        time = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 3;//代表写回的是magic
                         now->finish_id = back_id;
                         //更新节点的写回表
                         now->wb_pos[back_type].push_back(back_id);
                         //更新阵列的存储表
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
 
                     }
                         break;
@@ -932,24 +932,24 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 buffer_sum.buffer_read_sum++;
                 //将读取时间更新到节点身上
                 //使用读时间更新函数
-                double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now);
-                read_time_update(nodes2,4, from_id, time_n, now, array_list1, array_list2, array_list3);
+                double time_n = time_now(array_list1, array_list2, array_list3, now);
+                read_time_update(4, from_id, time_n, now, array_list1, array_list2, array_list3);
 //                now->end_time += reg.reg_read_time;
                 //更新整体的buffer能量
-                read_energy_update(nodes2,4, from_id, now, array_list1, array_list2, array_list3);
+                read_energy_update(4, from_id, now, array_list1, array_list2, array_list3);
                 //判断是否有阵列写覆盖
                 if ((back_type == 2 || back_type == 3) &&
-                    cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                    write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                    cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                    write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                     return;
                 }
                 // 更新阵列写时间
-                time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                 //更新时间,节点，阵列
                 if (back_type == 0) back_type = -1; //单独处理写回寄存器的类型
-                time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                 //阵列写：更新阵列能量
-                energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                 //将寄存器类型改回0
                 if (back_type == -1) back_type = 0;
                 //更新阵列的结束(执行)类型和位置
@@ -961,7 +961,7 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 //更新写回表
                 now->wb_pos[back_type].push_back(back_id);
                 //更新阵列存储节点
-                array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
 
             }
                 break;
@@ -971,25 +971,25 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 buffer_sum.buffer_read_sum++;
                 //将读取时间更新到节点身上
                 //使用读时间更新函数
-                double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now);
-                read_time_update(nodes2,5, from_id, time_n, now, array_list1, array_list2, array_list3);
+                double time_n = time_now(array_list1, array_list2, array_list3, now);
+                read_time_update(5, from_id, time_n, now, array_list1, array_list2, array_list3);
 //                now->end_time += reg.reg_read_time;
                 //更新整体的buffer能量
-                read_energy_update(nodes2,5, from_id, now, array_list1, array_list2, array_list3);
+                read_energy_update(5, from_id, now, array_list1, array_list2, array_list3);
                 //判断是否有阵列写覆盖
                 if ((back_type == 2 || back_type == 3) &&
-                    cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                    cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
                     //调用写覆盖要直接返回
-                    write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                    write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                     return ;
                 }
                 // 更新阵列写时间
-                time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                 //更新时间,节点，阵列
                 if (back_type == 0) back_type = -1; //单独处理写回寄存器的类型
-                time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                 //阵列写：更新阵列能量
-                energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                 //更新写回表
                 if (back_type == -1) back_type = 0;//将寄存器类型改回0
                 now->wb_pos[back_type].push_back(back_id);
@@ -1000,7 +1000,7 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                 if (back_type == 2) now->do_type = 6;   //sa存储
                 now->finish_id = back_id;
                 //更新阵列存储节点
-                array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
 
             }
                 break;
@@ -1012,17 +1012,17 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //从阵列中读数据
                         array_list2[from_id].read_number++;
                         //阵列读时间更新
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(nodes2,2, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
+                        read_time_update(2, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,2, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(2, from_id, now, array_list1, array_list2, array_list3);
                         //将数据写到寄存器中
                         Reg_sum.write_num_sum++;
                         //更新寄存器写时间
-                        time_n = time_now(nodes2,array_list1, array_list2, array_list3, now);
-                        time_update(nodes2,0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
+                        time_n = time_now(array_list1, array_list2, array_list3, now);
+                        time_update(0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
                         //更新寄存器能量
-                        energy_update(nodes2,0, -1, -1, array_list1, array_list2, array_list3);
+                        energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                         //更新阵列的结束(执行)类型和位置
                         now->do_type = -1;
                         now->finish_id = back_id;
@@ -1036,32 +1036,32 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //从阵列中读数据
                         array_list2[from_id].read_number++;
                         //阵列读时间更新
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(nodes2,2, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
+                        read_time_update(2, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,2, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(2, from_id, now, array_list1, array_list2, array_list3);
 
                         //阵列写次数++
                         array_list2[back_id].write_number++;
                         //判断是否有阵列写覆盖
                         if ((back_type == 2 || back_type == 3) &&
-                            cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                            cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //时间
-                        time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新阵列的结束(执行)类型和位置
                         now->do_type = 6;
                         now->finish_id = back_id;
                         //更新节点的写回表
                         now->wb_pos[back_type].push_back(back_id);
                         //更新阵列的存储表
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
                     }
                         break;
                     case 3: //来自sa存储6 写回magic
@@ -1069,32 +1069,32 @@ void write_back(vector<Node> &nodes2,int from_type, int from_id, Node *now, vect
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //阵列读时间更新
-                        double time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(nodes2,2, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
+                        read_time_update(2, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(nodes2,2, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(2, from_id, now, array_list1, array_list2, array_list3);
 
                         //阵列写次数++
                         array_list3[back_id].write_number++;
                         //判断是否有阵列写覆盖
                         if ((back_type == 2 || back_type == 3) &&
-                            cap_array_lost(nodes2,back_type, back_id, array_list1, array_list2, array_list3) == 0) {
-                            write_cover(nodes2,0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
+                            cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
+                            write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
                             return;
                         }
                         //时间
-                        time_n = time_now(nodes2,array_list1, array_list2, array_list3, now, back_type, back_id);
+                        time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(nodes2,0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(nodes2,0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
                         //更新阵列的结束(执行)类型和位置
                         now->do_type = back_type;
                         now->finish_id = back_id;
                         //更新节点的写回表
                         now->wb_pos[back_type].push_back(back_id);
                         //更新阵列的存储表
-                        array_add_node(nodes2,back_type, back_id, now, array_list1, array_list2, array_list3);
+                        array_add_node(back_type, back_id, now, array_list1, array_list2, array_list3);
 
                     }
                         break;

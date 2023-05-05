@@ -158,10 +158,10 @@ double ma_energy(int op_type)
 }
 //计算架构性能参数
 //延迟,所有时间中的最大值
-double latency_all(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+double latency_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
     double latency_all=0;
-    for (auto i:nodes2) {
+    for (auto i:nodes) {
         latency_all= max(latency_all,i.end_time);
     }
     for (auto i:array_list1) {
@@ -178,7 +178,7 @@ double latency_all(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_
 }
 //面积，阵列+buffer+Reg
 //TODO：测量面积
-double area_all(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
+double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
     double area_all=0;
     //阵列的面积

@@ -1,5 +1,5 @@
 #include "logic_func.h"
-void array_add_node(vector<Node> &nodes2,int array_type, int array_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void array_add_node(int array_type, int array_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     vector<magic_arr> &array_list3) {
     if (is_in_wb(array_type,array_id, now)) return;
     else{
@@ -14,7 +14,7 @@ void array_add_node(vector<Node> &nodes2,int array_type, int array_id, Node *now
 }
 
 //将阵列存储表中的节点删除
-void array_erase_node(vector<Node> &nodes2,int erase_node,int array_type,int array_id,
+void array_erase_node(int erase_node,int array_type,int array_id,
                       vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,vector<magic_arr> &array_list3)
 {
     switch (array_type) {

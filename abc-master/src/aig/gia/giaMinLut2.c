@@ -418,7 +418,7 @@ word * Abc_TtMin_rec( word * pF, word * pR, int nVars, Vec_Wrd_t * vMemory, Vec_
     }
     if ( 1 && vNodes2 )
     {
-        Vec_Int_t * vLayer = Vec_WecEntry( vNodes2, nVars );
+        Vec_Int_t * vLayer = Vec_WecEntry( v  nVars );
         Vec_IntForEachEntry( vLayer, Entry, i )
         {
             word * pTemp = Vec_WrdEntryP( vMemory, Entry );

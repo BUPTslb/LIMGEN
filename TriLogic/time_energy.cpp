@@ -2,9 +2,10 @@
 #include "parameter.h"
 
 //现在已经决定了从哪里找操作数，在哪里执行，可以直接进行时间更新
+//TODO:时间更新策略有问题
 //注意，现在只是获取开始的时间
 //这里只根据依赖的阵列、节点来获取时间，对reg,buffer更新不需要调用，直接在节点上更改
-double time_now(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                 vector<magic_arr> &array_list3, Node *node_now, int decide_array_type, int decide_array_id) {
     //函数执行的操作：
     //执行阵列：更新开始时间和结束时间，将使用的阵列置为is_using=true
@@ -56,9 +57,9 @@ double time_now(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr
                     wb_empty(node_now->depend1)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
                 {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                    write_back(nodes2,node_now->depend1->do_type, node_now->depend1->finish_id, node_now, array_list1,
+                    write_back(node_now->depend1->do_type, node_now->depend1->finish_id, node_now, array_list1,
                                array_list2, array_list3);
-                    time_n = time_now(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                    time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                       decide_array_id);//更新时间
                 }
             }
@@ -78,11 +79,11 @@ double time_now(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:lut-buffer 5：sa-buffer 6:sa存储
                 if (node_now->depend1->do_type == 1 || node_now->depend1->do_type == 2) {
-                    write_back(nodes2,node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
+                    write_back(node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
                                array_list1, array_list2, array_list3);
                 }
                 cout << "time_now中的write_back没问题" << endl;
-                time_n = time_now(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
 
@@ -97,9 +98,9 @@ double time_now(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr
                 wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
 //写回 from_type表示写回的类型 0:Reg 1:lut-out 2:sa-out 3:magic存储 4:sa-buffer 5：lut-buffer 6:sa存储
-                write_back(nodes2,node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2,
+                write_back(node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2,
                            array_list1, array_list2, array_list3);
-                time_n = time_now(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type,
+                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
             time_n = max(time_n, time2);
@@ -121,10 +122,10 @@ double time_now(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr
         if (node_now->depend2 != nullptr) //将2存储起来，但是2可能是个立即数，也可能已经存了
         {
             if (ft() == 1) {
-                write_back(nodes2,node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2, array_list1,
+                write_back(node_now->depend2->do_type, node_now->depend2->finish_id, node_now->depend2, array_list1,
                            array_list2,array_list3);//不确定写到哪了
                 //更新时间
-                time_n = time_now(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
+                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
 
             }
             //存储其中一个节点，write_in
@@ -132,11 +133,11 @@ double time_now(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr
         if (node_now->depend1 != nullptr) //2
         {
             if (ft() == 2) { //存储其中一个节点，write_in
-                write_back(nodes2,node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1, array_list1,
+                write_back(node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1, array_list1,
                            array_list2,
                            array_list3);//不确定写到哪了
                 //更新时间
-                time_n = time_now(nodes2,array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
+                time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type, decide_array_id);
             }
         }
 //需要写回的全部写回完毕
@@ -165,7 +166,7 @@ double time_now(vector<Node> &nodes2,vector<lut_arr> &array_list1, vector<sa_arr
 
 
 //只有写操作和执行的时候才会调用
-void time_update(vector<Node> &nodes2,int op_type, int do_type, int decide_array_id, double time_now, Node *node_now,
+void time_update(int op_type, int do_type, int decide_array_id, double time_now, Node *node_now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //set start time of node
     if (node_now->start_time == 0 || op_type == 0)
@@ -178,6 +179,7 @@ void time_update(vector<Node> &nodes2,int op_type, int do_type, int decide_array
         switch (do_type) {
             case -1://REG
             {
+                //TODO:设置为写到寄存器中的时间
                 node_now->end_time = time_now + reg.reg_write_time;//寄存器写
                 cout << "写到寄存器后的时间为" << node_now->end_time << endl;
             }
@@ -260,7 +262,8 @@ void time_update(vector<Node> &nodes2,int op_type, int do_type, int decide_array
 //每次读取都得调用这个函数更新时间
 //这里的array_type和写回表一样 -1 1 2 3 4 5
 //读，主要更新的是阵列的时间。阵列的时间对节点的时间产生连锁反应
-void read_time_update(vector<Node> &nodes2,int array_type, int array_id, double time_now, Node *now, vector<lut_arr> &array_list1,
+//TODO:now应该是一个数字“=”类型
+void read_time_update(int array_type, int array_id, double time_now, Node *now, vector<lut_arr> &array_list1,
                       vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
 
     //对不合理情况进行判断
@@ -309,7 +312,8 @@ void read_time_update(vector<Node> &nodes2,int array_type, int array_id, double 
     }
 }
 
-void read_energy_update(vector<Node> &nodes2,int array_type, int array_id, Node *node_now,
+//TODO:，每次读都得调用这个函数来更新其能量
+void read_energy_update(int array_type, int array_id, Node *node_now,
                         vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //对不合理情况进行判断
     if (array_type==1||array_type==2)
@@ -348,7 +352,7 @@ void read_energy_update(vector<Node> &nodes2,int array_type, int array_id, Node 
 
 }
 
-void energy_update(vector<Node> &nodes2,int op_type, int do_type, int array_id, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void energy_update(int op_type, int do_type, int array_id, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                    vector<magic_arr> &array_list3) {
     if (op_type == 0) //写的操作,目标肯定只有 -1 3 4 5 6
     {
