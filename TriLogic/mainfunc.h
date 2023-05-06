@@ -43,10 +43,16 @@ struct Node {
 
 extern vector<Node> nodes;//节点类型的向量，里面可以放下一个个节点
 
+extern vector<Node> nodes2;
+
+void reset_nodes2();
+
 
 //定义函数，输入操作类型，操作数位数，lut类型，输出数量和级数
-int lut_num_op(int op_type,int lut_type);
-int lut_level_op(int op_type,int lut_type);
+int lut_num_op(int op_type, int lut_type);
+
+int lut_level_op(int op_type, int lut_type);
+
 //阵列基类
 class Array {
 public:
@@ -84,27 +90,33 @@ struct magic_arr : public Array {
 };
 
 int Type2node(string type);//Type2node函数的声明
+//在构建节点关系的时候用1
+Node *find_node_by_number1(int node_id);//寻找节点指针的函数声明
 Node *find_node_by_number(int node_id);//寻找节点指针的函数声明
 //topo排序
 void topologicalSort(vector<Node> nodes, map<int, int> &inDegree,
-                     vector<vector<Node>> &controlstep,map<int, int> &id_pos);//函数声明
+                     vector<vector<Node>> &controlstep, map<int, int> &id_pos);//函数声明
 void ComIndegree(queue<int> &nodeQueue, map<int, int> &inDegree,
-                 vector<Node> &nodes,map<int, int> &id_pos);//子函数声明
+                 vector<Node> &nodes, map<int, int> &id_pos);//子函数声明
 //将算子转换成符号
 int op2int(string operation);
 
 //控制步处理函数
-void control_step(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                  vector<magic_arr> &array_list3);
+std::vector<double>
+control_step(vector<vector<Node *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+             vector<magic_arr> &array_list3);
 
-void only_lut(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                  vector<magic_arr> &array_list3);
+std::vector<double>
+only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+         vector<magic_arr> &array_list3);
 
-void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-              vector<magic_arr> &array_list3);
+std::vector<double>
+only_sa(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+        vector<magic_arr> &array_list3);
 
-void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-              vector<magic_arr> &array_list3);
+std::vector<double>
+only_magic(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+           vector<magic_arr> &array_list3);
 
 void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                         vector<magic_arr> &array_list3);
@@ -113,11 +125,20 @@ void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &ar
 //全部运行完之后
 //计算架构性能参数
 //延迟,所有时间中的最大值
-double latency_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
+double
+latency_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2, std::vector<magic_arr> &array_list3);
 
 //面积，阵列+buffer+Reg
-double area_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
+double
+area_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2, std::vector<magic_arr> &array_list3);
+
 //能耗,阵列+buffer+Reg
-double energy_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,std::vector<magic_arr> &array_list3);
+double
+energy_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2, std::vector<magic_arr> &array_list3);
+
+void get_best(std::vector<double> &best_latency, std::vector<double> &best_energy, std::vector<double> latency_energy,
+              std::vector<int> &array_num_latency, std::vector<int> &array_num_energy,
+              std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,
+              std::vector<magic_arr> &array_list3);
 
 #endif //SYNTHESIS_MAINFUNC_H

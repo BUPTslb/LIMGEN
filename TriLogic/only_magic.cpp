@@ -2,7 +2,7 @@
 #include "logic_func.h"
 //对照实验，只选用magic实现功能
 //可以做存储的地方只有magic和reg
-void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+std::vector<double>  only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
               vector<magic_arr> &array_list3)
 {
     for (int i = 0; i < controlstep2.size(); i++) {
@@ -160,14 +160,14 @@ void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1
             if (operand_num == 1) //只有一个操作数，读取
             {
                 cout << "操作数个数为1" << endl;
-                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read_magic(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             } else //有两个操作数
             {
                 cout << "操作数个数为2" << endl;
-                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read_magic(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
-                data_read(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read_magic(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             }
             cout << "date_read运行正常" << endl;
@@ -175,11 +175,11 @@ void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
             //将数据输入到执行阵列：input逻辑
-            input_logic(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
+            input_logic_magic(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
                         controlstep2[i][j],
                         array_list1, array_list2, array_list3);
             //执行运算,要更新finish_id
-            output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
+            output_logic_magic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
 
             cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
@@ -198,8 +198,10 @@ void only_magic(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1
     //遍历完控制步，输出延迟、能耗、面积信息
     cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
     cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
-
-
+    double all_latency=latency_all(array_list1, array_list2, array_list3);
+    double all_energy=energy_all(array_list1, array_list2, array_list3);
+    std::vector<double> latency_energy_area={all_latency,all_energy};
+    return latency_energy_area;
 
 }
 
@@ -394,8 +396,6 @@ void input_logic_magic(int operand_num, int input1_type, int input1_id, int inpu
                        int decide_array_type, int decide_array_id, Node *now,
                        vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     cout << "input_logic中的decide_array_type= " << decide_array_type << endl;
-    int op_type = op2int(now->operator_name);
-
     //不管有几个操作数，都写入
     if (operand_num == 1) {
         //不在一个阵列中，写入
@@ -590,7 +590,6 @@ void write_back_magic(int from_type, int from_id, Node *now, vector<lut_arr> &ar
                     int pos = ready_array[rand() % ready_array.size()];
                     write_back_magic( -1, -1, now, array_list1, array_list2, array_list3, 3, pos);
                 }
-
             }
                 break;
             case 3: //来自magic存储 ,写回顺位：寄存器0、其他magic 3

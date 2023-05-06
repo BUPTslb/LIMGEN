@@ -5,7 +5,7 @@
 //需要添加功能：lut阵列做存储，这时就类似ME了
 //有 三个地方可以存储数据 -1.reg(0) 3.magic(lut存储)(3-1) 4.lut-buffer(4)
 //每一次调用和写回相关的都注意，只能写回这三个地方
-void only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
               vector<magic_arr> &array_list3) {
     for (int i = 0; i < controlstep2.size(); i++) {
         cout << "step：" << i << endl;
@@ -31,9 +31,9 @@ void only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1,
 
                     //更新出度
                     out_degree(controlstep2[i][j]);
-                    double time = time_only_lut(array_list1, array_list2, array_list3, controlstep2[i][j]);
+                    double time_n = time_only_lut(array_list1, array_list2, array_list3, controlstep2[i][j]);
                     //update the time of do_array
-                    time_update(0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
+                    time_update(0, -1, -1, time_n, controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
                     energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                     //更新wb_pos,表示写到了寄存器中
@@ -54,10 +54,10 @@ void only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1,
                 switch (controlstep2[i][j]->depend1->do_type) {
                     case -1:  //来自寄存器，不知到写回到哪里,直接赋值应该不用写的
                     {
-                        int back_type_ready[2] = {-1, 3};
+                        int back_type_ready[2] = {0, 3};
                         int back_type = back_type_ready[rand() % 2];
                         int back_id = 0;
-                        if (back_type == -1) back_id = -1;
+                        if (back_type == 0) back_id = -1;
                         if (back_type == 3) {
                             if (array_list3.empty())
                                 back_id = build(3, 0, array_list1, array_list2, array_list3);
@@ -86,17 +86,18 @@ void only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1,
                             {
                                 if (wb_empty(find_node_by_number(lut_out_now))) {
                                     //TODO:设置优先级，buffer只能写回本阵列
-                                    int back_type_ready[3] = {-1, 3, 4};
+                                    int back_type_ready[3] = {0, 3, 4};
                                     int back_type = back_type_ready[rand() % 3];
                                     int back_id = 0;
-                                    if (back_type == -1) back_id = -1;
+                                    if (back_type == 0) back_id = -1;
                                     if (back_type == 3) {
                                         if (array_list3.empty())
                                             back_id = build(3, 0, array_list1, array_list2, array_list3);
                                         else
                                             back_id = array_list3[rand() % array_list3.size()].array_id;
                                     }
-                                    if (back_type == 4) back_id = controlstep2[i][j]->depend1->finish_id;
+                                    if (back_type == 4)
+                                        back_id = controlstep2[i][j]->depend1->finish_id;
                                     write_back_lut(1, find_node_by_number(lut_out_now)->finish_id,
                                                find_node_by_number(lut_out_now),
                                                array_list1, array_list2, array_list3, back_type, back_id);
@@ -111,10 +112,10 @@ void only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1,
                         break;
                     case 4: //操作数来自lut-buffer
                     {
-                        int back_type_ready[2] = {-1, 3};
+                        int back_type_ready[2] = {0, 3};
                         int back_type = back_type_ready[rand() % 2];
                         int back_id = 0;
-                        if (back_type == -1) back_id = -1;
+                        if (back_type == 0) back_id = -1;
                         if (back_type == 3) {
                             if (array_list3.empty())
                                 back_id = build(3, 0, array_list1, array_list2, array_list3);
@@ -237,7 +238,13 @@ void only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1,
 
         }
     }
-
+    //遍历完控制步，输出延迟、能耗、面积信息
+    cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
+    cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
+    double all_latency=latency_all(array_list1, array_list2, array_list3);
+    double all_energy=energy_all(array_list1, array_list2, array_list3);
+    std::vector<double> latency_energy_area={all_latency,all_energy};
+    return latency_energy_area;
 
 }
 

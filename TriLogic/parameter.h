@@ -133,6 +133,8 @@ double sa_energy(int op_type,int sa_type);
 double ma_latency(int op_type);
 double ma_energy(int op_type);
 
+void init_Buffer_Reg();
+
 
 
 //

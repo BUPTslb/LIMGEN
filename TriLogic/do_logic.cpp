@@ -13,7 +13,10 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
         case 1://LUT
         {
             if (array_list1.empty()) //以防万一，如果lut阵列是空的
-                decide_array_id=build(1,op_type, array_list1,array_list2, array_list3);
+            {
+                int build_new=build(1,op_type, array_list1,array_list2, array_list3);
+                decide_array_id=build_new;
+            }
             return;//LUT输入无需写入
         }
 
@@ -68,15 +71,16 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                     //4.1 1写入 2direct
                     //4.2 2写入 1direct
                     vector<int> idea_ready = {1, 2};
-                    int idea_dse = rand() % 2;
+                    int idea_dse = idea_ready[rand() % 2];
                     array_list2[decide_array_id].write_number++;
                     //获取现在的时间
                     cout << "执行阵列的类型为sa,其decide_array_type = " << decide_array_type << endl;
+                    //当前节点为now,获取其可以执行的时间：依赖的节点、依赖的阵列
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type,decide_array_id);
                     cout<<"input_logic中的time_now正常运行"<<endl;
                     //1.depend1写入,注意时间的节点
                     //将时间更新到depend1
-                    if (idea_dse == 0) {
+                    if (idea_dse == 1) {
                         //更新阵列的写次数
                         array_list2[decide_array_id].write_number++;
                         //对立即数进行讨论
@@ -96,21 +100,26 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                                 //更新节点的finish_id
                                 now->depend1->finish_id = decide_array_id;
                                 //更新1的节点的时间、阵列的时间
-                                time_update(0, decide_array_type, decide_array_id, time_n, now->depend1, array_list1,
+                                //将节点now.depend1写入阵列阵列中，执行类型应该是6而不是2
+                                time_update(0, 6, decide_array_id, time_n, now->depend1, array_list1,
                                             array_list2, array_list3);
                             }
                         }
-                        else //depend1是立即数,只需要更新写入阵列这段时间
+                        else //depend1是立即数,只需要更新写入阵列这段时间,将阵列依赖时间延长了
                         {
                             //判断是否需要写覆盖,这里op_type只要不是0，就不会用到now,只进行写覆盖
                             if (cap_array_lost(2, decide_array_id, array_list1, array_list2, array_list3) == 0) {
                                 write_cover(100, now, 2, decide_array_id,1, array_list1, array_list2, array_list3);
                             }
-                            array_list2[decide_array_id].start_time = time_n;
-                            double time_up = sa_latency(0, array_list2[decide_array_id].sa_type);
-                            array_list2[decide_array_id].over_time = time_n + time_up;
-                            //set is_using
-                            array_list2[decide_array_id].is_using = true;
+                            else
+                            {
+                                array_list2[decide_array_id].start_time = time_n;
+                                double time_up = sa_latency(0, array_list2[decide_array_id].sa_type);
+                                array_list2[decide_array_id].over_time = time_n + time_up;
+                                //set is_using
+                                array_list2[decide_array_id].is_using = true;
+                            }
+
                         }
                         //更新能量，对type-id阵列执行了写入（0）操作
                         energy_update(0, 6, decide_array_id, array_list1, array_list2, array_list3);
@@ -138,7 +147,7 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                                 //更新节点的finish_id
                                 now->depend2->finish_id = decide_array_id;
                                 //更新1的节点的时间、阵列的时间
-                                time_update(0, decide_array_type, decide_array_id, time_n, now->depend2, array_list1,
+                                time_update(0, 6, decide_array_id, time_n, now->depend2, array_list1,
                                             array_list2, array_list3);
                             }
                         }
@@ -373,6 +382,8 @@ void output_logic(int decide_array_type, int decide_array_id, int op_type, Node 
 //lut执行逻辑
 void op_lut(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
             vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
+    cout<<"进入当前op_lut函数的操作类型为："<<op_type<<endl;
+
     //重新确认节点的执行类型
     now->do_type = 1;
     //节点的结束位置
@@ -387,10 +398,12 @@ void op_lut(int op_type, int decide_array_id, Node *now, double time_now, vector
             array_list1[decide_array_id].lut_out = now->node_id;
         else //否则判断一下其写回表和出度
         {
-            if (find_node_by_number(lut_out_now)->out_degree > 0 &&
-                wb_empty(find_node_by_number(lut_out_now))) {
+            if (wb_empty(find_node_by_number(lut_out_now)))
+//          if (find_node_by_number(lut_out_now)->out_degree > 0 &&
+//                wb_empty(find_node_by_number(lut_out_now)))
+            {
                 //TODO:设置优先级，buffer只能写回本阵列
-                write_back(1, find_node_by_number(lut_out_now)->finish_id, find_node_by_number(lut_out_now),
+                write_back_lut(1, find_node_by_number(lut_out_now)->finish_id, find_node_by_number(lut_out_now),
                            array_list1, array_list2, array_list3);
             }
         }
@@ -423,7 +436,7 @@ void op_sa(int op_type, int decide_array_id, Node *now, double time_now, vector<
             if (find_node_by_number(sa_out_now)->out_degree > 0 &&
                 wb_empty(find_node_by_number(sa_out_now))) {
                 //TODO:设置优先级，buffer只能写回本阵列
-                write_back(2, find_node_by_number(sa_out_now)->finish_id,find_node_by_number(sa_out_now),
+                write_back_lut(2, find_node_by_number(sa_out_now)->finish_id,find_node_by_number(sa_out_now),
                            array_list1, array_list2, array_list3);
             }
         }

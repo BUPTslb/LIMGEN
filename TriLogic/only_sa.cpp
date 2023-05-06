@@ -2,7 +2,7 @@
 #include "logic_func.h"
 //对照实验，只选用sa来实现功能
 //可以存储的位置 6.sa 5.sa-buffer -1.reg  写回要重新调用
-void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
               vector<magic_arr> &array_list3)
 {
     for (int i = 0; i < controlstep2.size(); i++) {
@@ -34,7 +34,7 @@ void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, v
 
                     //更新出度
                     out_degree(controlstep2[i][j]);
-                    double time = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);
+                    double time = time_only_sa(array_list1, array_list2, array_list3, controlstep2[i][j]);
                     //update the time of do_array
                     time_update(0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
@@ -51,13 +51,13 @@ void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, v
                 //TODO:分析一下，能否直接调用write_back函数？
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
-                double time_n = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
+                double time_n = time_only_sa(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
                 //如果默认其为直接输出的out,则不会对其他产生任何影响，不需要进行time_update
                 //c=a op b || c=a op -1 || c = a
                 switch (controlstep2[i][j]->depend1->do_type) {
                     case -1:  //来自寄存器，不知到写回到哪里,直接赋值应该不用写的
                     {
-                        write_back(-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
+                        write_back_sa(-1, -1, controlstep2[i][j], array_list1, array_list2, array_list3);
                     }
                         break;
                     case 2: //来自sa的执行结果
@@ -80,7 +80,7 @@ void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, v
                                 if (find_node_by_number(sa_out_now)->out_degree > 0 &&
                                     wb_empty(find_node_by_number(sa_out_now))) {
                                     //TODO:设置优先级，buffer只能写回本阵列
-                                    write_back(2, find_node_by_number(sa_out_now)->finish_id,
+                                    write_back_sa(2, find_node_by_number(sa_out_now)->finish_id,
                                                find_node_by_number(sa_out_now),
                                                array_list1, array_list2, array_list3);
                                 }
@@ -95,13 +95,13 @@ void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, v
                         //下边这几个应该不会出现
                     case 5: //来自sa-buffer
                     {
-                        write_back(5, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
+                        write_back_sa(5, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
                                    array_list2, array_list3);
                     }
                         break;
                     case 6: //来自sa存储
                     {
-                        write_back(6, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
+                        write_back_sa(6, controlstep2[i][j]->depend1->finish_id, controlstep2[i][j], array_list1,
                                    array_list2, array_list3);
                     }
                         break;
@@ -190,14 +190,14 @@ void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, v
             if (operand_num == 1) //只有一个操作数，读取
             {
                 cout << "操作数个数为1" << endl;
-                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read_sa(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             } else //有两个操作数
             {
                 cout << "操作数个数为2" << endl;
-                data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read_sa(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
-                data_read(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
+                data_read_sa(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             }
             cout << "date_read运行正常" << endl;
@@ -205,11 +205,11 @@ void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, v
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
             //将数据输入到执行阵列：input逻辑
-            input_logic(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
+            input_logic_sa(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
                         controlstep2[i][j],
                         array_list1, array_list2, array_list3);
             //执行运算,要更新finish_id
-            output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
+            output_logic_sa(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
 
             cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
@@ -229,7 +229,10 @@ void only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, v
     cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
     cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
 
-
+    double all_latency=latency_all(array_list1, array_list2, array_list3);
+    double all_energy=energy_all(array_list1, array_list2, array_list3);
+    std::vector<double> latency_energy_area={all_latency,all_energy};
+    return latency_energy_area;
 
 }
 
@@ -723,7 +726,7 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
                 //选择要写回的类型，如果选择了buffer
                 if (write_type == 5) //buffer
                 {
-                    write_back( 2, from_id, now, array_list1, array_list2, array_list3, 5, from_id);
+                    write_back_sa( 2, from_id, now, array_list1, array_list2, array_list3, 5, from_id);
                 }
                 if (write_type == 2) //sa
                 {
@@ -732,22 +735,22 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
                     if (ready_array.empty())
                         ready_array.push_back(build( 2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back( 2, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back_sa( 2, from_id, now, array_list1, array_list2, array_list3, 2, pos);
                 }
                 if (write_type == 0) //写回寄存器
                 {
-                    write_back( 2, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back_sa( 2, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
 
             }
                 break;
-            case 5: //来自sa-buffer。写回顺位：寄存器0、其他magic 3、sa存储 2
+            case 5: //来自sa-buffer。写回顺位：寄存器0、sa存储 2
             {
                 vector<int> ready_type = {0, 2};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back( 5, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back_sa( 5, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 2) //写回sa
                 {
@@ -755,7 +758,7 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
                     if (ready_array.empty())
                         ready_array.push_back(build( 2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back( 5, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back_sa( 5, from_id, now, array_list1, array_list2, array_list3, 2, pos);
 
                 }
 
@@ -768,7 +771,7 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
-                    write_back( 6, from_id, now, array_list1, array_list2, array_list3, 0, -1);
+                    write_back_sa( 6, from_id, now, array_list1, array_list2, array_list3, 0, -1);
                 }
                 if (write_type == 2) //写回sa
                 {
@@ -776,7 +779,7 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
                     if (ready_array.empty())
                         ready_array.push_back(build( 2, 0, array_list1, array_list2, array_list3));
                     int pos = ready_array[rand() % ready_array.size()];
-                    write_back( 6, from_id, now, array_list1, array_list2, array_list3, 2, pos);
+                    write_back_sa( 6, from_id, now, array_list1, array_list2, array_list3, 2, pos);
 
                 }
 
@@ -887,7 +890,7 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
                                 wb_empty(find_node_by_number( array_list2[back_id].sa_buffer.back())))
                                 //找个地方写回，from_type=5,sa-buffer
                             {
-                                write_back( 5, back_id, find_node_by_number( array_list2[back_id].sa_buffer.back()),
+                                write_back_sa( 5, back_id, find_node_by_number( array_list2[back_id].sa_buffer.back()),
                                            array_list1, array_list2, array_list3);
                             }
 

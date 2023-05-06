@@ -3,7 +3,8 @@
 
 using namespace rapidjson;
 using namespace std;
-vector<Node> nodes={};//节点类型的向量，里面可以放下一个个节点
+vector<Node> nodes = {};//节点类型的向量，里面可以放下一个个节点
+vector<Node> nodes2 = {};
 
 int main() {
     //三种阵列使用的数量
@@ -72,12 +73,12 @@ int main() {
             n.operator_name = d[i]["Operation"].GetString();
             n.wb_pos.resize(6);//节点存储表，初始化为3，其中0：Reg,1：lut，2：sa, 3:magic,4:lut-buffer,5:sa-buffer
             n.out_degree = 0;//初始化出度
-            n.do_type=-2;//初始化执行类型
+            n.do_type = -2;//初始化执行类型
             //初始化时间
-            n.end_time=0;
-            n.start_time=0;
+            n.end_time = 0;
+            n.start_time = 0;
             //初始化结束阵列位置
-            n.finish_id=-2; //-1是寄存器，因此初始化为-2
+            n.finish_id = -2; //-1是寄存器，因此初始化为-2
             inDegree[n.node_id] = 0;//初始化节点的入度
             nodes.push_back(n);//将节点加入节点向量
             id_pos[n.node_id] = nodes.size() - 1;//新节点在nodes中的位置
@@ -118,7 +119,9 @@ int main() {
         //Branch和loop没有input
         //如果有“Input”，得到input的数量
         type_id = Type2node(d[i]["Type"].GetString());
-        Node *c = find_node_by_number( i + 1);//c表示当前节点
+        Node *c = find_node_by_number1(i + 1);
+        //c表示当前节点
+//        Node c=nodes[id_pos[i+1]];
         map<int, bool> input_depend;//每次i都构建hash表，存储当前输入（最多两个），如果前面找到了前驱依赖，值为true
         if (d[i].HasMember("Input")) {
             num_input = d[i]["Input"].IsArray() ? d[i]["Input"].Size() : 1;
@@ -129,7 +132,7 @@ int main() {
             //对互斥表进行清空重建
             TvsF.clear();
             int con = d[i]["condition"].GetInt();//条件节点的位置,其类型是op
-            Node *con_node = find_node_by_number( con);//条件节点的指针
+            Node *con_node = find_node_by_number1(con);//条件节点的指针
             int sizeofT = d[i]["Statement_when_true"].Size();//T的节点数目
             int sizeofF = d[i]["Statement_when_false"].Size();//F的节点数目
             //TODO：HOW do control node?
@@ -140,7 +143,7 @@ int main() {
 
             for (int there = 0; there < sizeofT; there++) {
                 cout << d[i]["Statement_when_true"][there].GetInt() << "   ";
-                Node *a = find_node_by_number( d[i]["Statement_when_true"][there].GetInt());
+                Node *a = find_node_by_number1(d[i]["Statement_when_true"][there].GetInt());
 //a不是空节点,且当前控制节点没有指向
                 if (a != NULL && (a->control == NULL || a->control->node_id < con)) {
                     if (a->control == NULL)//如果是第一次设置控制节点
@@ -154,7 +157,7 @@ int main() {
             cout << endl << "F：";
             for (int there = 0; there < sizeofF; there++) {
                 cout << d[i]["Statement_when_false"][there].GetInt() << "   ";
-                Node *b = find_node_by_number( d[i]["Statement_when_false"][there].GetInt());
+                Node *b = find_node_by_number1(d[i]["Statement_when_false"][there].GetInt());
 
                 if (b != NULL && (b->control == NULL || b->control->node_id < con))//b不是空节点,且当前控制节点没有指向
                 {
@@ -172,7 +175,7 @@ int main() {
             //loop的依赖比较独特，即需要依赖前面的执行结果，又需要依赖循环内对数据的改变结果
             //先输出控制依赖
             int con = d[i]["Condition"].GetInt();//条件节点的位置
-            Node *con_node = find_node_by_number( con);
+            Node *con_node = find_node_by_number1(con);
 
             cout << "loop节点依赖" << endl << "条件节点：" << con << endl;
             int sizeofL = d[i]["Statement_loop"].Size();//LOOP节点数目
@@ -184,7 +187,7 @@ int main() {
                 //1.该节点可能是OP，没有Dst，所以要先对类型进行判断
                 //2.条件节点判断的输入也可能有多个，最好写成函数，直接套用OP之间的依赖
                 //问题：there_id可能根本不在nodes中，nodes的依赖可能有很多，需要找到他的直接依赖
-                Node *a = find_node_by_number( there_id);
+                Node *a = find_node_by_number1(there_id);
                 if (a != NULL && (a->control == NULL || a->control->node_id < con))//a不是空节点，且a当前控制节点没有指向或者是更大一级别的
                 {
                     if (a->control == NULL)//如果第一次设置控制节点
@@ -221,7 +224,7 @@ int main() {
                         string name_in2 = d[i]["Input"][1].GetString();
                         if (dst_id[name_in1] && (!input_depend[0]) && (dst_id[name_in1] < i + 1))//存在且未被输出且节点对应关系正确
                         {
-                            Node *a = find_node_by_number( dst_id[name_in1]);//当前输入依赖的节点1
+                            Node *a = find_node_by_number1(dst_id[name_in1]);//当前输入依赖的节点1
                             if (a != nullptr)
                                 a->out_degree++;//依赖的节点的出度++
 
@@ -235,7 +238,7 @@ int main() {
                         }
                         if (dst_id[name_in2] && (!input_depend[1]) && (dst_id[name_in2] < i + 1))//存在
                         {
-                            Node *b = find_node_by_number( dst_id[name_in2]);//当前输入依赖的节点2
+                            Node *b = find_node_by_number1(dst_id[name_in2]);//当前输入依赖的节点2
                             if (b != nullptr)
                                 b->out_degree++;
 
@@ -253,7 +256,7 @@ int main() {
 
                         if (dst_id[input_name] && (dst_id[input_name] < i + 1) && (!input_depend[0]))//存在且值比i+1小且没输出过
                         {
-                            Node *a = find_node_by_number( dst_id[input_name]);//指向输入依赖
+                            Node *a = find_node_by_number1(dst_id[input_name]);//指向输入依赖
                             if (a != nullptr)
                                 a->out_degree++;
 
@@ -272,7 +275,7 @@ int main() {
 
                     //如果input是ID，则直接输出
                     if (d[i]["Input"].IsInt() && !input_depend[0]) {
-                        Node *a = find_node_by_number( d[i]["Input"].GetInt());
+                        Node *a = find_node_by_number1(d[i]["Input"].GetInt());
                         if (a != nullptr)
                             a->out_degree++;
 
@@ -287,7 +290,7 @@ int main() {
                     if (d[i]["Input"].IsString() && !input_depend[0]) {
                         input_depend[0] = true;
                         string input_name = d[i]["Input"].GetString();
-                        Node *a = find_node_by_number( dst_id[input_name]);
+                        Node *a = find_node_by_number1(dst_id[input_name]);
                         c->depend1 = a;
                         if (a != nullptr)
                             a->out_degree++;
@@ -310,22 +313,14 @@ int main() {
      * 构建初始的控制步
      *******************************/
     topologicalSort(nodes, inDegree, controlstep, id_pos);//函数使用，现在得到了controlstep vector<vector<Node>>,但是没有依赖关系
-    vector<vector<Node *>> controlstep2;
-    for (int i = 0; i < controlstep.size(); ++i) {
-        vector<Node *> stepnow;//当前控制步，存放节点指针
-        for (int j = 0; j < controlstep[i].size(); ++j) {
-            stepnow.push_back(find_node_by_number( controlstep[i][j].node_id));//换成真正的依赖关系
-        }
-        controlstep2.push_back(stepnow);
-    }
 
     for (int i = 0; i < controlstep.size(); ++i) {
         cout << "control step" << i + 1 << "大小为" << controlstep[i].size() << endl;
         for (int j = 0; j < controlstep[i].size(); ++j) {
-            cout << controlstep2[i][j]->node_id << ":" << controlstep2[i][j]->operator_name << endl;
-            cout << controlstep2[i][j]->node_id << "的依赖为"
-                 << (controlstep2[i][j]->depend1 ? controlstep2[i][j]->depend1->node_id : 0) << " "
-                 << (controlstep2[i][j]->depend2 ? controlstep2[i][j]->depend2->node_id : 0)
+            cout << controlstep[i][j].node_id << ":" << controlstep[i][j].operator_name << endl;
+            cout << controlstep[i][j].node_id << "的依赖为"
+                 << (controlstep[i][j].depend1 ? controlstep[i][j].depend1->node_id : 0) << " "
+                 << (controlstep[i][j].depend2 ? controlstep[i][j].depend2->node_id : 0)
                  << endl;
         }
     }
@@ -337,14 +332,64 @@ int main() {
      * */
     //我们规定，只能使用4/6输入的LUT
     //VHDL中，逻辑操作都是按位的，需要由一位操作拼接
-    vector<lut_arr> array_list1={};//lut阵列表
-    vector<sa_arr> array_list2={};//sa阵列表
-    vector<magic_arr> array_list3={};//magic阵列表
 
+    int model_chosen[4] = {0, 1, 2, 3};
+    int model = model_chosen[1];
+    vector<double> best_latency = {10000, 10000};//延迟、能耗
+    vector<double> best_energy = {10000, 10000};//延迟、能耗
+    vector<int> array_num_latency;
+    vector<int> array_num_energy;
+
+    cout << &nodes2[0] << "< - >" << &nodes[0] << endl;
+
+    for (int p = 0; p < 10000; ++p) {
+        reset_nodes2();
+        init_Buffer_Reg();//初始化buffer和Reg
+        vector<lut_arr> array_list1 = {};//lut阵列表
+        vector<sa_arr> array_list2 = {};//sa阵列表
+        vector<magic_arr> array_list3 = {};//magic阵列表
+        vector<vector<Node *>> controlstep2;
+        for (auto & i : controlstep) {
+            vector<Node *> stepnow;//当前控制步，存放节点指针
+            for (int j = 0; j < i.size(); ++j) {
+                stepnow.push_back(find_node_by_number(i[j].node_id));//换成真正的依赖关系
+            }
+            controlstep2.push_back(stepnow);
+        }
+        switch (model) {
+            case 0: {
+                vector<double> latency_energy = control_step(controlstep2, array_list1, array_list2, array_list3);
+                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+            }
+                break;
+            case 1: {
+                cout<<"lut-only"<<endl;
+                vector<double> latency_energy =only_lut(controlstep2, array_list1, array_list2, array_list3);
+                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+            }
+                break;
+            case 2: {
+                vector<double> latency_energy =only_sa(controlstep2, array_list1, array_list2, array_list3);
+                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+            }
+                break;
+            case 3: {
+                vector<double> latency_energy =only_magic(controlstep2, array_list1, array_list2, array_list3);
+                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+            }
+                break;
+            default:
+                break;
+        }
+        cout<<"循环次数为："<<p+1<<endl;
+
+    }
+
+    cout << "最优延迟时：延迟为" << best_latency[0] << " 能耗为 " << best_latency[1] << endl;
+    cout << "最优延迟时：三种阵列个数为：" << array_num_latency[0] << " " << array_num_latency[1] <<" "<<array_num_latency[2] << endl;
+    cout << "最优能耗时：延迟为" << best_energy[0] << " 能耗为 " << best_energy[1] << endl;
+    cout << "最优延迟时：三种阵列个数为：" << array_num_energy[0] << " " << array_num_energy[1] <<" "<<array_num_energy[2] << endl;
     //先判断设计目标，按照设计目标来循环给约束
-
-    control_step(controlstep2, array_list1, array_list2,array_list3);
-    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
     return 0;
 }
 

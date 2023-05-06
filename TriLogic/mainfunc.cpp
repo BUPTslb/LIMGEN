@@ -25,6 +25,32 @@ std::string l_add="HdlOpType.ADD";//加法
 std::string l_div="HdlOpType.DIV";//除法，应该不会使用
 
 
+//将nodes中的链接关系设置到nodes2中，对nodes2进行初始化
+void reset_nodes2()
+{
+    //主要初始化指针相关的
+    nodes2=nodes; //值相等了
+    //设置指针
+    for (int i = 0; i < nodes.size(); ++i) {
+        if (nodes[i].depend1!= nullptr)
+        {
+            nodes2[i].depend1=find_node_by_number(nodes[i].depend1->node_id);
+        }
+        if (nodes[i].depend2!= nullptr)
+        {
+            nodes2[i].depend2=find_node_by_number(nodes[i].depend2->node_id);
+        }
+        if (nodes[i].control!= nullptr)
+        {
+            nodes2[i].control=find_node_by_number(nodes[i].control->node_id);
+        }
+
+    }
+
+
+}
+
+
 int Type2node(std::string type){
     if(type==op)
         return 1;
@@ -38,6 +64,19 @@ int Type2node(std::string type){
 }
 //根据节点id，返回节点指针，好像和id_pos功能冲突了
 Node * find_node_by_number(int node_id) {
+    auto it = std::find_if(nodes2.begin(), nodes2.end(),
+                           [node_id](const Node& node) {
+                               return node.node_id == node_id;
+                           });
+
+    if (it != nodes2.end()) {
+        return &(*it);//返回指针指向的变量的地址
+    } else {
+        return nullptr;
+    }
+}
+
+Node * find_node_by_number1(int node_id) {
     auto it = std::find_if(nodes.begin(), nodes.end(),
                            [node_id](const Node& node) {
                                return node.node_id == node_id;

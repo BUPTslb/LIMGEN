@@ -1,8 +1,18 @@
 #include "mainfunc.h"
 #include "logic_func.h"
 
-void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                   vector<magic_arr> &array_list3) {
+    cout<<"****************验证**********************"<<endl;
+    cout<<"修改controlstep2的do_type和finish_id，看是否会对nodes2产生影响？"<<endl;
+    controlstep2[0][0]->finish_id=666;
+    cout<<"将controlstep2[0][0]的finish_id设置为666，nodes2[0]的finish_id是："<<nodes2[0].finish_id<<endl;
+    cout<<"使用find_node_by_number对nodes2进行修改，看是否会对controlstep2产生影响？"<<endl;
+    find_node_by_number(controlstep2[0][0]->node_id)->finish_id=777;
+    cout<<"将nodes2[0]的finish_id改为777后，controlstep2[0][0] finish_id = "<<controlstep2[0][0]->finish_id<<endl;
+    cout<<"nodes2[0]的finish_id = "<<nodes2[0].finish_id<<endl;
+
+
     for (int i = 0; i < controlstep2.size(); i++) {
         cout << "step：" << i << endl;
         for (int j = 0; j < controlstep2[i].size(); ++j) {
@@ -286,13 +296,21 @@ void control_step(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_li
             //更新出度
             out_degree(controlstep2[i][j]);
 
-
         }
     }
 
     //遍历完控制步，输出延迟、能耗、面积信息
-    cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
-    cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
+    double all_latency=latency_all(array_list1, array_list2, array_list3);
+    double all_energy=energy_all(array_list1, array_list2, array_list3);
+    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
+    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
+    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
+
+    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
+    std::vector<double> latency_energy_area={all_latency,all_energy};
+    return latency_energy_area;
+
+
 }
 //
 // Created by shenlibo on 23-5-1.

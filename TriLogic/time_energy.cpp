@@ -181,7 +181,7 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
             {
                 //TODO:设置为写到寄存器中的时间
                 node_now->end_time = time_now + reg.reg_write_time;//寄存器写
-                cout << "写到寄存器后的时间为" << node_now->end_time << endl;
+//                cout << "写到寄存器后的时间为" << node_now->end_time << endl;
             }
                 break;
             case 3://MAGIC
@@ -189,7 +189,7 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 array_list3[decide_array_id].start_time = time_now;
                 double time_up = ma_latency(op_type);
                 node_now->end_time = time_now + time_up;
-                cout << "写入magic后的时间为：" << node_now->end_time << endl;
+//                cout << "写入magic后的时间为：" << node_now->end_time << endl;
                 array_list3[decide_array_id].over_time = node_now->end_time;
                 //set is_using
                 array_list3[decide_array_id].is_using = true;
@@ -198,13 +198,13 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
             case 4://lut buffer
             {
                 node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
-                cout << "写到lut-buffer后的时间为：" << node_now->end_time << endl;
+//                cout << "写到lut-buffer后的时间为：" << node_now->end_time << endl;
             }
                 break;
             case 5://sa buffer
             {
                 node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
-                cout << "写到sa-buffer后的时间为：" << node_now->end_time << endl;
+//                cout << "写到sa-buffer后的时间为：" << node_now->end_time << endl;
             }
                 break;
             default:
@@ -214,16 +214,16 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
     }
     else
     {
+        if (do_type!=1&&do_type!=2&&do_type!=3)
+            cout<<"warning: time_update出现了错误类型："<<do_type<<endl;
         switch (do_type) {
             //对不合理情况进行判断
-            if (do_type!=1&&do_type!=2&&do_type!=3)
-                cout<<"warning: time_update出现了错误类型："<<do_type<<endl;
             case 1://lut
             {
                 double time_up = lut_latency(op_type);//使用lut执行当前操作，所需的时间
                 array_list1[decide_array_id].start_time = time_now;
                 node_now->end_time = time_now + time_up;
-                cout << "lut执行后的时间为：" << node_now->end_time << endl;
+//                cout << "lut执行后的时间为：" << node_now->end_time << endl;
                 array_list1[decide_array_id].over_time = node_now->end_time;
                 //set is_using
                 array_list1[decide_array_id].is_using = true;
@@ -234,7 +234,7 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 array_list2[decide_array_id].start_time = time_now;
                 double time_up = sa_latency(op_type, array_list2[decide_array_id].sa_type);
                 node_now->end_time = time_now + time_up;
-                cout << "sa执行后的时间为：" << node_now->end_time << endl;
+//                cout << "sa执行后的时间为：" << node_now->end_time << endl;
                 array_list2[decide_array_id].over_time = node_now->end_time;
                 //set is_using
                 array_list2[decide_array_id].is_using = true;
@@ -245,7 +245,7 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 array_list3[decide_array_id].start_time = time_now;
                 double time_up = ma_latency(op_type);
                 node_now->end_time = time_now + time_up;
-                cout << "magic执行后的时间为：" << node_now->end_time << endl;
+//                cout << "magic执行后的时间为：" << node_now->end_time << endl;
                 array_list3[decide_array_id].over_time = node_now->end_time;
                 //set is_using
                 array_list3[decide_array_id].is_using = true;
