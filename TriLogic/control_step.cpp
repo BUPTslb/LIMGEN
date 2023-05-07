@@ -30,7 +30,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
 
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
-            //TODO:规定，不存在A=B这种赋值操作
+            //TODO:显然加密算法中存在大量的A=B赋值操作
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {

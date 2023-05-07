@@ -42,7 +42,8 @@ int main() {
     map<int, bool> TvsF;//Branch斥互表, 遇到分支节点，正确和错误的不能相互依赖，每次遇到branch要清空重写
     map<int, int> inDegree;//入度表，记录每个节点的入度，id对应入度，数据1、2+直接控制，最大为3
     //1.先读一个节点让其输出
-    ifstream file("../hdlAst/hdlast2.json");
+//    ifstream file("../hdlAst/hdlast2.json");
+    ifstream file("../hdlAst/des.json");
     stringstream hdlast;
     hdlast << file.rdbuf();
     string content(hdlast.str());
@@ -334,7 +335,7 @@ int main() {
     //VHDL中，逻辑操作都是按位的，需要由一位操作拼接
 
     int model_chosen[4] = {0, 1, 2, 3};
-    int model = model_chosen[1];
+    int model = model_chosen[0];
     vector<double> best_latency = {10000, 10000};//延迟、能耗
     vector<double> best_energy = {10000, 10000};//延迟、能耗
     vector<int> array_num_latency;
@@ -342,7 +343,7 @@ int main() {
 
     cout << &nodes2[0] << "< - >" << &nodes[0] << endl;
 
-    for (int p = 0; p < 10000; ++p) {
+    for (int p = 0; p < 1; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1 = {};//lut阵列表
