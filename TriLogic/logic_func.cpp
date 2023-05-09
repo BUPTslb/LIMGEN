@@ -66,7 +66,6 @@ void find_input(int &array_type, int &array_id, Node *node_depend) {
 
 
 //只有着一个函数可以建立阵列**定义建立逻辑，对于LUT,考虑加入操作
-//TODO:build时将阵列的大小也确定,操作数的位数应该是一个全局变量
 int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
                 vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     int build;
@@ -79,7 +78,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             //初始化is_using
             now1.is_using = false;
             //初始化面积
-            now1.row_num = 64;
+            now1.row_num = 64;//代表是lut6
             now1.col_num = bit_num_operand;//这里只代表输出的位数，不代表真实的列数
             now1.lut_num = lut_num_op(op_type, 6);//lut-6数量
             now1.lut_level = lut_level_op(op_type, 6);//执行但前运算需要的级别数
@@ -96,9 +95,9 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             //初始化latch
             now1.lut_latch = {};
             //设置功能。
-            now1.op_type = {};
+            now1.op_type = -1;
             if (op_type != 0)
-                now1.op_type.insert(op_type);
+                now1.op_type=op_type;
 
             array_list1.push_back(now1);
             cout << "当前array_list1的大小为：" << array_list1.size() << endl;

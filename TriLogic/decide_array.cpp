@@ -143,7 +143,8 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
             {
                 //如果是lut,还是需要判断,尽量在本阵列执行
                 if (decide_array_type == 1) {
-                    if (array_list1[input1_id].op_type.find(op_type) != array_list1[input1_id].op_type.end()) //算子支持
+//                    if (array_list1[input1_id].op_type.find(op_type) != array_list1[input1_id].op_type.end()) //算子支持
+                    if (array_list1[input1_id].op_type == op_type) //算子支持
                         array_id.push_back(input1_id);
                     //other 可用阵列
                     if (!array_no_using.empty()) {
@@ -247,7 +248,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
             if (decide_array_type == 1)//LUT,无关，但还是尽量在本节点进行
             {
                 //1算子支持 或者 算子不支持但是可以加进去
-                if (array_list1[input1_id].op_type.find(op_type) != array_list1[input1_id].op_type.end())
+                if (array_list1[input1_id].op_type == op_type)
                     array_id.push_back(input1_id);
             } else //SA\magic
             {
@@ -266,7 +267,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
         {
             if (decide_array_type == 1)//LUT,无关，但还是尽量在本节点进行
             {
-                if (array_list1[input2_id].op_type.find(op_type) != array_list1[input2_id].op_type.end())//2算子支持
+                if (array_list1[input2_id].op_type == op_type)//2算子支持
                     array_id.push_back(input2_id);
             } else //SA\magic
             {
@@ -326,11 +327,11 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
 
     int decide_array_id = array_id[rand() % array_id.size()];//使用随机数
 
-    if (decide_array_type == 1) {
-        //给lut添加功能
-        if (array_list1[decide_array_id].op_type.find(op_type) == array_list1[decide_array_id].op_type.end())
-            array_list1[decide_array_id].op_type.insert(op_type);
-    }
+//    if (decide_array_type == 1) {
+//        //给lut添加功能
+//        if (array_list1[decide_array_id].op_type.find(op_type) == array_list1[decide_array_id].op_type.end())
+//            array_list1[decide_array_id].op_type.insert(op_type);
+//    }
 
     cout<<"decide_array_id运行正常"<<endl;
     //只是寻找节点id,应该不需要执行时间更新

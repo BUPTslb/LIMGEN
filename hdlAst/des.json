@@ -56,100 +56,104 @@
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "ip",
+        "Input": [
+            "ip"
+        ],
         "Node_ID": 9,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "data_out",
+        "Input": 9,
         "Node_ID": 10,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 11,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 11,
+        "Node_ID": 12,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 13,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 13,
+        "Node_ID": 14,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Dst": "row",
         "Input": "10\n",
-        "Node_ID": 12,
+        "Node_ID": 15,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Dst": "col",
         "Input": "11\n",
-        "Node_ID": 13,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "result",
-        "Input": "s_box_table",
-        "Node_ID": 14,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "k",
-        "Input": "result",
-        "Node_ID": 15,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "result",
         "Node_ID": 16,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Input": [
+            "s_box_table"
+        ],
         "Node_ID": 17,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Dst": "result",
+        "Input": 17,
         "Node_ID": 18,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Input": [
+            "result"
+        ],
         "Node_ID": 19,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "k",
+        "Input": 19,
         "Node_ID": 20,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "result"
         ],
         "Node_ID": 21,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "data_out",
         "Input": 21,
         "Node_ID": 22,
         "Operation": "SEQ",
@@ -157,15 +161,14 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "pc2"
         ],
         "Node_ID": 23,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "data_out",
         "Input": 23,
         "Node_ID": 24,
         "Operation": "SEQ",
@@ -173,15 +176,14 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "data_out"
         ],
         "Node_ID": 25,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "k",
         "Input": 25,
         "Node_ID": 26,
         "Operation": "SEQ",
@@ -189,11 +191,10 @@
     },
     {
         "Input": [
-            "l",
             "r"
         ],
         "Node_ID": 27,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
@@ -204,37 +205,17 @@
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 29,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "pc2",
-        "Node_ID": 30,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "k",
-        "Input": "data_out",
-        "Node_ID": 31,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "l",
-        "Input": "r",
-        "Node_ID": 32,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
         "Dst": "result",
-        "Input": "r",
-        "Node_ID": 33,
+        "Input": 29,
+        "Node_ID": 30,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -243,46 +224,46 @@
             "result",
             "l"
         ],
+        "Node_ID": 31,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 31,
+        "Node_ID": 32,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 33,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 33,
         "Node_ID": 34,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
-        "Dst": "r",
-        "Input": 34,
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 35,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 36,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 36,
-        "Node_ID": 37,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 38,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "r",
-        "Input": 38,
-        "Node_ID": 39,
+        "Input": 35,
+        "Node_ID": 36,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -291,63 +272,87 @@
             "l",
             "r"
         ],
-        "Node_ID": 40,
+        "Node_ID": 37,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "l",
-        "Input": 40,
-        "Node_ID": 41,
+        "Input": 37,
+        "Node_ID": 38,
         "Operation": "SEQ",
         "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result"
+        ],
+        "Node_ID": 39,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
         "Dst": "data_out",
-        "Input": "result",
+        "Input": 39,
+        "Node_ID": 40,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pc2"
+        ],
+        "Node_ID": 41,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 41,
         "Node_ID": 42,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Input": [
+            "data_out"
+        ],
         "Node_ID": 43,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
         "Dst": "k",
-        "Input": "data_out",
+        "Input": 43,
         "Node_ID": 44,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 45,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "l",
+        "Input": 45,
         "Node_ID": 46,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "r"
         ],
         "Node_ID": 47,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "result",
         "Input": 47,
         "Node_ID": 48,
         "Operation": "SEQ",
@@ -355,15 +360,15 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "result",
+            "l"
         ],
         "Node_ID": 49,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "r",
         "Input": 49,
         "Node_ID": 50,
         "Operation": "SEQ",
@@ -379,7 +384,7 @@
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "l",
         "Input": 51,
         "Node_ID": 52,
         "Operation": "SEQ",
@@ -395,44 +400,100 @@
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "r",
         "Input": 53,
         "Node_ID": 54,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 55,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Dst": "l",
+        "Input": 55,
         "Node_ID": 56,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Input": [
+            "result"
+        ],
         "Node_ID": 57,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Dst": "data_out",
+        "Input": 57,
         "Node_ID": 58,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Input": [
+            "pc2"
+        ],
         "Node_ID": 59,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 59,
+        "Node_ID": 60,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "data_out"
+        ],
+        "Node_ID": 61,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "k",
+        "Input": 61,
+        "Node_ID": 62,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 63,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 63,
+        "Node_ID": 64,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 65,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 65,
+        "Node_ID": 66,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -441,111 +502,60 @@
             "result",
             "l"
         ],
-        "Node_ID": 60,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 60,
-        "Node_ID": 61,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 62,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 62,
-        "Node_ID": 63,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 64,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 64,
-        "Node_ID": 65,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 66,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 66,
         "Node_ID": 67,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Dst": "r",
+        "Input": 67,
         "Node_ID": 68,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 69,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Dst": "l",
+        "Input": 69,
         "Node_ID": 70,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 71,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "r",
+        "Input": 71,
         "Node_ID": 72,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "l",
+            "r"
         ],
         "Node_ID": 73,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "l",
         "Input": 73,
         "Node_ID": 74,
         "Operation": "SEQ",
@@ -553,15 +563,14 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "result"
         ],
         "Node_ID": 75,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "data_out",
         "Input": 75,
         "Node_ID": 76,
         "Operation": "SEQ",
@@ -569,15 +578,14 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "pc2"
         ],
         "Node_ID": 77,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "data_out",
         "Input": 77,
         "Node_ID": 78,
         "Operation": "SEQ",
@@ -585,52 +593,46 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "data_out"
         ],
         "Node_ID": 79,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "k",
         "Input": 79,
         "Node_ID": 80,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 81,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Dst": "l",
+        "Input": 81,
         "Node_ID": 82,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 83,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "l",
-        "Input": "r",
-        "Node_ID": 84,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
         "Dst": "result",
-        "Input": "r",
-        "Node_ID": 85,
+        "Input": 83,
+        "Node_ID": 84,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -639,30 +641,30 @@
             "result",
             "l"
         ],
+        "Node_ID": 85,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 85,
         "Node_ID": 86,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
-        "Dst": "r",
-        "Input": 86,
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 87,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 88,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "l",
-        "Input": 88,
-        "Node_ID": 89,
+        "Input": 87,
+        "Node_ID": 88,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -671,14 +673,14 @@
             "l",
             "r"
         ],
-        "Node_ID": 90,
+        "Node_ID": 89,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "r",
-        "Input": 90,
-        "Node_ID": 91,
+        "Input": 89,
+        "Node_ID": 90,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -687,63 +689,72 @@
             "l",
             "r"
         ],
-        "Node_ID": 92,
+        "Node_ID": 91,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "l",
-        "Input": 92,
-        "Node_ID": 93,
+        "Input": 91,
+        "Node_ID": 92,
         "Operation": "SEQ",
         "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result"
+        ],
+        "Node_ID": 93,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
         "Dst": "data_out",
-        "Input": "result",
+        "Input": 93,
         "Node_ID": 94,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Input": [
+            "pc2"
+        ],
         "Node_ID": 95,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Dst": "data_out",
+        "Input": 95,
         "Node_ID": 96,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Input": [
+            "data_out"
+        ],
         "Node_ID": 97,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "k",
+        "Input": 97,
         "Node_ID": 98,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "r"
         ],
         "Node_ID": 99,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "l",
         "Input": 99,
         "Node_ID": 100,
         "Operation": "SEQ",
@@ -751,15 +762,14 @@
     },
     {
         "Input": [
-            "l",
             "r"
         ],
         "Node_ID": 101,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "result",
         "Input": 101,
         "Node_ID": 102,
         "Operation": "SEQ",
@@ -767,8 +777,8 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "result",
+            "l"
         ],
         "Node_ID": 103,
         "Operation": "HdlOpType.XOR",
@@ -798,37 +808,109 @@
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 107,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Dst": "r",
+        "Input": 107,
         "Node_ID": 108,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 109,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
         "Dst": "l",
-        "Input": "r",
+        "Input": 109,
         "Node_ID": 110,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Input": [
+            "result"
+        ],
         "Node_ID": 111,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 111,
+        "Node_ID": 112,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pc2"
+        ],
+        "Node_ID": 113,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 113,
+        "Node_ID": 114,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "data_out"
+        ],
+        "Node_ID": 115,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "k",
+        "Input": 115,
+        "Node_ID": 116,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 117,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 117,
+        "Node_ID": 118,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 119,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 119,
+        "Node_ID": 120,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -837,104 +919,37 @@
             "result",
             "l"
         ],
-        "Node_ID": 112,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 112,
-        "Node_ID": 113,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 114,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 114,
-        "Node_ID": 115,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 116,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 116,
-        "Node_ID": 117,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 118,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 118,
-        "Node_ID": 119,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "result",
-        "Node_ID": 120,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "pc2",
         "Node_ID": 121,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Dst": "r",
+        "Input": 121,
         "Node_ID": 122,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 123,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "l",
+        "Input": 123,
         "Node_ID": 124,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "l",
+            "r"
         ],
         "Node_ID": 125,
         "Operation": "HdlOpType.XOR",
@@ -965,15 +980,14 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "result"
         ],
         "Node_ID": 129,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "data_out",
         "Input": 129,
         "Node_ID": 130,
         "Operation": "SEQ",
@@ -981,52 +995,61 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "pc2"
         ],
         "Node_ID": 131,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "data_out",
         "Input": 131,
         "Node_ID": 132,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "data_out"
+        ],
         "Node_ID": 133,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Dst": "k",
+        "Input": 133,
         "Node_ID": 134,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 135,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
         "Dst": "l",
-        "Input": "r",
+        "Input": 135,
         "Node_ID": 136,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 137,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 137,
+        "Node_ID": 138,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -1035,46 +1058,14 @@
             "result",
             "l"
         ],
-        "Node_ID": 138,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 138,
         "Node_ID": 139,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 140,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 140,
-        "Node_ID": 141,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 142,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "r",
-        "Input": 142,
-        "Node_ID": 143,
+        "Input": 139,
+        "Node_ID": 140,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -1083,63 +1074,89 @@
             "l",
             "r"
         ],
-        "Node_ID": 144,
+        "Node_ID": 141,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "l",
-        "Input": 144,
-        "Node_ID": 145,
+        "Input": 141,
+        "Node_ID": 142,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 143,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 143,
+        "Node_ID": 144,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 145,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 145,
         "Node_ID": 146,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Input": [
+            "result"
+        ],
         "Node_ID": 147,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Dst": "data_out",
+        "Input": 147,
         "Node_ID": 148,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Input": [
+            "pc2"
+        ],
         "Node_ID": 149,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "data_out",
+        "Input": 149,
         "Node_ID": 150,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "data_out"
         ],
         "Node_ID": 151,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "k",
         "Input": 151,
         "Node_ID": 152,
         "Operation": "SEQ",
@@ -1147,11 +1164,10 @@
     },
     {
         "Input": [
-            "l",
             "r"
         ],
         "Node_ID": 153,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
@@ -1163,15 +1179,14 @@
     },
     {
         "Input": [
-            "l",
             "r"
         ],
         "Node_ID": 155,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "result",
         "Input": 155,
         "Node_ID": 156,
         "Operation": "SEQ",
@@ -1179,52 +1194,140 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "result",
+            "l"
         ],
         "Node_ID": 157,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "r",
         "Input": 157,
         "Node_ID": 158,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 159,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Dst": "l",
+        "Input": 159,
         "Node_ID": 160,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 161,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Dst": "r",
+        "Input": 161,
         "Node_ID": 162,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 163,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 163,
+        "Node_ID": 164,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result"
+        ],
+        "Node_ID": 165,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 165,
+        "Node_ID": 166,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pc2"
+        ],
+        "Node_ID": 167,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 167,
+        "Node_ID": 168,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "data_out"
+        ],
+        "Node_ID": 169,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "k",
+        "Input": 169,
+        "Node_ID": 170,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 171,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 171,
+        "Node_ID": 172,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 173,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 173,
+        "Node_ID": 174,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -1233,111 +1336,28 @@
             "result",
             "l"
         ],
-        "Node_ID": 164,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 164,
-        "Node_ID": 165,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 166,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 166,
-        "Node_ID": 167,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 168,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 168,
-        "Node_ID": 169,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 170,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 170,
-        "Node_ID": 171,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "result",
-        "Node_ID": 172,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "pc2",
-        "Node_ID": 173,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "k",
-        "Input": "data_out",
-        "Node_ID": 174,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "l",
-        "Input": "r",
         "Node_ID": 175,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "r",
+        "Input": 175,
         "Node_ID": 176,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "l",
+            "r"
         ],
         "Node_ID": 177,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "l",
         "Input": 177,
         "Node_ID": 178,
         "Operation": "SEQ",
@@ -1353,7 +1373,7 @@
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "r",
         "Input": 179,
         "Node_ID": 180,
         "Operation": "SEQ",
@@ -1369,7 +1389,7 @@
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "l",
         "Input": 181,
         "Node_ID": 182,
         "Operation": "SEQ",
@@ -1377,52 +1397,76 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "result"
         ],
         "Node_ID": 183,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "data_out",
         "Input": 183,
         "Node_ID": 184,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "pc2"
+        ],
         "Node_ID": 185,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
         "Dst": "data_out",
-        "Input": "pc2",
+        "Input": 185,
         "Node_ID": 186,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Input": [
+            "data_out"
+        ],
         "Node_ID": 187,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Dst": "k",
+        "Input": 187,
         "Node_ID": 188,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 189,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 189,
+        "Node_ID": 190,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 191,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 191,
+        "Node_ID": 192,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -1431,46 +1475,14 @@
             "result",
             "l"
         ],
-        "Node_ID": 190,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 190,
-        "Node_ID": 191,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 192,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 192,
         "Node_ID": 193,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 194,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "r",
-        "Input": 194,
-        "Node_ID": 195,
+        "Input": 193,
+        "Node_ID": 194,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -1479,63 +1491,74 @@
             "l",
             "r"
         ],
-        "Node_ID": 196,
+        "Node_ID": 195,
         "Operation": "HdlOpType.XOR",
         "Type": "Op"
     },
     {
         "Dst": "l",
-        "Input": 196,
-        "Node_ID": 197,
+        "Input": 195,
+        "Node_ID": 196,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "result",
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 197,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 197,
         "Node_ID": 198,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "data_out",
-        "Input": "pc2",
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 199,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Dst": "k",
-        "Input": "data_out",
+        "Dst": "l",
+        "Input": 199,
         "Node_ID": 200,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": "r",
+        "Input": [
+            "result"
+        ],
         "Node_ID": 201,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
     },
     {
-        "Dst": "result",
-        "Input": "r",
+        "Dst": "data_out",
+        "Input": 201,
         "Node_ID": 202,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "result",
-            "l"
+            "pc2"
         ],
         "Node_ID": 203,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "data_out",
         "Input": 203,
         "Node_ID": 204,
         "Operation": "SEQ",
@@ -1543,15 +1566,14 @@
     },
     {
         "Input": [
-            "l",
-            "r"
+            "data_out"
         ],
         "Node_ID": 205,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "k",
         "Input": 205,
         "Node_ID": 206,
         "Operation": "SEQ",
@@ -1559,15 +1581,14 @@
     },
     {
         "Input": [
-            "l",
             "r"
         ],
         "Node_ID": 207,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "l",
         "Input": 207,
         "Node_ID": 208,
         "Operation": "SEQ",
@@ -1575,52 +1596,16 @@
     },
     {
         "Input": [
-            "l",
             "r"
         ],
         "Node_ID": 209,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "l",
+        "Dst": "result",
         "Input": 209,
         "Node_ID": 210,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "result",
-        "Node_ID": 211,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "data_out",
-        "Input": "pc2",
-        "Node_ID": 212,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "k",
-        "Input": "data_out",
-        "Node_ID": 213,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "l",
-        "Input": "r",
-        "Node_ID": 214,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Dst": "result",
-        "Input": "r",
-        "Node_ID": 215,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -1629,76 +1614,648 @@
             "result",
             "l"
         ],
+        "Node_ID": 211,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 211,
+        "Node_ID": 212,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 213,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 213,
+        "Node_ID": 214,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 215,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 215,
         "Node_ID": 216,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
-        "Dst": "r",
-        "Input": 216,
+        "Input": [
+            "l",
+            "r"
+        ],
         "Node_ID": 217,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Input": [
-            "l",
-            "r"
-        ],
+        "Dst": "l",
+        "Input": 217,
         "Node_ID": 218,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
-        "Dst": "l",
-        "Input": 218,
+        "Input": [
+            "result"
+        ],
         "Node_ID": 219,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 220,
-        "Operation": "HdlOpType.XOR",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": 220,
-        "Node_ID": 221,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "l",
-            "r"
-        ],
-        "Node_ID": 222,
-        "Operation": "HdlOpType.XOR",
-        "Type": "Op"
-    },
-    {
-        "Dst": "l",
-        "Input": 222,
-        "Node_ID": 223,
-        "Operation": "SEQ",
-        "Type": "Assign"
     },
     {
         "Dst": "data_out",
-        "Input": "ip_inv",
+        "Input": 219,
+        "Node_ID": 220,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pc2"
+        ],
+        "Node_ID": 221,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 221,
+        "Node_ID": 222,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "data_out"
+        ],
+        "Node_ID": 223,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "k",
+        "Input": 223,
         "Node_ID": 224,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Dst": "result",
-        "Input": "bllock",
+        "Input": [
+            "r"
+        ],
         "Node_ID": 225,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 225,
+        "Node_ID": 226,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 227,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 227,
+        "Node_ID": 228,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result",
+            "l"
+        ],
+        "Node_ID": 229,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 229,
+        "Node_ID": 230,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 231,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 231,
+        "Node_ID": 232,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 233,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 233,
+        "Node_ID": 234,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 235,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 235,
+        "Node_ID": 236,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result"
+        ],
+        "Node_ID": 237,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 237,
+        "Node_ID": 238,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pc2"
+        ],
+        "Node_ID": 239,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 239,
+        "Node_ID": 240,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "data_out"
+        ],
+        "Node_ID": 241,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "k",
+        "Input": 241,
+        "Node_ID": 242,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 243,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 243,
+        "Node_ID": 244,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 245,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 245,
+        "Node_ID": 246,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result",
+            "l"
+        ],
+        "Node_ID": 247,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 247,
+        "Node_ID": 248,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 249,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 249,
+        "Node_ID": 250,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 251,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 251,
+        "Node_ID": 252,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 253,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 253,
+        "Node_ID": 254,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result"
+        ],
+        "Node_ID": 255,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 255,
+        "Node_ID": 256,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pc2"
+        ],
+        "Node_ID": 257,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 257,
+        "Node_ID": 258,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "data_out"
+        ],
+        "Node_ID": 259,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "k",
+        "Input": 259,
+        "Node_ID": 260,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 261,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 261,
+        "Node_ID": 262,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 263,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 263,
+        "Node_ID": 264,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result",
+            "l"
+        ],
+        "Node_ID": 265,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 265,
+        "Node_ID": 266,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 267,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 267,
+        "Node_ID": 268,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 269,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 269,
+        "Node_ID": 270,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 271,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 271,
+        "Node_ID": 272,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result"
+        ],
+        "Node_ID": 273,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 273,
+        "Node_ID": 274,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pc2"
+        ],
+        "Node_ID": 275,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 275,
+        "Node_ID": 276,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "data_out"
+        ],
+        "Node_ID": 277,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "k",
+        "Input": 277,
+        "Node_ID": 278,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 279,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 279,
+        "Node_ID": 280,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r"
+        ],
+        "Node_ID": 281,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 281,
+        "Node_ID": 282,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "result",
+            "l"
+        ],
+        "Node_ID": 283,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 283,
+        "Node_ID": 284,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 285,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 285,
+        "Node_ID": 286,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 287,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 287,
+        "Node_ID": 288,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "l",
+            "r"
+        ],
+        "Node_ID": 289,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "l",
+        "Input": 289,
+        "Node_ID": 290,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "ip_inv"
+        ],
+        "Node_ID": 291,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "data_out",
+        "Input": 291,
+        "Node_ID": 292,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "bllock"
+        ],
+        "Node_ID": 293,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "result",
+        "Input": 293,
+        "Node_ID": 294,
         "Operation": "SEQ",
         "Type": "Assign"
     }

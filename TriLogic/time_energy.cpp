@@ -15,31 +15,42 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
     double time2 = 0; //depend2的时间
     double time3 = 0; //control的时间
     double time_do_array = 0; //阵列的时间
-    cout << "time_now函数中的decide_array_type = " << decide_array_type << endl;
+//    cout << "time_now函数中的decide_array_type = " << decide_array_type << endl;
     //假设确定了使用的阵列，那节点开始执行的时间就是使用阵列的结束时间
     //虽然操作并行可能会让op类型比=先执行，但时间和能量均不影响
     switch (decide_array_type) {
         case 1: {
             time_do_array = array_list1[decide_array_id].over_time;
+//            cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
         }
             break;
         case 2:
+        {
             time_do_array = array_list2[decide_array_id].over_time;
+//            cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
+        }
             break;
         case 3:
+        {
             time_do_array = array_list3[decide_array_id].over_time;
+//            cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
+        }
             break;
         default:
+        {
+//            cout << "time_now函数中阵列的over_time: " << 0 << endl;
+        }
             break;
     }
-    cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
+//    cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
     int op_type = op2int(node_now->operator_name);//操作类型
     //先看控制依赖
     if (node_now->control != nullptr) {
+        cout<<"存在控制依赖"<<endl;
+//        cout << "控制依赖 time3 =" << time3 << endl;
         time3 = node_now->control->end_time;
         time_n = max(time_n, time3);
     }
-    cout << "控制依赖 time3 =" << time3 << endl;
     if (op_type == 0) //写操作,只有一个数据依赖，可能有控制依赖
     {
         if (node_now->depend1 != nullptr) //有依赖 A=b A=B OP C
@@ -72,8 +83,8 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         if (node_now->depend1 != nullptr) //有依赖
         {
             time1 = node_now->depend1->end_time;
-            cout << "time1 = " << time1 << endl;
-            cout << "wb_empty(node_now->depend1)没有问题：" << wb_empty(node_now->depend1) << endl;
+//            cout << "time1 = " << time1 << endl;
+//            cout << "wb_empty(node_now->depend1)没有问题：" << wb_empty(node_now->depend1) << endl;
             if ((time_do_array > time1 || time3 > time1) &&
                 wb_empty(node_now->depend1)) //控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
@@ -82,7 +93,7 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     write_back(node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
                                array_list1, array_list2, array_list3);
                 }
-                cout << "time_now中的write_back没问题" << endl;
+//                cout << "time_now中的write_back没问题" << endl;
                 time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
@@ -93,7 +104,7 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         if (node_now->depend2 != nullptr) //2有依赖
         {
             time2 = node_now->depend2->end_time;
-            cout << "time2 = " << time2 << endl;
+//            cout << "time2 = " << time2 << endl;
             if ((time_do_array > time2 || time3 > time2) &&
                 wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {

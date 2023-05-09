@@ -343,7 +343,7 @@ int main() {
 
     cout << &nodes2[0] << "< - >" << &nodes[0] << endl;
 
-    for (int p = 0; p < 1; ++p) {
+    for (int p = 0; p < 100000; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1 = {};//lut阵列表
@@ -390,6 +390,9 @@ int main() {
     cout << "最优延迟时：三种阵列个数为：" << array_num_latency[0] << " " << array_num_latency[1] <<" "<<array_num_latency[2] << endl;
     cout << "最优能耗时：延迟为" << best_energy[0] << " 能耗为 " << best_energy[1] << endl;
     cout << "最优延迟时：三种阵列个数为：" << array_num_energy[0] << " " << array_num_energy[1] <<" "<<array_num_energy[2] << endl;
+
+    //绘制帕累托优化的解
+
     //先判断设计目标，按照设计目标来循环给约束
     return 0;
 }

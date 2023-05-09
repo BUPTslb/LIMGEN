@@ -89,10 +89,27 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                         }
                     }
                     int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                    int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+
                     find_node_by_number(erase_node)->do_type = do_type_chosen;
-                    find_node_by_number(erase_node)->finish_id = find_node_by_number(
-                            erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                    //do_type_chosen不能用来对wb_pos索引
+                    //先进行变换
+                    if (do_type_chosen==-1) //reg
+                    {
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[0].size();
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                erase_node)->wb_pos[0][rand() % wb_i_size];
+                    }
+                    else if(do_type_chosen==6) //sa存储
+                    {
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[2].size();
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                erase_node)->wb_pos[2][rand() % wb_i_size];
+                    }
+                    else {
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                    }
                 }
             }
             //将此节点从阵列的存储节点中擦除
@@ -158,10 +175,26 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                         }
                     }
                     int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                    int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
                     find_node_by_number(erase_node)->do_type = do_type_chosen;
-                    find_node_by_number(erase_node)->finish_id = find_node_by_number(
-                            erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                    //do_type_chosen不能用来对wb_pos索引
+                    //先进行变换
+                    if (do_type_chosen==-1) //reg
+                    {
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[0].size();
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                erase_node)->wb_pos[0][rand() % wb_i_size];
+                    }
+                    else if(do_type_chosen==6) //sa存储
+                    {
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[2].size();
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                erase_node)->wb_pos[2][rand() % wb_i_size];
+                    }
+                    else {
+                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                    }
                 }
             }
             //将此节点从阵列的存储节点中擦除
@@ -230,10 +263,26 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                             }
                         }
                         int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
                         find_node_by_number(erase_node)->do_type = do_type_chosen;
-                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
-                                erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                        //do_type_chosen不能用来对wb_pos索引
+                        //先进行变换
+                        if (do_type_chosen==-1) //reg
+                        {
+                            int wb_i_size = find_node_by_number(erase_node)->wb_pos[0].size();
+                            find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                    erase_node)->wb_pos[0][rand() % wb_i_size];
+                        }
+                        else if(do_type_chosen==6) //sa存储
+                        {
+                            int wb_i_size = find_node_by_number(erase_node)->wb_pos[2].size();
+                            find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                    erase_node)->wb_pos[2][rand() % wb_i_size];
+                        }
+                        else {
+                            int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                            find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                    erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                        }
                     }
                 }
                 //将此节点从阵列的存储节点中擦除
@@ -286,10 +335,26 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                             }
                         }
                         int do_type_chosen = do_type_ready[rand() % do_type_ready.size()];
-                        int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
                         find_node_by_number(erase_node)->do_type = do_type_chosen;
-                        find_node_by_number(erase_node)->finish_id = find_node_by_number(
-                                erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                        //do_type_chosen不能用来对wb_pos索引
+                        //先进行变换
+                        if (do_type_chosen==-1) //reg
+                        {
+                            int wb_i_size = find_node_by_number(erase_node)->wb_pos[0].size();
+                            find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                    erase_node)->wb_pos[0][rand() % wb_i_size];
+                        }
+                        else if(do_type_chosen==6) //sa存储
+                        {
+                            int wb_i_size = find_node_by_number(erase_node)->wb_pos[2].size();
+                            find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                    erase_node)->wb_pos[2][rand() % wb_i_size];
+                        }
+                        else {
+                            int wb_i_size = find_node_by_number(erase_node)->wb_pos[do_type_chosen].size();
+                            find_node_by_number(erase_node)->finish_id = find_node_by_number(
+                                    erase_node)->wb_pos[do_type_chosen][rand() % wb_i_size];
+                        }
                     }
                 }
                 //将此节点从阵列的存储节点中擦除

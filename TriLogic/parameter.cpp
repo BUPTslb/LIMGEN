@@ -1,11 +1,16 @@
 #include "parameter.h"
 #include "mainfunc.h"
 
-//单位 ns pj mm^2
-RRAM rram = {10, 10, 0.02, 0.13, 1e12};//RRAM参数 全局 ns pj
-REG reg = {1, 1, 0.48, 0.48, 0.002};//单个reg的索引,数据来源：PUMA 1KB Reg
-Register Reg_sum = {0, 0, 0, 0};
-BUFFER buffer = {1, 1, 0.29, 0.29, 0.0001375};//TODO:这里仅限1bit,数据来源：PUMA
+//控制器的面积，行列各有一个
+extern double controler_magic=1344;
+extern double controler_sa=672;
+extern double controler_lut=672;
+
+//单位 ns pj F^2
+RRAM rram = {1, 1, 0.02, 0.13 , 6, 1e12};//RRAM参数 全局 ns pj
+REG reg = {1, 1, 0.02, 0.02, 1524};//单个reg的索引 只有面积参数是1bit的
+Register Reg_sum = {0, 0, 0, 0, 0};
+BUFFER buffer = {1, 1, 0.02, 0.02, 96}; //这里的buffer只是锁存而已，原来能量是0.29，现在改成0.02，1bit的大小是96F^2
 Buffer buffer_sum = {0, 0, 0, 0};
 
 Sa_op CSA_and = {6, 0.03, 0.029};//ns pj
@@ -15,7 +20,7 @@ Sa_op CSA_nor = {9, 0.08, 0.038}; //or + not
 Sa_op CSA_xor = {10, 0.32, 0.04};
 Sa_op CSA_add = {11, 0.38, 0.069};//add 1bit
 std::vector<Sa_op> csa = {CSA_and, CSA_or, CSA_not, CSA_nor, CSA_xor, CSA_add};
-SA CSA = {0.04, 0.016, csa};
+SA CSA = {0.04, 0.016, 534 , 240, csa};
 
 Sa_op DSA_and = {6, 0.078, 0.015};//ns pj
 Sa_op DSA_or = {7, 0.09, 0.01};
@@ -24,7 +29,7 @@ Sa_op DSA_nor = {9, 0.18, 0.02}; //or + not
 Sa_op DSA_xor = {10, 0.10, 0.025};
 Sa_op DSA_add = {11, 0.12, 0.026};
 std::vector<Sa_op> dsa = {DSA_and, DSA_or, DSA_not, DSA_nor, DSA_xor, DSA_add};
-SA DSA = {0.09, 0.010, dsa};
+SA DSA = {0.09, 0.010, 792 , 240 ,dsa}; //读时间 读能量 面积 操作
 
 //TODO:verilog-A仿真一下，magic能耗过高，时间太慢，参数都需要更新
 Ma_op ma_seq = {0, rram.write_time, rram.write_energy};//用set reset平均（0.219+0.034）/2
@@ -138,8 +143,8 @@ double ma_latency(int op_type) {
     double ma_latency = 0;
     for (auto i: magic_op) {
         if (i.op_type == op_type) {
-            if (op_type == 11)
-                ma_latency = i.op_time * (bit_num_operand + 4);//N+4
+            if (op_type == 11) //加法
+                ma_latency =bit_num_operand + i.op_time * (bit_num_operand + 4);//N*1 + N+4
             else
                 ma_latency = i.op_time;
         }
@@ -183,26 +188,36 @@ double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vecto
     double area_all = 0;
     //阵列的面积
     for (auto i: array_list1) {
-        area_all += 0;
+        //注意，这里lut_num才代表真实的列数，col_num只代表输出的列数
+        area_all += i.row_num*i.lut_num*rram.t1r1_area;
+        if (i.row_num==16)
+            area_all += lut4_out_area*i.lut_num;
+        else
+            area_all += lut6_out_area*i.lut_num;
+
     }
     for (auto i: array_list2) {
         if (i.sa_type == 1) {
             //加上csa的面积
-
+            area_all+=i.col_num*i.row_num*rram.t1r1_area;
+            area_all+=CSA.SA_area*i.col_num;
+            area_all+=CSA.SA_add_area*i.col_num;
         } else {
             //加上dsa的面积
-
+            area_all+=i.col_num*i.row_num*rram.t1r1_area;
+            area_all+=DSA.SA_area*i.col_num;
+            area_all+=DSA.SA_add_area*i.col_num;
         }
-
     }
+
     for (auto i: array_list3) {
-        area_all += 0;
+        area_all += i.col_num*i.row_num*rram.t1r1_area;
+        area_all += i.row_num * controler_magic + i.col_num * controler_magic;
+        area_all += i.row_num * 196 ;
     }
-    //加上寄存器的面积
-
-
-
-
+    //寄存器的面积都一样
+    //其余的面积都可以认定为一样
+    //讲解一下为什么其他面积被忽略了
 }
 
 //能耗,阵列+buffer+Reg
@@ -228,6 +243,9 @@ void get_best(std::vector<double> &best_latency, std::vector<double> &best_energ
               std::vector<int> &array_num_latency, std::vector<int> &array_num_energy, vector<lut_arr> &array_list1,
               vector<sa_arr> &array_list2,
               vector<magic_arr> &array_list3) {
+    //将所有结果都输出，然后在统一绘制图形
+
+
     //优化延迟
     if (latency_energy[0] < best_latency[0]) {
         best_latency = latency_energy;
@@ -236,6 +254,7 @@ void get_best(std::vector<double> &best_latency, std::vector<double> &best_energ
         array_num_latency[0]=array_list1.size();
         array_num_latency[1]=array_list2.size();
         array_num_latency[2]=array_list3.size();
+
     }
     cout << "优化延迟" << endl;
     if (latency_energy[1] < best_energy[1]) {
@@ -247,6 +266,8 @@ void get_best(std::vector<double> &best_latency, std::vector<double> &best_energ
         array_num_energy[2]=array_list3.size();
     }
     cout << "优化能耗" << endl;
+
+
 
 
 }

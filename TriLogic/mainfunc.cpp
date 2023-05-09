@@ -109,6 +109,9 @@ int op2int(string operation){
 }
 
 //database
+extern double lut6_out_area=11712;
+extern double lut4_out_area=4824;
+
 vector<Lut_Record> lut_record= lut_records();
 vector<Lut_Record> lut_records()
 {
@@ -169,11 +172,11 @@ void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &ar
         outfile<< "number of array_lut:" << array_list1.size() << endl;
         for (auto &i: array_list1) {
             outfile << "op_type of lut_array" << i.array_id << endl;
-            outfile << "op-num of lut" << i.array_id << "=" << i.op_type.size() << endl;
-            outfile << "The op of this lut:  ";
-            for (auto &j: i.op_type) {
-                outfile << j << "  ";
-            }
+            outfile << "op-num of lut" << i.array_id << "=" << i.op_type << endl;
+            outfile << "The op of this lut:  "<<i.op_type;
+//            for (auto &j: i.op_type) {
+//                outfile << j << "  ";
+//            }
             outfile<<endl<<"time of this lut:"<<"start time: "<<i.start_time<<"  over time: "<<i.over_time<<endl;
 
         }

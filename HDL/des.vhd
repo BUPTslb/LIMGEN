@@ -71,15 +71,15 @@ begin
         l <= 222;
         r <= 111;
 
-        --IP置换得到data_out
-        data_out <= ip;
+        --IP置换得到data_out (用not代替)
+        data_out <= not ip;
 
         --e 置换
-        --48次循环
-        result <= r;
+        --48次循环 (用not代替)
+        result <= not r;
 
-        -- P 置换
-        result <= r;
+        -- P 置换 (用not代替)
+        result <= not r;
 
 
         -- S-Box 置换
@@ -87,213 +87,206 @@ begin
         col <= 11;
 
         --4个bit
-        result <= s_box_table;
+        result <= not s_box_table;
 
 
         -- 初始密钥置换
         -- 56bit
-        k <= result;
+        k <= not result;
 
 
         -- 16 轮加密
 
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
+        data_out <=not result;
+        data_out <=not pc2;
+        k <=not data_out;
         -- f 函数
-        l <= r;
+        l <=not r;
         --P置换、permute
-        result <=r;
-        r <= result xor l;
-        l <= l xor r;
-        r <= l xor r;
-        l <= l xor r;
-        --15次循环，执行xor操作
-        data_out <= result;
-        data_out <= pc2;
-        k <= data_out;
-        -- f 函数
-        l <= r;
-        --P置换、permute
-        result <=r;
+        result <=not r;
         r <= result xor l;
         l <= l xor r;
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
 
+
+
+
+
+
         -- 逆 IP 置换
-        data_out <= ip_inv;
+        data_out <=not ip_inv;
         -- IP 逆置换
-        result <= bllock;
+        result <=not bllock;
 
 end process;
 

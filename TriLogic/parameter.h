@@ -12,11 +12,16 @@ struct RRAM{
     double write_time;
     double read_energy;
     double write_energy;
+    double t1r1_area;
 //    double set_energy;//0.22pj
 //    double reset_energy;//0.03pj
     double write_max;
 };
 extern RRAM rram;
+
+extern double controler_magic;
+extern double controler_sa;
+extern double controler_lut;
 
 //单个Reg 1KB
 struct REG{
@@ -24,7 +29,7 @@ struct REG{
     double reg_write_time;//ns
     double reg_read_energy;//pj
     double reg_write_energy;//更新不需要乘以位数
-    double reg_area;//mm2 1KB=1024*8 bits = 64 * 64 * 2
+    double reg_area;//F^2 单个bit
 };
 extern REG reg;
 
@@ -34,6 +39,7 @@ struct Register{
     int read_num_sum;
     double write_energy_sum;
     double read_energy_sum;
+    double Reg_area;
 };
 extern Register Reg_sum;
 
@@ -43,7 +49,7 @@ struct BUFFER{
     double buffer_write_time;
     double buffer_read_energy;//pj
     double buffer_write_energy;
-    double buffer_area;//mm2
+    double buffer_area;//F^2
 };
 extern BUFFER buffer;
 
@@ -65,6 +71,8 @@ struct Sa_op {
 struct SA {
     double read_time;
     double read_energy;
+    double SA_area;
+    double SA_add_area;
     std::vector<Sa_op> sa_op;
 };
 extern Sa_op CSA_and;
@@ -110,8 +118,6 @@ extern std::vector<Ma_op> magic_op;
 extern Ma_Record magic_record;
 
 
-
-
 struct Lut_Record{
     int op_type;//操作类型
     int data_bits;//操作数位数
@@ -121,6 +127,8 @@ struct Lut_Record{
     int lut6_level;
 };
 
+extern double lut4_out_area;
+extern double lut6_out_area;
 
 std::vector<Lut_Record> lut_records();//获得lut的参数
 extern std::vector<Lut_Record> lut_record;//全局

@@ -71,7 +71,8 @@ public:
 struct lut_arr : public Array {
     vector<int> lut_latch;//记录buffer锁存
     int lut_out;//当前的输出
-    set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
+//    set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
+    int op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
     int lut_level;
     //TODO:使用模块时，增大lut阵列的尺寸，使其专用化，一个阵列直接完成功能

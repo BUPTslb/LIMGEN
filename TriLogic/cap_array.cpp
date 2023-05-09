@@ -7,13 +7,15 @@ int cap_array_lost(int decide_array_type, int decide_array_id, vector<lut_arr> &
     switch (decide_array_type) {
         case 1://LUT, 计算还能够放下几个运算
         {
-            auto it = array_list1[decide_array_id].op_type.begin();
-            //lut : add mul div l_eq l_bigger l_less
-            if (*it == 11 || *it == 12 || *it == 13 || *it == 1 || *it == 2 || *it == 3)
-                return 0;
-                //TODO: can array co-using lut-mux?
-            else
-                cap_array = 3 - array_list1[decide_array_id].op_type.size();
+            //lut应该直接返回0
+
+//            auto it = array_list1[decide_array_id].op_type.begin();
+//            //lut : add mul div l_eq l_bigger l_less
+//            if (*it == 11 || *it == 12 || *it == 13 || *it == 1 || *it == 2 || *it == 3)
+//                return 0;
+//                //TODO: can array co-using lut-mux?
+//            else
+//                cap_array = 3 - array_list1[decide_array_id].op_type.size();
             cout << "lut当前的容量为" << cap_array << endl;
         }
             break;
