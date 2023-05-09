@@ -200,7 +200,8 @@ std::vector<double>  only_magic(vector<vector<Node *>> controlstep2,vector<lut_a
     cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
-    std::vector<double> latency_energy_area={all_latency,all_energy};
+    double all_area= area_all(array_list1, array_list2, array_list3);
+    std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
     return latency_energy_area;
 
 }

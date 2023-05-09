@@ -336,10 +336,12 @@ int main() {
 
     int model_chosen[4] = {0, 1, 2, 3};
     int model = model_chosen[0];
-    vector<double> best_latency = {10000, 10000};//延迟、能耗
-    vector<double> best_energy = {10000, 10000};//延迟、能耗
+    vector<double> best_latency = {10000, 10000,1000000000000};//延迟、能耗,面积
+    vector<double> best_energy = {10000, 10000,10000000000000};//延迟、能耗，面积
+    vector<double> best_area = {10000, 10000,10000000000000};//延迟、能耗，面积
     vector<int> array_num_latency;
     vector<int> array_num_energy;
+
 
     cout << &nodes2[0] << "< - >" << &nodes[0] << endl;
 
@@ -359,24 +361,24 @@ int main() {
         }
         switch (model) {
             case 0: {
-                vector<double> latency_energy = control_step(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                vector<double> latency_energy_area = control_step(controlstep2, array_list1, array_list2, array_list3);
+                get_best(best_latency,best_energy,best_area,latency_energy_area,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
             }
                 break;
             case 1: {
                 cout<<"lut-only"<<endl;
-                vector<double> latency_energy =only_lut(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                vector<double> latency_energy_area =only_lut(controlstep2, array_list1, array_list2, array_list3);
+                get_best(best_latency,best_energy,best_area,latency_energy_area,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
             }
                 break;
             case 2: {
                 vector<double> latency_energy =only_sa(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                get_best(best_latency,best_energy,best_area,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
             }
                 break;
             case 3: {
                 vector<double> latency_energy =only_magic(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                get_best(best_latency,best_energy,best_area,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
             }
                 break;
             default:

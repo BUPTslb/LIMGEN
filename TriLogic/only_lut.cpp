@@ -239,11 +239,17 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
         }
     }
     //遍历完控制步，输出延迟、能耗、面积信息
-    cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
-    cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
+
+
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
-    std::vector<double> latency_energy_area={all_latency,all_energy};
+    double all_area= area_all_lut(array_list1,array_list2,array_list3);
+    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
+    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
+    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
+
+    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
+    std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
     return latency_energy_area;
 
 }
@@ -1126,6 +1132,11 @@ void op_lut_only(int op_type, int decide_array_id, Node *now, double time_now, v
     time_update( op_type, 1, decide_array_id, time_now, now, array_list1, array_list2, array_list3);
 //更新能量
     energy_update( op_type, 1, decide_array_id, array_list1, array_list2, array_list3);
+
+
+
+
+
 
 }
 //

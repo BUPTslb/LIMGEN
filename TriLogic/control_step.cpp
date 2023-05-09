@@ -302,12 +302,13 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
     //遍历完控制步，输出延迟、能耗、面积信息
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
+    double all_area= area_all(array_list1,array_list2,array_list3);
     cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
     cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
     cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
 
     redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
-    std::vector<double> latency_energy_area={all_latency,all_energy};
+    std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
     return latency_energy_area;
 
 

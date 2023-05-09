@@ -133,11 +133,16 @@ latency_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,
 double
 area_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2, std::vector<magic_arr> &array_list3);
 
+double area_all_lut(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2, std::vector<magic_arr> &array_list3);
+
 //能耗,阵列+buffer+Reg
 double
 energy_all(std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2, std::vector<magic_arr> &array_list3);
 
-void get_best(std::vector<double> &best_latency, std::vector<double> &best_energy, std::vector<double> latency_energy,
+void get_best(std::vector<double> &best_latency,
+              std::vector<double> &best_energy,
+              std::vector<double> &best_area,
+              std::vector<double> latency_energy,
               std::vector<int> &array_num_latency, std::vector<int> &array_num_energy,
               std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,
               std::vector<magic_arr> &array_list3);
