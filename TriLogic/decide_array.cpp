@@ -34,13 +34,10 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
     //执行当前操作需要的资源数,此时假设操作数都在阵列中
     int row_need = op_row_need(op_type, decide_array_type);//后续要更改
 
-    cout << "op_row_need函数没有问题" << endl;
     //未使用的阵列和等待的阵列,这里没有
     vector<int> array_no_using = find_no_using(op_type, decide_array_type, array_list1, array_list2, array_list3);
-    cout << "array_no_using函数没有问题" << endl;
     vector<int> array_wait = waiting_array_list(op_type, decide_array_type, array_list1, array_list2, array_list3);
     //检验越界
-    cout << "array_wait函数没有问题" << endl;
     //如果都是空的，或者lut的功能不匹配,则需要新建阵列
     if (array_no_using.empty() && array_wait.empty())
     {
@@ -295,7 +292,6 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
 
         } else//sa和magic,要保证剩余空间充足
         {
-            cout<<"两个操作数,在sa或者magic中执行"<<endl;
             //array no using is not empty
             if (!array_no_using.empty()) {
                 for (int i: array_no_using) //随便找一个能用的
@@ -333,7 +329,7 @@ int decide_array_id(int op_type, Node *node_now, int decide_array_type, \
 //            array_list1[decide_array_id].op_type.insert(op_type);
 //    }
 
-    cout<<"decide_array_id运行正常"<<endl;
+//    cout<<"decide_array_id运行正常"<<endl;
     //只是寻找节点id,应该不需要执行时间更新
 //    time_update(op_type, decide_array_type, decide_array_id, time_n, node_now, array_list1, array_list2, array_list3);
     return decide_array_id;

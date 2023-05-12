@@ -6,28 +6,16 @@ int cap_array_lost(int decide_array_type, int decide_array_id, vector<lut_arr> &
     int cap_array = 0;
     switch (decide_array_type) {
         case 1://LUT, 计算还能够放下几个运算
-        {
-            //lut应该直接返回0
-
-//            auto it = array_list1[decide_array_id].op_type.begin();
-//            //lut : add mul div l_eq l_bigger l_less
-//            if (*it == 11 || *it == 12 || *it == 13 || *it == 1 || *it == 2 || *it == 3)
-//                return 0;
-//                //TODO: can array co-using lut-mux?
-//            else
-//                cap_array = 3 - array_list1[decide_array_id].op_type.size();
-            cout << "lut当前的容量为" << cap_array << endl;
-        }
             break;
         case 2://SA
         {
             //TODO:根据store_node,计算实际容量,有修改空间
             //需要一个函数，计算当前存储节点占用的空间
             //检验越界
-            cout<<"选中sa阵列的行数："<<array_list2[decide_array_id].row_num<<endl;
+//            cout<<"选中sa阵列的行数："<<array_list2[decide_array_id].row_num<<endl;
             cap_array = array_list2[decide_array_id].row_num
                         - capped_now(decide_array_type, decide_array_id, array_list1,array_list2, array_list3);
-            cout<<"capped_now函数运行正常"<<endl;
+//            cout<<"capped_now函数运行正常"<<endl;
             cap_array = max(0, cap_array);
         }
             break;
@@ -35,16 +23,16 @@ int cap_array_lost(int decide_array_type, int decide_array_id, vector<lut_arr> &
         {
             //节点存入magic有两种情况:1.要更新写回= 2.操作中有立即数，类型为op
             //magic中，立即数也会被写入，因此要全部统计
-            cout<<"选中magic阵列的行数："<<array_list3[decide_array_id].row_num<<endl;
+//            cout<<"选中magic阵列的行数："<<array_list3[decide_array_id].row_num<<endl;
             cap_array = array_list3[decide_array_id].row_num - capped_now(decide_array_type, decide_array_id, array_list1,array_list2, array_list3);
-            cout<<"capped_now函数运行正常"<<endl;
+//            cout<<"capped_now函数运行正常"<<endl;
             cap_array = max(0, cap_array);
         }
             break;
         default:
             break;
     }
-    cout<<"cap_array_lost函数正常运行"<<endl;
+//    cout<<"cap_array_lost函数正常运行"<<endl;
     return cap_array;
 
 }
@@ -116,20 +104,20 @@ int capped_now(int decide_array_type, int decide_array_id, vector<lut_arr> &arra
 {
     int capped_now=0;
     switch (decide_array_type) {
-        case 2://sa
+        case 2://sa-out
             //问题，store_node中的数字出现了乱码
             for (int i:array_list2[decide_array_id].store_node) {
                 if (find_node_by_number(i)) //能找到该节点
                     capped_now++;
             }
             break;
-        case 5://sa
+        case 5://sa-buffer
             for (int i:array_list2[decide_array_id].store_node) {
                 if (find_node_by_number(i)) //能找到该节点
                     capped_now++;
             }
             break;
-        case 6://sa
+        case 6://sa-store
             for (int i:array_list2[decide_array_id].store_node) {
                 if (find_node_by_number(i)) //能找到该节点
                     capped_now++;

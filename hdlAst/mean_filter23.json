@@ -151,10 +151,10 @@
     {
         "Input": [
             "sum",
-            "9\n"
+            "sum"
         ],
         "Node_ID": 21,
-        "Operation": "HdlOpType.MUL",
+        "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
@@ -166,14 +166,15 @@
     },
     {
         "Input": [
+            "sum",
             "sum"
         ],
         "Node_ID": 23,
-        "Operation": "HdlOpType.NEG",
+        "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
-        "Dst": "output",
+        "Dst": "sum",
         "Input": 23,
         "Node_ID": 24,
         "Operation": "SEQ",
@@ -182,7 +183,7 @@
     {
         "Input": [
             "sum",
-            "b"
+            "sum"
         ],
         "Node_ID": 25,
         "Operation": "HdlOpType.ADD",
@@ -197,15 +198,15 @@
     },
     {
         "Input": [
-            "r",
-            "1\n"
+            "sum",
+            "pixels"
         ],
         "Node_ID": 27,
         "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
-        "Dst": "r",
+        "Dst": "sum",
         "Input": 27,
         "Node_ID": 28,
         "Operation": "SEQ",
@@ -213,17 +214,64 @@
     },
     {
         "Input": [
+            "sum"
+        ],
+        "Node_ID": 29,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "output",
+        "Input": 29,
+        "Node_ID": 30,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "b"
+        ],
+        "Node_ID": 31,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 31,
+        "Node_ID": 32,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r",
+            "1\n"
+        ],
+        "Node_ID": 33,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 33,
+        "Node_ID": 34,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
             "r",
             "3\n"
         ],
-        "Node_ID": 29,
+        "Node_ID": 35,
         "Operation": "HdlOpType.EQ",
         "Type": "Op"
     },
     {
         "Dst": "r",
         "Input": "0\n",
-        "Node_ID": 30,
+        "Node_ID": 36,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -232,62 +280,62 @@
             "c",
             "1\n"
         ],
-        "Node_ID": 31,
+        "Node_ID": 37,
         "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
         "Dst": "c",
-        "Input": 31,
-        "Node_ID": 32,
+        "Input": 37,
+        "Node_ID": 38,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Node_ID": 33,
+        "Node_ID": 39,
         "Statement_when_false": [],
         "Statement_when_true": [
-            30,
-            31,
-            32
+            36,
+            37,
+            38
         ],
         "Type": "Branch",
-        "condition": 29
+        "condition": 35
     },
     {
         "Input": [
             "c",
             "3\n"
         ],
-        "Node_ID": 34,
+        "Node_ID": 40,
         "Operation": "HdlOpType.EQ",
         "Type": "Op"
     },
     {
         "Dst": "done",
         "Input": "12\n",
-        "Node_ID": 35,
+        "Node_ID": 41,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Node_ID": 36,
+        "Node_ID": 42,
         "Statement_when_false": [],
         "Statement_when_true": [
-            35
+            41
         ],
         "Type": "Branch",
-        "condition": 34
+        "condition": 40
     },
     {
         "Dst": "shift_reg_cnt",
         "Input": "0\n",
-        "Node_ID": 37,
+        "Node_ID": 43,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Node_ID": 38,
+        "Node_ID": 44,
         "Statement_when_false": [],
         "Statement_when_true": [
             21,
@@ -306,7 +354,13 @@
             34,
             35,
             36,
-            37
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43
         ],
         "Type": "Branch",
         "condition": 20
@@ -314,7 +368,7 @@
     {
         "Dst": "done",
         "Input": "0\n",
-        "Node_ID": 39,
+        "Node_ID": 45,
         "Operation": "SEQ",
         "Type": "Assign"
     }

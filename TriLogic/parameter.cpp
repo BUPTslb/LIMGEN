@@ -2,15 +2,18 @@
 #include "mainfunc.h"
 
 //控制器的面积，行列各有一个
-extern double controler_magic = 1344;
-extern double controler_sa = 672;
-extern double controler_lut = 672;
+double controler_magic = 1344;
+double controler_sa = 672;
+double controler_lut = 672;
+double decoder_power =0.0177;//mW 和 ns相乘直接得到pJ
+double decoder_latency=0.18;//ns
 
 //单位 ns pj F^2
-RRAM rram = {1, 1, 0.02, 0.13, 6, 1e12};//RRAM参数 全局 ns pj
-REG reg = {1, 1, 0.02, 0.02, 1524};//单个reg的索引 只有面积参数是1bit的
+//RRAM rram = {1, 1, 0.02, 0.13, 6, 1e12};//RRAM参数 全局 ns pj
+RRAM rram = {10, 10, 0.02, 0.13, 6, 1e12};//RRAM参数 全局 ns pj
+REG reg = {0.09, 0.09, 0.02, 0.02, 1524};//单个reg的索引 只有面积参数是1bit的
 Register Reg_sum = {0, 0, 0, 0, 0};
-BUFFER buffer = {1, 1, 0.02, 0.02, 96}; //这里的buffer只是锁存而已，原来能量是0.29，现在改成0.02，1bit的大小是96F^2
+BUFFER buffer = {0.09, 0.09, 0.02, 0.02, 96}; //这里的buffer只是锁存而已，原来能量是0.29，现在改成0.02，1bit的大小是96F^2
 Buffer buffer_sum = {0, 0, 0, 0};
 
 Sa_op CSA_and = {6, 0.03, 0.029};//ns pj
@@ -33,14 +36,20 @@ SA DSA = {0.09, 0.010, 792, 240, dsa}; //读时间 读能量 面积 操作
 
 //TODO:verilog-A仿真一下，magic能耗过高，时间太慢，参数都需要更新
 Ma_op ma_seq = {0, rram.write_time, rram.write_energy};//用set reset平均（0.219+0.034）/2
-Ma_op ma_nor = {9, 2.3, 0.18};//1.3ns 50fJ+0.13pJ
+//Ma_op ma_nor = {9, 2.3, 0.18};//1.3ns 50fJ+0.13pJ
+Ma_op ma_nor = {9, 22.3, 0.18};//1.3ns 50fJ+0.13pJ
 //FELIX
-Ma_op ma_and = {6, 3.6, 0.203};//data from: FELIX AND3
-Ma_op ma_or = {7, 2.3, 0.139};
-Ma_op ma_not = {8, 2.3, 0.154};
-Ma_op ma_xor = {10, 3.6, 0.16};//nand 0.049+0.009
+//Ma_op ma_and = {6, 3.6, 0.203};//data from: FELIX AND3
+Ma_op ma_and = {6, 33.6, 0.203};//data from: FELIX AND3
+//Ma_op ma_or = {7, 2.3, 0.139};
+Ma_op ma_or = {7, 32.3, 0.139};
+//Ma_op ma_not = {8, 2.3, 0.154};
+Ma_op ma_not = {8, 22.3, 0.154};
+//Ma_op ma_xor = {10, 3.6, 0.16};//nand 0.049+0.009
+Ma_op ma_xor = {10, 43.6, 0.16};//nand 0.049+0.009
 //一共写4.5次
-Ma_op ma_add = {11, 7.2, 0.6};//1bit N+4 4是两个xor=7.2ns N每一个都是7（直接全部设置成7.2）
+//Ma_op ma_add = {11, 7.2, 0.6};//1bit N+4 4是两个xor=7.2ns N每一个都是7（直接全部设置成7.2）
+Ma_op ma_add = {11, 72, 0.6};//1bit N+4 4是两个xor=47.2ns N每一个都是7（直接全部设置成7.2）
 std::vector<Ma_op> magic_op = {ma_seq, ma_and, ma_or, ma_not, ma_nor, ma_xor, ma_add};
 Ma_Record magic_record = {rram.read_energy, rram.write_energy, magic_op};
 
@@ -73,6 +82,7 @@ double lut_energy(int op_type) {
     //静态功耗：1.121uW
     //反转能耗：4.1852fJ
     //lut mux:功耗 2.143u
+    //不需要decoder
     if (op_type == 0) return bit_num_operand * reg.reg_write_energy;//写到了reg中
     double do_time = lut_latency(op_type);
     double static_energy = do_time * 3.264;
@@ -88,6 +98,7 @@ double lut_energy(int op_type) {
 
 double sa_latency(int op_type, int sa_type) {
     double sa_latency = 0;
+    sa_latency += decoder_latency;
     if (op_type == 0) return rram.write_time;//write_back
     if (sa_type == 1) //CSA
     {
@@ -118,6 +129,8 @@ double sa_latency(int op_type, int sa_type) {
 
 double sa_energy(int op_type, int sa_type) {
     double sa_energy = 0;
+    //先将译码器的开销加上
+    sa_energy += decoder_latency*decoder_power;
     if (op_type == 0) return bit_num_operand * rram.write_energy;
     if (sa_type == 1) //CSA
     {
@@ -141,6 +154,7 @@ double sa_energy(int op_type, int sa_type) {
 
 double ma_latency(int op_type) {
     double ma_latency = 0;
+    ma_latency+=decoder_latency;//加上译码器的时间
     for (auto i: magic_op) {
         if (i.op_type == op_type) {
             if (op_type == 11) //加法
@@ -154,6 +168,7 @@ double ma_latency(int op_type) {
 
 double ma_energy(int op_type) {
     double ma_energy = 0;
+    ma_energy+=decoder_latency*decoder_power;
     for (auto i: magic_op) {
         if (i.op_type == op_type)
             ma_energy = bit_num_operand * i.op_energy;
@@ -182,14 +197,16 @@ double latency_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, ve
 
 }
 
-//面积，阵列+buffer+Reg
-//TODO：测量面积
+//阵列面积+控制器面积+译码器面积+外围电路面积+buffer面积+寄存器面积
+//TODO：测量面积,假设以寄存器写数量/2来计算面积
 double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     double area_all = 0;
+    area_all+=reg.reg_area * Reg_sum.write_num_sum /2;
     //阵列的面积
     for (auto i: array_list1) {
         //注意，这里lut_num才代表真实的列数，col_num只代表输出的列数
-        area_all += i.row_num * i.lut_num * rram.t1r1_area;
+        area_all+=i.row_num * controler_lut + i.col_num * controler_lut;
+        area_all += i.row_num * i.lut_num * rram.t1r1_area; //RRAM的面积
         if (i.row_num == 16)
             area_all += lut4_out_area * i.lut_num;
         else
@@ -208,22 +225,25 @@ double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vecto
             area_all += DSA.SA_area * i.col_num;
             area_all += DSA.SA_add_area * i.col_num;
         }
+        area_all += i.row_num * controler_sa + i.col_num * controler_sa;
     }
 
     for (auto i: array_list3) {
         area_all += i.col_num * i.row_num * rram.t1r1_area;
         area_all += i.row_num * controler_magic + i.col_num * controler_magic;
-        area_all += i.row_num * 196;
+        area_all += i.row_num * 196; //为了实现加法添加的部分
     }
     //寄存器的面积都一样
-    //其余的面积都可以认定为一样
-    //讲解一下为什么其他面积被忽略了
+    return area_all;
 }
 
 double area_all_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     double area_all = 0;
+    area_all+=reg.reg_area * Reg_sum.write_num_sum /2;
+
     //阵列的面积
     for (auto i: array_list1) {
+        area_all += i.row_num * controler_lut + i.col_num * controler_lut;
         //注意，这里lut_num才代表真实的列数，col_num只代表输出的列数
         area_all += i.row_num * i.lut_num * rram.t1r1_area;
         if (i.row_num == 16)
@@ -237,6 +257,8 @@ double area_all_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, v
         area_all += i.col_num * i.row_num * rram.t1r1_area;
         area_all += i.row_num * controler_lut + i.col_num * controler_lut;
     }
+
+    return area_all;
     //寄存器的面积都一样
     //其余的面积都可以认定为一样
     //讲解一下为什么其他面积被忽略了
@@ -265,19 +287,16 @@ double energy_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vec
 void get_best(std::vector<double> &best_latency,
               std::vector<double> &best_energy,
               std::vector<double> &best_area,
-              std::vector<double> latency_energy,
+              std::vector<double> latency_energy_area,
               std::vector<int> &array_num_latency,
               std::vector<int> &array_num_energy,
+              std::vector<int> &array_num_area,
               vector<lut_arr> &array_list1,
               vector<sa_arr> &array_list2,
               vector<magic_arr> &array_list3) {
-    //将所有结果都输出，然后在统一绘制图形
-
-
-
     //优化延迟
-    if (latency_energy[0] < best_latency[0]) {
-        best_latency = latency_energy;
+    if (latency_energy_area[0] < best_latency[0]) {
+        best_latency = latency_energy_area;
         if (array_num_latency.empty())
             array_num_latency.resize(3);
         array_num_latency[0] = array_list1.size();
@@ -285,16 +304,23 @@ void get_best(std::vector<double> &best_latency,
         array_num_latency[2] = array_list3.size();
 
     }
-    cout << "优化延迟" << endl;
-    if (latency_energy[1] < best_energy[1]) {
-        best_energy = latency_energy;
+    if (latency_energy_area[1] < best_energy[1]) {
+        best_energy = latency_energy_area;
         if (array_num_energy.empty())
             array_num_energy.resize(3);
         array_num_energy[0] = array_list1.size();
         array_num_energy[1] = array_list2.size();
         array_num_energy[2] = array_list3.size();
     }
-    cout << "优化能耗" << endl;
+
+    if (latency_energy_area[2] < best_area[2]) {
+        best_area = latency_energy_area;
+        if (array_num_area.empty())
+            array_num_area.resize(3);
+        array_num_area[0] = array_list1.size();
+        array_num_area[1] = array_list2.size();
+        array_num_area[2] = array_list3.size();
+    }
 
 
 }

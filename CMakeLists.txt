@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.23)
 project(Synthesis)
+set(CMAKE_BUILD_TYPE Debug)
 
+#下面是原来的
 set(CMAKE_CXX_STANDARD 14)
 set(INC_DIR  ./include)
 add_executable(Synthesis
@@ -27,3 +29,4 @@ add_executable(Synthesis
         TriLogic/only_sa.cpp
         TriLogic/only_magic.cpp
         )
+

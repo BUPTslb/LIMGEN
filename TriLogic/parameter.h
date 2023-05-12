@@ -19,9 +19,11 @@ struct RRAM{
 };
 extern RRAM rram;
 
-extern double controler_magic;
+extern double controler_magic;//控制器的面积
 extern double controler_sa;
 extern double controler_lut;
+extern double decoder_power;//整体的时间*powerr得到其能耗
+extern double decoder_latency;//decoder的延迟
 
 //单个Reg 1KB
 struct REG{

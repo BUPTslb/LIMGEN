@@ -23,11 +23,11 @@ unsigned int arr_size() {
 void find_input(int &array_type, int &array_id, Node *node_depend) {
 
     //存在依赖，这个依赖是一个节点
-    cout << "数据依赖所在的节点： " << node_depend->node_id << endl
-         << "其算子类型: " << op2int(node_depend->operator_name) << endl
-         << "其执行阵列的类型" << node_depend->do_type << endl
-         << "其存储位置的数量：" << num_node_position(node_depend) << endl
-         << "该依赖节点的结束时间为：" << node_depend->end_time << endl;
+//    cout << "数据依赖所在的节点： " << node_depend->node_id << endl
+//         << "其算子类型: " << op2int(node_depend->operator_name) << endl
+//         << "其执行阵列的类型" << node_depend->do_type << endl
+//         << "其存储位置的数量：" << num_node_position(node_depend) << endl
+//         << "该依赖节点的结束时间为：" << node_depend->end_time << endl;
     //如果是out,看时间是否对等
     if (node_depend->do_type == 1 || node_depend->do_type == 2) {
         //判断当前的阵列输出是不是这个节点
@@ -100,7 +100,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
                 now1.op_type=op_type;
 
             array_list1.push_back(now1);
-            cout << "当前array_list1的大小为：" << array_list1.size() << endl;
+//            cout << "当前array_list1的大小为：" << array_list1.size() << endl;
             build = array_list1.size() - 1;
 
         }
@@ -135,7 +135,6 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now2.sa_direct = -2;//将直接输入设置为-2
             now2.sa_out = -1;//将新建阵列的输出设置为-1，>=0为节点
             array_list2.push_back(now2);
-            cout << "当前array_list2的大小为：" << array_list2.size() << endl;
             build = array_list2.size() - 1;
 
         }
@@ -160,7 +159,6 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             //初始化存储节点表
             now3.store_node = {};
             array_list3.push_back(now3);
-            cout << "当前array_list3的大小为：" << array_list3.size() << endl;
             build = array_list3.size() - 1;
 
         }
@@ -217,22 +215,22 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
     //时间和能量加在哪里？
     //根据当前节点，获取当前的时间
     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-    cout << "data_read中的time_now运行正常" << endl;
+//    cout << "data_read中的time_now运行正常" << endl;
     //从数据读取开始，op节点开始执行
     if (now->start_time == 0)
         now->start_time = time_n;
     if (input_type == -1)//register
     {
-        cout << "data来自寄存器：" << endl;
+//        cout << "data来自寄存器：" << endl;
         //调用数据读取函数
         //更新读取次数
         Reg_sum.read_num_sum++;
         //更新时间
         read_time_update(-1, -1, time_n, now, array_list1, array_list2, array_list3);
-        cout << "date_read中的read_time_update运行正常" << endl;
+//        cout << "date_read中的read_time_update运行正常" << endl;
         //更新能量
         read_energy_update(-1, -1, now, array_list1, array_list2, array_list3);
-        cout << "date_read中的read_energy_update运行正常" << endl;
+//        cout << "date_read中的read_energy_update运行正常" << endl;
         //读数
         return;
     }

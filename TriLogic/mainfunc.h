@@ -143,8 +143,11 @@ void get_best(std::vector<double> &best_latency,
               std::vector<double> &best_energy,
               std::vector<double> &best_area,
               std::vector<double> latency_energy,
-              std::vector<int> &array_num_latency, std::vector<int> &array_num_energy,
-              std::vector<lut_arr> &array_list1, std::vector<sa_arr> &array_list2,
+              std::vector<int> &array_num_latency,
+              std::vector<int> &array_num_energy,
+              std::vector<int> &array_num_area,
+              std::vector<lut_arr> &array_list1,
+              std::vector<sa_arr> &array_list2,
               std::vector<magic_arr> &array_list3);
 
 #endif //SYNTHESIS_MAINFUNC_H

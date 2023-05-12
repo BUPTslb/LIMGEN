@@ -3,23 +3,8 @@
 
 std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                   vector<magic_arr> &array_list3) {
-    cout<<"****************验证**********************"<<endl;
-    cout<<"修改controlstep2的do_type和finish_id，看是否会对nodes2产生影响？"<<endl;
-    controlstep2[0][0]->finish_id=666;
-    cout<<"将controlstep2[0][0]的finish_id设置为666，nodes2[0]的finish_id是："<<nodes2[0].finish_id<<endl;
-    cout<<"使用find_node_by_number对nodes2进行修改，看是否会对controlstep2产生影响？"<<endl;
-    find_node_by_number(controlstep2[0][0]->node_id)->finish_id=777;
-    cout<<"将nodes2[0]的finish_id改为777后，controlstep2[0][0] finish_id = "<<controlstep2[0][0]->finish_id<<endl;
-    cout<<"nodes2[0]的finish_id = "<<nodes2[0].finish_id<<endl;
-
-
     for (int i = 0; i < controlstep2.size(); i++) {
-        cout << "step：" << i << endl;
         for (int j = 0; j < controlstep2[i].size(); ++j) {
-            cout << "node_id：" << controlstep2[i][j]->node_id << endl
-                 << " operator_name：" << controlstep2[i][j]->operator_name
-                 << "depend1：" << (controlstep2[i][j]->depend1 ? controlstep2[i][j]->depend1->node_id : 0) << "  "
-                 << "depend2：" << (controlstep2[i][j]->depend2 ? controlstep2[i][j]->depend2->node_id : 0) << endl;
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
             int type_operation = op2int(controlstep2[i][j]->operator_name);
 
@@ -50,8 +35,6 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
                     //更新wb_pos,表示写到了寄存器中
                     controlstep2[i][j]->wb_pos[0].push_back(-1);
                     //输出：
-                    cout << "do_type: " << controlstep2[i][j]->do_type << "  finish_id: "
-                         << controlstep2[i][j]->finish_id << endl;
                     continue;//进行下一个循环
                 }
 
@@ -101,7 +84,6 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
                         break;
                     case 2: //来自sa的执行结果
                     {
-                        //TODO：先假设其执行类型为sa-out,不更新时间能量，到再次使用时候再更新
                         //目前这个节点的写回表是空的
                         controlstep2[i][j]->do_type = 2;
                         controlstep2[i][j]->end_time = time_n;//暂时设置时间
@@ -118,7 +100,6 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
                             {
                                 if (find_node_by_number(sa_out_now)->out_degree > 0 &&
                                     wb_empty(find_node_by_number(sa_out_now))) {
-                                    //TODO:设置优先级，buffer只能写回本阵列
                                     write_back(2, find_node_by_number(sa_out_now)->finish_id,
                                                find_node_by_number(sa_out_now),
                                                array_list1, array_list2, array_list3);
@@ -182,10 +163,6 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
 
                 }
 
-                cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name："
-                     << controlstep2[i][j]->operator_name << endl;
-                cout << "do_type： " << controlstep2[i][j]->do_type << "  finish_id：" << controlstep2[i][j]->finish_id
-                     << endl;
                 //更新出度
                 out_degree(controlstep2[i][j]);
 
@@ -231,26 +208,18 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
             //先决定执行类型
             int do_array_type = 0, do_array_id = -1;//执行阵列的类型,id
             do_array_type = decide_array_type(type_operation, design_target);//决定执行阵列类型 1 2 3
-            cout << "op_type " << op2int(controlstep2[i][j]->operator_name) << endl
-                 << "决定的执行阵列类型：" << do_array_type << endl;
             //更新节点的do_type,执行节点的do_type只有1:lut-out 2:sa-out 3:magic
             controlstep2[i][j]->do_type = do_array_type;
-            cout << "node " << controlstep2[i][j]->node_id << endl
-                 << "第一次将op的do_type修改后的值为：" << endl
-                 << "do_type: " << controlstep2[i][j]->do_type << endl;
             //如果要执行的类型当前没有阵列，则建立
             if (do_array_type == 1 && array_list1.empty() ||
                 do_array_type == 2 && array_list2.empty() ||
                 do_array_type == 3 && array_list3.empty())
                 do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
-            cout << "当前的决定执行阵列的位置为：" << do_array_id << endl;
-            cout << "op类型的节点选择id之前的三种阵列个数为：" << endl
-                 << array_list1.size() << " " << array_list2.size() << " " << array_list3.size() << endl;
+
             //决定执行阵列的id
             do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
                                           array_list2, array_list3, input1_type, input1_id, input2_type, input2_id);
 
-            cout << "调用do_array_id后的执行阵列位置为：" << do_array_id << endl;
             /*现在已知：
              * 操作数1所在阵列类型，id；
              * 操作数2所在阵列类型，id；
@@ -264,18 +233,18 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
             //input_type的类型有：-1(寄存器) 1(lut) 2(sa) 3(magic)
             if (operand_num == 1) //只有一个操作数，读取
             {
-                cout << "操作数个数为1" << endl;
+//                cout << "操作数个数为1" << endl;
                 data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             } else //有两个操作数
             {
-                cout << "操作数个数为2" << endl;
+//                cout << "操作数个数为2" << endl;
                 data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
                 data_read(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
             }
-            cout << "date_read运行正常" << endl;
+//            cout << "date_read运行正常" << endl;
             //现在已经知道了操作数的个数operand_num
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
@@ -287,7 +256,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
             output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
 
-            cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
+//            cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
             //写回在最开始，不用在执行
             //只要有写操作，就存在-内部有覆盖的情况，更新出度，清除被覆盖的节点，节点出度为0，找到存储他的阵列，将其擦除
             //补充控制节点，设计比较器件 ，看是否需要加其他运算器，如ALU
@@ -303,11 +272,12 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
     double all_area= area_all(array_list1,array_list2,array_list3);
-    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
-    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
-    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
+//    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
+//    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
+//    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
+//    cout << "整体架构的面积为： " <<all_area << "F^2"<<endl;
 
-    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
+//    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
     std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
     return latency_energy_area;
 

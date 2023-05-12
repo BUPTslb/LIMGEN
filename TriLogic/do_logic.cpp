@@ -7,7 +7,7 @@
 void input_logic(int operand_num, int input1_type, int input1_id, int input2_type, int input2_id,
                  int decide_array_type, int decide_array_id, Node *now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
-    cout << "input_logic中的decide_array_type= " << decide_array_type << endl;
+//    cout << "input_logic中的decide_array_type= " << decide_array_type << endl;
     int op_type= op2int(now->operator_name);
     switch (decide_array_type) {
         case 1://LUT
@@ -74,10 +74,10 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                     int idea_dse = idea_ready[rand() % 2];
                     array_list2[decide_array_id].write_number++;
                     //获取现在的时间
-                    cout << "执行阵列的类型为sa,其decide_array_type = " << decide_array_type << endl;
+//                    cout << "执行阵列的类型为sa,其decide_array_type = " << decide_array_type << endl;
                     //当前节点为now,获取其可以执行的时间：依赖的节点、依赖的阵列
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type,decide_array_id);
-                    cout<<"input_logic中的time_now正常运行"<<endl;
+//                    cout<<"input_logic中的time_now正常运行"<<endl;
                     //1.depend1写入,注意时间的节点
                     //将时间更新到depend1
                     if (idea_dse == 1) {
@@ -183,7 +183,7 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                 if (input1_type != 3 || input1_id != decide_array_id) {
                     //获取现在的时间
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-                    cout<<"input_logic中的time_now正常运行"<<endl;
+//                    cout<<"input_logic中的time_now正常运行"<<endl;
                     //更新阵列的写次数
                     array_list3[decide_array_id].write_number++;
                     //判断立即数
@@ -235,7 +235,7 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                 if (input1_type != 3 || input1_id != decide_array_id) {
                     //获取现在的时间
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-                    cout<<"input_logic中的time_now正常运行"<<endl;
+//                    cout<<"input_logic中的time_now正常运行"<<endl;
                     //更新阵列的写次数
                     array_list3[decide_array_id].write_number++;
                     //判断立即数
@@ -285,7 +285,7 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                 if (input2_type != 3 || input2_id != decide_array_id) {
                     //获取现在的时间
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-                    cout<<"input_logic中的time_now正常运行"<<endl;
+//                    cout<<"input_logic中的time_now正常运行"<<endl;
                     //更新阵列的写次数
                     array_list3[decide_array_id].write_number++;
                     //判断立即数
@@ -352,11 +352,11 @@ void output_logic(int decide_array_type, int decide_array_id, int op_type, Node 
     //1.是否需要调用模块 LUT SA MA 都有设计好的模块供调用
     //获取时间
     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-    cout<<"output_logic中的time_now正常运行"<<endl;
+//    cout<<"output_logic中的time_now正常运行"<<endl;
     switch (decide_array_type) {
         case 1: //LUT
         {
-            cout<<"outlogic使用的执行阵列类型为 lut,现在lut阵列的个数为 "<<array_list1.size()<<endl;
+//            cout<<"outlogic使用的执行阵列类型为 lut,现在lut阵列的个数为 "<<array_list1.size()<<endl;
             op_lut(op_type, decide_array_id, now, time_n, array_list1, array_list2, array_list3);
             //需要一个函数判断是否需要调用模块
             //根据op_type，进行每一个阵列下的操作：lut_op\sa_op\ma_op
@@ -382,8 +382,6 @@ void output_logic(int decide_array_type, int decide_array_id, int op_type, Node 
 //lut执行逻辑
 void op_lut(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
             vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
-    cout<<"进入当前op_lut函数的操作类型为："<<op_type<<endl;
-
     //重新确认节点的执行类型
     now->do_type = 1;
     //节点的结束位置
@@ -399,11 +397,9 @@ void op_lut(int op_type, int decide_array_id, Node *now, double time_now, vector
         else //否则判断一下其写回表和出度
         {
             if (wb_empty(find_node_by_number(lut_out_now)))
-//          if (find_node_by_number(lut_out_now)->out_degree > 0 &&
-//                wb_empty(find_node_by_number(lut_out_now)))
             {
                 //TODO:设置优先级，buffer只能写回本阵列
-                write_back_lut(1, find_node_by_number(lut_out_now)->finish_id, find_node_by_number(lut_out_now),
+                write_back(1, find_node_by_number(lut_out_now)->finish_id, find_node_by_number(lut_out_now),
                            array_list1, array_list2, array_list3);
             }
         }
@@ -436,7 +432,7 @@ void op_sa(int op_type, int decide_array_id, Node *now, double time_now, vector<
             if (find_node_by_number(sa_out_now)->out_degree > 0 &&
                 wb_empty(find_node_by_number(sa_out_now))) {
                 //TODO:设置优先级，buffer只能写回本阵列
-                write_back_lut(2, find_node_by_number(sa_out_now)->finish_id,find_node_by_number(sa_out_now),
+                write_back(2, find_node_by_number(sa_out_now)->finish_id,find_node_by_number(sa_out_now),
                            array_list1, array_list2, array_list3);
             }
         }

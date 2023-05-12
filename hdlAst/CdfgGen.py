@@ -13,7 +13,7 @@ from hdlConvertorAst.language import Language
 # TEST_DIR = os.path.join("..", "tests", "verilog")
 
 TEST_DIR = os.path.join("..", "HDL")
-filenames = [os.path.join(TEST_DIR, "des.vhd"), ]
+filenames = [os.path.join(TEST_DIR, "mean_filter23.vhd"), ]
 include_dirs = []
 # 定义存储字典的列表
 dic = []
@@ -187,7 +187,7 @@ for o in d.objs:
                 print(json.dumps(dic, sort_keys=True, cls=MyEncoder,
                                  indent=4, separators=(',', ': ')))
                 # 将输出设置为json文件，其中包含节点信息，可以由此进行CDFG的绘制
-                out_file = open("des.json", "w")
+                out_file = open("mean_filter23.json", "w")
                 json.dump(dic, out_file, indent=4,
                           sort_keys=True, cls=MyEncoder)
                 out_file.close()

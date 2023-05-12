@@ -1,5 +1,6 @@
 #include "logic_func.h"
 #include "mainfunc.h"
+#include <xls.h>
 
 using namespace rapidjson;
 using namespace std;
@@ -42,8 +43,7 @@ int main() {
     map<int, bool> TvsF;//Branch斥互表, 遇到分支节点，正确和错误的不能相互依赖，每次遇到branch要清空重写
     map<int, int> inDegree;//入度表，记录每个节点的入度，id对应入度，数据1、2+直接控制，最大为3
     //1.先读一个节点让其输出
-//    ifstream file("../hdlAst/hdlast2.json");
-    ifstream file("../hdlAst/des.json");
+    ifstream file("../hdlAst/mean_filter23.json");
     stringstream hdlast;
     hdlast << file.rdbuf();
     string content(hdlast.str());
@@ -326,72 +326,122 @@ int main() {
         }
     }
 
-    /*开始新的循环
-     * 在初始控制步中加入逻辑函数
-     * 调度算子
-     * 先写单个循环，然后在最外层套上一个大的DSE迭代
-     * */
-    //我们规定，只能使用4/6输入的LUT
-    //VHDL中，逻辑操作都是按位的，需要由一位操作拼接
-
     int model_chosen[4] = {0, 1, 2, 3};
-    int model = model_chosen[0];
-    vector<double> best_latency = {10000, 10000,1000000000000};//延迟、能耗,面积
-    vector<double> best_energy = {10000, 10000,10000000000000};//延迟、能耗，面积
-    vector<double> best_area = {10000, 10000,10000000000000};//延迟、能耗，面积
+    int model = model_chosen[2];
+    vector<double> best_latency = {10000, 10000, 1000000000000};//延迟、能耗,面积
+    vector<double> best_energy = {10000, 10000, 10000000000000};//延迟、能耗，面积
+    vector<double> best_area = {10000, 10000, 10000000000000};//延迟、能耗，面积
     vector<int> array_num_latency;
     vector<int> array_num_energy;
+    vector<int> array_num_area;
 
-
-    cout << &nodes2[0] << "< - >" << &nodes[0] << endl;
-
-    for (int p = 0; p < 100000; ++p) {
+    std::ofstream outFile;
+    outFile.open("mean_filter_sa.csv", std::ios::out);
+    outFile << "latency/ns" << ',' << "energy/pJ" << ',' << "area/F^2" << ','
+            << "lut_num" << ',' << "csa_num" << ',' << "dsa_num" << ',' << "magic_num" << ',' <<
+            "Reg_write" << ',' << "Reg_read" << std::endl;
+    for (int p = 0; p < 10000; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1 = {};//lut阵列表
         vector<sa_arr> array_list2 = {};//sa阵列表
         vector<magic_arr> array_list3 = {};//magic阵列表
         vector<vector<Node *>> controlstep2;
-        for (auto & i : controlstep) {
+        for (auto &i: controlstep) {
             vector<Node *> stepnow;//当前控制步，存放节点指针
             for (int j = 0; j < i.size(); ++j) {
                 stepnow.push_back(find_node_by_number(i[j].node_id));//换成真正的依赖关系
             }
             controlstep2.push_back(stepnow);
         }
+
         switch (model) {
             case 0: {
-                vector<double> latency_energy_area = control_step(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,best_area,latency_energy_area,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                vector<double> latency_energy_area = control_step(controlstep2, array_list1, array_list2,array_list3);
+                int csa_num = 0, dsa_num = 0;
+                for (auto i: array_list2) {
+                    if (i.sa_type == 1)
+                        csa_num++;
+                    if (i.sa_type == 2)
+                        dsa_num++;
+                }
+                get_best(best_latency, best_energy, best_area, latency_energy_area, array_num_latency,
+                         array_num_energy,array_num_area,
+                         array_list1, array_list2, array_list3);
+                outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
+                        << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
+
             }
                 break;
             case 1: {
-                cout<<"lut-only"<<endl;
-                vector<double> latency_energy_area =only_lut(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,best_area,latency_energy_area,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                vector<double> latency_energy_area = only_lut(controlstep2, array_list1, array_list2, array_list3);
+                int csa_num = 0, dsa_num = 0;
+                for (auto i: array_list2) {
+                    if (i.sa_type == 1)
+                        csa_num++;
+                    if (i.sa_type == 2)
+                        dsa_num++;
+                }
+                get_best(best_latency, best_energy, best_area, latency_energy_area, array_num_latency,
+                         array_num_energy,array_num_area,
+                         array_list1, array_list2, array_list3);
+                outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
+                        << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
+
             }
                 break;
             case 2: {
-                vector<double> latency_energy =only_sa(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,best_area,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                vector<double> latency_energy_area = only_sa(controlstep2, array_list1, array_list2, array_list3);
+                int csa_num = 0, dsa_num = 0;
+                for (auto i: array_list2) {
+                    if (i.sa_type == 1)
+                        csa_num++;
+                    if (i.sa_type == 2)
+                        dsa_num++;
+                }
+                get_best(best_latency, best_energy, best_area, latency_energy_area, array_num_latency,
+                         array_num_energy,array_num_area,
+                         array_list1, array_list2, array_list3);
+                outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
+                        << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
             }
                 break;
             case 3: {
-                vector<double> latency_energy =only_magic(controlstep2, array_list1, array_list2, array_list3);
-                get_best(best_latency,best_energy,best_area,latency_energy,array_num_latency,array_num_energy,array_list1,array_list2,array_list3);
+                vector<double> latency_energy_area = only_magic(controlstep2, array_list1, array_list2, array_list3);
+                int csa_num = 0, dsa_num = 0;
+                for (auto i: array_list2) {
+                    if (i.sa_type == 1)
+                        csa_num++;
+                    if (i.sa_type == 2)
+                        dsa_num++;
+                }
+                get_best(best_latency, best_energy, best_area, latency_energy_area, array_num_latency,
+                         array_num_energy,array_num_area,
+                         array_list1, array_list2, array_list3);
+                outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
+                        << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
             }
                 break;
             default:
                 break;
         }
-        cout<<"循环次数为："<<p+1<<endl;
-
+        cout << "循环次数为：" << p + 1 << endl;
     }
+    outFile.close();
 
-    cout << "最优延迟时：延迟为" << best_latency[0] << " 能耗为 " << best_latency[1] << endl;
-    cout << "最优延迟时：三种阵列个数为：" << array_num_latency[0] << " " << array_num_latency[1] <<" "<<array_num_latency[2] << endl;
-    cout << "最优能耗时：延迟为" << best_energy[0] << " 能耗为 " << best_energy[1] << endl;
-    cout << "最优延迟时：三种阵列个数为：" << array_num_energy[0] << " " << array_num_energy[1] <<" "<<array_num_energy[2] << endl;
+    cout << "最优延迟时：延迟为" << best_latency[0] << " 能耗为 " << best_latency[1] <<"面积为 "<<best_latency[2] << endl;
+    cout << "最优延迟时：三种阵列个数为：" << array_num_latency[0] << " " << array_num_latency[1] << " "
+         << array_num_latency[2] << endl;
+    cout << "最优能耗时：延迟为" << best_energy[0] << " 能耗为 " << best_energy[1] <<"面积为 "<<best_energy[2]<< endl;
+    cout << "最优能耗时：三种阵列个数为：" << array_num_energy[0] << " " << array_num_energy[1] << " "
+         << array_num_energy[2] << endl;
+    cout << "最优面积时：延迟为" << best_area[0] << " 能耗为 " << best_area[1] <<"面积为 "<<best_area[2]<< endl;
+    cout << "最优能耗时：三种阵列个数为：" << array_num_area[0] << " " << array_num_area[1] << " "
+         << array_num_area[2] << endl;
 
     //绘制帕累托优化的解
 

@@ -10,11 +10,11 @@ vector<int> find_no_using(int op_type, int decide_array_type, vector<lut_arr> &a
             //第一步，判断有没有阵列
             if (array_list1.empty())
             {
-                cout<<"当前还没有lut阵列"<<endl;
+//                cout<<"当前还没有lut阵列"<<endl;
                 return find_no_using;
             }
             //有阵列
-            cout<<"lut阵列的个数为"<<array_list1.size()<<endl;
+//            cout<<"lut阵列的个数为"<<array_list1.size()<<endl;
             //先假设不需要使用模块
             bool module_need=false;
             for (auto i :array_list1)
@@ -60,11 +60,11 @@ vector<int> find_no_using(int op_type, int decide_array_type, vector<lut_arr> &a
             //第一步，判断有没有阵列
             if (array_list2.empty())
             {
-                cout<<"当前没有sa阵列"<<endl;
+//                cout<<"当前没有sa阵列"<<endl;
                 return find_no_using;
             }
             //有sa阵列
-            cout<<"当前sa阵列的个数为："<<array_list2.size()<<endl;
+//            cout<<"当前sa阵列的个数为："<<array_list2.size()<<endl;
             for (auto i : array_list2) {
 //                if (cap_array_lost(decide_array_type, i, nodes, array_list1, array_list2, array_list3) < 2)
 //                    continue; //判断空间是否够用放在外面
@@ -79,11 +79,11 @@ vector<int> find_no_using(int op_type, int decide_array_type, vector<lut_arr> &a
             //第一步，判断有没有阵列
             if (array_list3.empty())
             {
-                cout<<"当前没有magic阵列"<<endl;
+//                cout<<"当前没有magic阵列"<<endl;
                 return find_no_using;
             }
             //有
-            cout<<"当前magic阵列的个数为："<<array_list3.size()<<endl;
+//            cout<<"当前magic阵列的个数为："<<array_list3.size()<<endl;
             for (auto i :array_list3) {
                 if (!i.is_using)//空闲
                     find_no_using.push_back(i.array_id);
@@ -109,11 +109,11 @@ vector<int> waiting_array_list(int op_type, int decide_array_type, vector<lut_ar
             //第一步，判断有没有阵列
             if (array_list1.empty())
             {
-                cout<<"当前还没有lut阵列"<<endl;
+//                cout<<"当前还没有lut阵列"<<endl;
                 return waiting_array_list;
             }
             //有阵列
-            cout<<"当前lut阵列的个数为："<<array_list1.size()<<endl;
+//            cout<<"当前lut阵列的个数为："<<array_list1.size()<<endl;
 //            //先假设不需要模块
 //            bool module_need=false;
 //            //需要模块
@@ -148,11 +148,11 @@ vector<int> waiting_array_list(int op_type, int decide_array_type, vector<lut_ar
             //第一步，判断有没有阵列
             if (array_list2.empty())
             {
-                cout<<"当前没有sa阵列"<<endl;
+//                cout<<"当前没有sa阵列"<<endl;
                 return waiting_array_list;
             }
             //有sa阵列
-            cout<<"当前sa阵列的个数为："<<array_list2.size()<<endl;
+//            cout<<"当前sa阵列的个数为："<<array_list2.size()<<endl;
             for (auto &i: array_list2) {
                 if (i.is_using)//不空闲
                     pq.push(i);
@@ -165,11 +165,11 @@ vector<int> waiting_array_list(int op_type, int decide_array_type, vector<lut_ar
 //第一步，判断有没有阵列
             if (array_list2.empty())
             {
-                cout<<"当前没有magic阵列"<<endl;
+//                cout<<"当前没有magic阵列"<<endl;
                 return waiting_array_list;
             }
             //有sa阵列
-            cout<<"当前magic阵列的个数为："<<array_list3.size()<<endl;
+//            cout<<"当前magic阵列的个数为："<<array_list3.size()<<endl;
             for (auto &i: array_list3) {
                 if (i.is_using)//不空闲
                     pq.push(i);

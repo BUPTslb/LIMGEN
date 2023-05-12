@@ -15,39 +15,29 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
     double time2 = 0; //depend2的时间
     double time3 = 0; //control的时间
     double time_do_array = 0; //阵列的时间
-//    cout << "time_now函数中的decide_array_type = " << decide_array_type << endl;
     //假设确定了使用的阵列，那节点开始执行的时间就是使用阵列的结束时间
     //虽然操作并行可能会让op类型比=先执行，但时间和能量均不影响
     switch (decide_array_type) {
         case 1: {
             time_do_array = array_list1[decide_array_id].over_time;
-//            cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
         }
             break;
         case 2:
         {
             time_do_array = array_list2[decide_array_id].over_time;
-//            cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
         }
             break;
         case 3:
         {
             time_do_array = array_list3[decide_array_id].over_time;
-//            cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
         }
             break;
         default:
-        {
-//            cout << "time_now函数中阵列的over_time: " << 0 << endl;
-        }
             break;
     }
-//    cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
     int op_type = op2int(node_now->operator_name);//操作类型
     //先看控制依赖
     if (node_now->control != nullptr) {
-        cout<<"存在控制依赖"<<endl;
-//        cout << "控制依赖 time3 =" << time3 << endl;
         time3 = node_now->control->end_time;
         time_n = max(time_n, time3);
     }
@@ -83,8 +73,6 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         if (node_now->depend1 != nullptr) //有依赖
         {
             time1 = node_now->depend1->end_time;
-//            cout << "time1 = " << time1 << endl;
-//            cout << "wb_empty(node_now->depend1)没有问题：" << wb_empty(node_now->depend1) << endl;
             if ((time_do_array > time1 || time3 > time1) &&
                 wb_empty(node_now->depend1)) //控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
@@ -93,7 +81,6 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     write_back(node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
                                array_list1, array_list2, array_list3);
                 }
-//                cout << "time_now中的write_back没问题" << endl;
                 time_n = time_now(array_list1, array_list2, array_list3, node_now, decide_array_type,
                                   decide_array_id);//更新时间
             }
@@ -104,7 +91,6 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         if (node_now->depend2 != nullptr) //2有依赖
         {
             time2 = node_now->depend2->end_time;
-//            cout << "time2 = " << time2 << endl;
             if ((time_do_array > time2 || time3 > time2) &&
                 wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
@@ -192,7 +178,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
             {
                 //TODO:设置为写到寄存器中的时间
                 node_now->end_time = time_now + reg.reg_write_time;//寄存器写
-//                cout << "写到寄存器后的时间为" << node_now->end_time << endl;
             }
                 break;
             case 3://MAGIC
@@ -200,7 +185,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 array_list3[decide_array_id].start_time = time_now;
                 double time_up = ma_latency(op_type);
                 node_now->end_time = time_now + time_up;
-//                cout << "写入magic后的时间为：" << node_now->end_time << endl;
                 array_list3[decide_array_id].over_time = node_now->end_time;
                 //set is_using
                 array_list3[decide_array_id].is_using = true;
@@ -209,13 +193,20 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
             case 4://lut buffer
             {
                 node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
-//                cout << "写到lut-buffer后的时间为：" << node_now->end_time << endl;
             }
                 break;
             case 5://sa buffer
             {
                 node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
-//                cout << "写到sa-buffer后的时间为：" << node_now->end_time << endl;
+            }
+            case 6://sa存储
+            {
+                array_list2[decide_array_id].start_time = time_now;
+                double time_up = sa_latency(op_type,array_list2[decide_array_id].sa_type);
+                node_now->end_time = time_now + time_up;
+                array_list2[decide_array_id].over_time = node_now->end_time;
+                //set is_using
+                array_list2[decide_array_id].is_using = true;
             }
                 break;
             default:
@@ -234,7 +225,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 double time_up = lut_latency(op_type);//使用lut执行当前操作，所需的时间
                 array_list1[decide_array_id].start_time = time_now;
                 node_now->end_time = time_now + time_up;
-//                cout << "lut执行后的时间为：" << node_now->end_time << endl;
                 array_list1[decide_array_id].over_time = node_now->end_time;
                 //set is_using
                 array_list1[decide_array_id].is_using = true;
@@ -245,7 +235,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 array_list2[decide_array_id].start_time = time_now;
                 double time_up = sa_latency(op_type, array_list2[decide_array_id].sa_type);
                 node_now->end_time = time_now + time_up;
-//                cout << "sa执行后的时间为：" << node_now->end_time << endl;
                 array_list2[decide_array_id].over_time = node_now->end_time;
                 //set is_using
                 array_list2[decide_array_id].is_using = true;
@@ -290,7 +279,7 @@ void read_time_update(int array_type, int array_id, double time_now, Node *now, 
         case 3://MAGIC
         {
             array_list3[array_id].start_time = max(array_list3[array_id].start_time, time_now);
-            double time_up = rram.read_time;
+            double time_up = rram.read_time+decoder_latency;
             now->end_time = time_now + time_up;
             array_list3[array_id].over_time = now->end_time;
 //set is_using
@@ -338,7 +327,7 @@ void read_energy_update(int array_type, int array_id, Node *node_now,
             break;
         case 3: //magic
         {
-            array_list3[array_id].energy += bit_num_operand * rram.read_energy;
+            array_list3[array_id].energy += bit_num_operand * rram.read_energy+decoder_latency*decoder_power;
         }
             break;
         case 4://sa buffer

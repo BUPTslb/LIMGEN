@@ -39,7 +39,6 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
             break;
 
     }
-    cout << "erase_node_list的大小为：" << erase_node_list.size() << endl;
     //按顺序覆盖，阵列的存储节点、节点的写回阵列都要更新
     //擦除的阵列的写回表  阵列存储表也要更新
     if (op_type == 0)  //正常的节点变量写入，只需要占用一行
@@ -380,6 +379,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
         return cap_array_lost(array_type, array_id, array_list1, array_list2, array_list3) +
                cap_array_cover(array_type, array_id, array_list1, array_list2, array_list3);
     };
+    cout<<"write_back--find_no_using"<<endl;
     vector<int> sa_no_using = find_no_using(0, 2, array_list1, array_list2, array_list3);
     vector<int> sa_waiting = waiting_array_list(0, 2, array_list1, array_list2, array_list3);
     vector<int> sa_list;
@@ -642,9 +642,20 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 // 更新阵列写时间
                 time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                 //更新时间,节点，阵列
-                time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                if (back_type==2)
+                    time_update(0, 6, back_id, time_n, now, array_list1, array_list2, array_list3);
+                else if (back_type==0)
+                    time_update(0, -1, back_id, time_n, now, array_list1, array_list2, array_list3);
+                else
+                    time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                 //阵列写：更新阵列能量
-                energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+                if (back_type==2)
+                    energy_update(0, 6, back_id, array_list1, array_list2, array_list3);
+                else if (back_type==0)
+                    energy_update(0, -1, back_id, array_list1, array_list2, array_list3);
+                else
+                    energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+
                 //更新写回表
                 now->wb_pos[back_type].push_back(back_id);
                 //更新阵列的结束(执行)类型和位置
@@ -668,7 +679,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         //更新寄存器能量
                         energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                         //时间
-                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, -1, -1);
                         //更新时间,节点，阵列
                         time_update(0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
                         //更新节点写回表
@@ -692,9 +703,9 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         //时间
                         double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, 6, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, 6, back_id, array_list1, array_list2, array_list3);
                         //更新节点
                         //更新阵列的结束(执行)类型和位置
                         now->do_type = 6;//代表写回的是sa的存储中
@@ -789,7 +800,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         Reg_sum.write_num_sum++;
                         energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                         //时间
-                        double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
+                        double time_n = time_now(array_list1, array_list2, array_list3, now, -1, back_id);
                         //更新时间,节点，阵列
                         time_update(0, -1, -1, time_n, now, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
@@ -800,7 +811,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         now->wb_pos[0].push_back(-1);
                     }
                         break;
-                    case 2://来自sa-out 2 写回sa
+                    case 2://来自sa-out 2 写回sa(6)
                     {
                         //阵列写次数++
                         array_list2[back_id].write_number++;
@@ -812,9 +823,9 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         //时间
                         double time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, 6, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, 6, back_id, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 6;//代表写回的是sa存储
                         now->finish_id = back_id;
@@ -938,9 +949,9 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         //时间
                         time = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(0, back_type, back_id, time, now, array_list1, array_list2, array_list3);
+                        time_update(0, 6, back_id, time, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, 6, back_id, array_list1, array_list2, array_list3);
                         //更新节点的结束(执行)类型和位置
                         now->do_type = 6;//代表写回的是sa阵列
                         now->finish_id = back_id;
@@ -1011,12 +1022,20 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 // 更新阵列写时间
                 time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                 //更新时间,节点，阵列
-                if (back_type == 0) back_type = -1; //单独处理写回寄存器的类型
-                time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                if (back_type==2)
+                    time_update(0, 6, back_id, time_n, now, array_list1, array_list2, array_list3);
+                else if (back_type==0)
+                    time_update(0, -1, back_id, time_n, now, array_list1, array_list2, array_list3);
+                else
+                    time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                 //阵列写：更新阵列能量
-                energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
-                //将寄存器类型改回0
-                if (back_type == -1) back_type = 0;
+                if (back_type==2)
+                    energy_update(0, 6, back_id, array_list1, array_list2, array_list3);
+                else if (back_type==0)
+                    energy_update(0, -1, back_id, array_list1, array_list2, array_list3);
+                else
+                    energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+
                 //更新阵列的结束(执行)类型和位置
                 now->do_type = back_type;
                 //有两个特殊的处理一下
@@ -1051,12 +1070,20 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 // 更新阵列写时间
                 time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                 //更新时间,节点，阵列
-                if (back_type == 0) back_type = -1; //单独处理写回寄存器的类型
-                time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                if (back_type==2)
+                    time_update(0, 6, back_id, time_n, now, array_list1, array_list2, array_list3);
+                else if (back_type==0)
+                    time_update(0, -1, back_id, time_n, now, array_list1, array_list2, array_list3);
+                else
+                    time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
                 //阵列写：更新阵列能量
-                energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
-                //更新写回表
-                if (back_type == -1) back_type = 0;//将寄存器类型改回0
+                if (back_type==2)
+                    energy_update(0, 6, back_id, array_list1, array_list2, array_list3);
+                else if (back_type==0)
+                    energy_update(0, -1, back_id, array_list1, array_list2, array_list3);
+                else
+                    energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+
                 now->wb_pos[back_type].push_back(back_id);
                 //更新阵列的结束(执行)类型和位置
                 now->do_type = back_type;
@@ -1078,9 +1105,9 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         array_list2[from_id].read_number++;
                         //阵列读时间更新
                         double time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(2, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        read_time_update(6, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(2, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(6, from_id, now, array_list1, array_list2, array_list3);
                         //将数据写到寄存器中
                         Reg_sum.write_num_sum++;
                         //更新寄存器写时间
@@ -1102,9 +1129,9 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         array_list2[from_id].read_number++;
                         //阵列读时间更新
                         double time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(2, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        read_time_update(6, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(2, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(6, from_id, now, array_list1, array_list2, array_list3);
 
                         //阵列写次数++
                         array_list2[back_id].write_number++;
@@ -1117,9 +1144,9 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         //时间
                         time_n = time_now(array_list1, array_list2, array_list3, now, back_type, back_id);
                         //更新时间,节点，阵列
-                        time_update(0, back_type, back_id, time_n, now, array_list1, array_list2, array_list3);
+                        time_update(0, 6, back_id, time_n, now, array_list1, array_list2, array_list3);
                         //阵列写：更新阵列能量
-                        energy_update(0, back_type, back_id, array_list1, array_list2, array_list3);
+                        energy_update(0, 6, back_id, array_list1, array_list2, array_list3);
                         //更新阵列的结束(执行)类型和位置
                         now->do_type = 6;
                         now->finish_id = back_id;
@@ -1135,9 +1162,9 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         array_list3[from_id].read_number++;
                         //阵列读时间更新
                         double time_n = time_now(array_list1, array_list2, array_list3, now, from_type, from_id);
-                        read_time_update(2, from_id, time_n, now, array_list1, array_list2, array_list3);
+                        read_time_update(6, from_id, time_n, now, array_list1, array_list2, array_list3);
                         //读能量更新
-                        read_energy_update(2, from_id, now, array_list1, array_list2, array_list3);
+                        read_energy_update(6, from_id, now, array_list1, array_list2, array_list3);
 
                         //阵列写次数++
                         array_list3[back_id].write_number++;

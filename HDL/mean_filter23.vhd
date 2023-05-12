@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 --数字图像处理算法：均值滤波
-entity mean_filter is
+entity mean_filter23 is
 port (
 clk : in std_logic;
 rst : in std_logic;
@@ -11,9 +11,9 @@ done : out std_logic;
 input : in std_logic_vector(7 downto 0);
 output : out std_logic_vector(7 downto 0)
 );
-end entity mean_filter;
+end entity mean_filter23;
 
-architecture Behavioral of mean_filter is
+architecture Behavioral of mean_filter23 is
 -- 声明变量
 signal r, c : bit;
 signal sum : bit_vector(7 downto 0);
@@ -41,7 +41,11 @@ begin
         shift_reg<=not pixels;
         shift_reg_cnt <= shift_reg_cnt + 1;
         if shift_reg_cnt = 3 then -- 满3个像素进行计算
-            sum <=sum * 9;
+            --将乘法拆解成加法
+            sum <=sum + sum;
+            sum <=sum + sum;
+            sum <=sum + sum;
+            sum <=sum + pixels;
             output <= not sum; --将sum调整为8位，交给output
             sum <= sum + b;
             r <= r + 1;

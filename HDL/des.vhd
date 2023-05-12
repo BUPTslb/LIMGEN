@@ -71,7 +71,7 @@ begin
         l <= 222;
         r <= 111;
 
-        --IP置换得到data_out (用not代替)
+        --IP置换得到data_out (用not代替) 64次操作
         data_out <= not ip;
 
         --e 置换
@@ -277,9 +277,6 @@ begin
         r <= l xor r;
         l <= l xor r;
         --15次循环，执行xor操作
-
-
-
 
 
 

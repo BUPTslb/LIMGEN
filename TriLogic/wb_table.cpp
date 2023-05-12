@@ -4,16 +4,14 @@
 //作用：在节点now从某一个存储位置中删除，更新写回表
 //erase_type:0.reg 1.lut(empty) 2.sa 3.magic 4.lut-buffer 5.sa-buffer
 void wb_erase(Node *now, int erase_type, int erase_id) {
-    cout << "before erase: " << now->wb_pos[erase_type].size() << endl;
     for (int i = 0; i < now->wb_pos[erase_type].size(); i++) {
         if (now->wb_pos[erase_type][i] == erase_id)
             now->wb_pos[erase_type].erase(now->wb_pos[erase_type].begin() + i);
     }
-    cout << "after erase: " << now->wb_pos[erase_type].size() << endl;
 }
 
 bool wb_empty(Node *now) {
-    cout<<now->node_id<<endl;
+//    cout<<now->node_id<<endl;
     if (now->wb_pos[0].empty() &&
         now->wb_pos[1].empty() &&
         now->wb_pos[2].empty() &&
