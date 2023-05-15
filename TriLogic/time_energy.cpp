@@ -49,7 +49,7 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
             if (op2int(node_now->depend1->operator_name) != 0) //依赖的是一个操作
             {
                 if (node_now->start_time == 0)
-                    node_now->start_time == node_now->depend1->end_time;
+                    node_now->start_time = node_now->depend1->end_time;
 
                 time1 = node_now->depend1->end_time;
             } else //依赖的是一个值节点，还需要看其阵列
@@ -279,7 +279,7 @@ void read_time_update(int array_type, int array_id, double time_now, Node *now, 
         case 3://MAGIC
         {
             array_list3[array_id].start_time = max(array_list3[array_id].start_time, time_now);
-            double time_up = rram.read_time+decoder_latency;
+            double time_up = rram.read_time+controler_latency+magic_decoder_latency;
             now->end_time = time_now + time_up;
             array_list3[array_id].over_time = now->end_time;
 //set is_using
@@ -299,7 +299,7 @@ void read_time_update(int array_type, int array_id, double time_now, Node *now, 
         case 6: //sa
         {
             array_list2[array_id].start_time = max(array_list2[array_id].start_time, time_now);
-            double time_up = sa_latency(8,array_list2[array_id].sa_type);
+            double time_up = sa_latency(8,array_list2[array_id].sa_type)+controler_latency+sa_decoder_area;
             now->end_time = time_now + time_up;
             array_list2[array_id].over_time = now->end_time;
 //set is_using
@@ -327,7 +327,8 @@ void read_energy_update(int array_type, int array_id, Node *node_now,
             break;
         case 3: //magic
         {
-            array_list3[array_id].energy += bit_num_operand * rram.read_energy+decoder_latency*decoder_power;
+            array_list3[array_id].energy += bit_num_operand * rram.read_energy+controler_latency*controler_power
+                                                                        +magic_decoder_power*magic_decoder_latency;
         }
             break;
         case 4://sa buffer

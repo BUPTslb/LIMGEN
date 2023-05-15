@@ -64,16 +64,32 @@
     },
     {
         "Input": [
-            "input"
+            "r",
+            "c"
         ],
         "Node_ID": 10,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 10,
+        "Node_ID": 11,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "input"
+        ],
+        "Node_ID": 12,
         "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
         "Dst": "pixels",
-        "Input": 10,
-        "Node_ID": 11,
+        "Input": 12,
+        "Node_ID": 13,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -82,27 +98,12 @@
             "sum",
             "pixels"
         ],
-        "Node_ID": 12,
+        "Node_ID": 14,
         "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
         "Dst": "sum",
-        "Input": 12,
-        "Node_ID": 13,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "pixels"
-        ],
-        "Node_ID": 14,
-        "Operation": "HdlOpType.NEG",
-        "Type": "Op"
-    },
-    {
-        "Dst": "b",
         "Input": 14,
         "Node_ID": 15,
         "Operation": "SEQ",
@@ -117,7 +118,7 @@
         "Type": "Op"
     },
     {
-        "Dst": "shift_reg",
+        "Dst": "b",
         "Input": 16,
         "Node_ID": 17,
         "Operation": "SEQ",
@@ -125,15 +126,14 @@
     },
     {
         "Input": [
-            "shift_reg_cnt",
-            "1\n"
+            "pixels"
         ],
         "Node_ID": 18,
-        "Operation": "HdlOpType.ADD",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "shift_reg_cnt",
+        "Dst": "shift_reg",
         "Input": 18,
         "Node_ID": 19,
         "Operation": "SEQ",
@@ -142,57 +142,47 @@
     {
         "Input": [
             "shift_reg_cnt",
-            "3\n"
+            "1\n"
         ],
         "Node_ID": 20,
-        "Operation": "HdlOpType.EQ",
+        "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
-        "Input": [
-            "sum",
-            "sum"
-        ],
+        "Dst": "shift_reg_cnt",
+        "Input": 20,
         "Node_ID": 21,
-        "Operation": "HdlOpType.ADD",
-        "Type": "Op"
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
-        "Dst": "sum",
-        "Input": 21,
+        "Input": [
+            "shift_reg_cnt",
+            "3\n"
+        ],
         "Node_ID": 22,
-        "Operation": "SEQ",
-        "Type": "Assign"
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
     },
     {
-        "Input": [
-            "sum",
-            "sum"
-        ],
+        "Dst": "shift_reg_cnt",
+        "Input": 22,
         "Node_ID": 23,
-        "Operation": "HdlOpType.ADD",
-        "Type": "Op"
-    },
-    {
-        "Dst": "sum",
-        "Input": 23,
-        "Node_ID": 24,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
         "Input": [
-            "sum",
-            "sum"
+            "pixels"
         ],
-        "Node_ID": 25,
-        "Operation": "HdlOpType.ADD",
+        "Node_ID": 24,
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
         "Dst": "sum",
-        "Input": 25,
-        "Node_ID": 26,
+        "Input": 24,
+        "Node_ID": 25,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -201,14 +191,14 @@
             "sum",
             "pixels"
         ],
-        "Node_ID": 27,
+        "Node_ID": 26,
         "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
         "Dst": "sum",
-        "Input": 27,
-        "Node_ID": 28,
+        "Input": 26,
+        "Node_ID": 27,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -216,14 +206,30 @@
         "Input": [
             "sum"
         ],
-        "Node_ID": 29,
+        "Node_ID": 28,
         "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
         "Dst": "output",
-        "Input": 29,
+        "Input": 28,
+        "Node_ID": 29,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "output",
+            "pixel"
+        ],
         "Node_ID": 30,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 30,
+        "Node_ID": 31,
         "Operation": "SEQ",
         "Type": "Assign"
     },
@@ -232,143 +238,484 @@
             "sum",
             "b"
         ],
-        "Node_ID": 31,
+        "Node_ID": 32,
         "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
         "Dst": "sum",
-        "Input": 31,
-        "Node_ID": 32,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "r",
-            "1\n"
-        ],
+        "Input": 32,
         "Node_ID": 33,
-        "Operation": "HdlOpType.ADD",
-        "Type": "Op"
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
-        "Dst": "r",
-        "Input": 33,
+        "Input": [
+            "sum",
+            "pixel"
+        ],
         "Node_ID": 34,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "r",
-            "3\n"
-        ],
-        "Node_ID": 35,
-        "Operation": "HdlOpType.EQ",
-        "Type": "Op"
-    },
-    {
-        "Dst": "r",
-        "Input": "0\n",
-        "Node_ID": 36,
-        "Operation": "SEQ",
-        "Type": "Assign"
-    },
-    {
-        "Input": [
-            "c",
-            "1\n"
-        ],
-        "Node_ID": 37,
         "Operation": "HdlOpType.ADD",
         "Type": "Op"
     },
     {
-        "Dst": "c",
-        "Input": 37,
-        "Node_ID": 38,
+        "Dst": "output",
+        "Input": 34,
+        "Node_ID": 35,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Node_ID": 39,
-        "Statement_when_false": [],
-        "Statement_when_true": [
-            36,
-            37,
-            38
+        "Input": [
+            "pixels"
         ],
-        "Type": "Branch",
-        "condition": 35
+        "Node_ID": 36,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 36,
+        "Node_ID": 37,
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
         "Input": [
-            "c",
-            "3\n"
+            "sum",
+            "pixels"
+        ],
+        "Node_ID": 38,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 38,
+        "Node_ID": 39,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum"
         ],
         "Node_ID": 40,
-        "Operation": "HdlOpType.EQ",
+        "Operation": "HdlOpType.NEG",
         "Type": "Op"
     },
     {
-        "Dst": "done",
-        "Input": "12\n",
+        "Dst": "output",
+        "Input": 40,
         "Node_ID": 41,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Node_ID": 42,
-        "Statement_when_false": [],
-        "Statement_when_true": [
-            41
+        "Input": [
+            "output",
+            "pixel"
         ],
-        "Type": "Branch",
-        "condition": 40
+        "Node_ID": 42,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
     },
     {
-        "Dst": "shift_reg_cnt",
-        "Input": "0\n",
+        "Dst": "sum",
+        "Input": 42,
         "Node_ID": 43,
         "Operation": "SEQ",
         "Type": "Assign"
     },
     {
-        "Node_ID": 44,
-        "Statement_when_false": [],
-        "Statement_when_true": [
-            21,
-            22,
-            23,
-            24,
-            25,
-            26,
-            27,
-            28,
-            29,
-            30,
-            31,
-            32,
-            33,
-            34,
-            35,
-            36,
-            37,
-            38,
-            39,
-            40,
-            41,
-            42,
-            43
+        "Input": [
+            "sum",
+            "b"
         ],
-        "Type": "Branch",
-        "condition": 20
+        "Node_ID": 44,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 44,
+        "Node_ID": 45,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "pixel"
+        ],
+        "Node_ID": 46,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "output",
+        "Input": 46,
+        "Node_ID": 47,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pixels"
+        ],
+        "Node_ID": 48,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 48,
+        "Node_ID": 49,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "pixels"
+        ],
+        "Node_ID": 50,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 50,
+        "Node_ID": 51,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum"
+        ],
+        "Node_ID": 52,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "output",
+        "Input": 52,
+        "Node_ID": 53,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "output",
+            "pixel"
+        ],
+        "Node_ID": 54,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 54,
+        "Node_ID": 55,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "b"
+        ],
+        "Node_ID": 56,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 56,
+        "Node_ID": 57,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "pixel"
+        ],
+        "Node_ID": 58,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "output",
+        "Input": 58,
+        "Node_ID": 59,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "pixels"
+        ],
+        "Node_ID": 60,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 60,
+        "Node_ID": 61,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "pixels"
+        ],
+        "Node_ID": 62,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 62,
+        "Node_ID": 63,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum"
+        ],
+        "Node_ID": 64,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "output",
+        "Input": 64,
+        "Node_ID": 65,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "output",
+            "pixel"
+        ],
+        "Node_ID": 66,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 66,
+        "Node_ID": 67,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "b"
+        ],
+        "Node_ID": 68,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "sum",
+        "Input": 68,
+        "Node_ID": 69,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "sum",
+            "pixel"
+        ],
+        "Node_ID": 70,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "output",
+        "Input": 70,
+        "Node_ID": 71,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r",
+            "1\n"
+        ],
+        "Node_ID": 72,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 72,
+        "Node_ID": 73,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r",
+            "3\n"
+        ],
+        "Node_ID": 74,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 74,
+        "Node_ID": 75,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "r",
+        "Input": "0\n",
+        "Node_ID": 76,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "c",
+            "1\n"
+        ],
+        "Node_ID": 77,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "c",
+        "Input": 77,
+        "Node_ID": 78,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "c",
+            "r"
+        ],
+        "Node_ID": 79,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "c",
+        "Input": 79,
+        "Node_ID": 80,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r",
+            "3\n"
+        ],
+        "Node_ID": 81,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 81,
+        "Node_ID": 82,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "c",
+            "r"
+        ],
+        "Node_ID": 83,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "c",
+        "Input": 83,
+        "Node_ID": 84,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r",
+            "3\n"
+        ],
+        "Node_ID": 85,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 85,
+        "Node_ID": 86,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "c",
+            "r"
+        ],
+        "Node_ID": 87,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "c",
+        "Input": 87,
+        "Node_ID": 88,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "r",
+            "3\n"
+        ],
+        "Node_ID": 89,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "r",
+        "Input": 89,
+        "Node_ID": 90,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "done",
+        "Input": "12\n",
+        "Node_ID": 91,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "shift_reg_cnt",
+        "Input": "0\n",
+        "Node_ID": 92,
+        "Operation": "SEQ",
+        "Type": "Assign"
     },
     {
         "Dst": "done",
         "Input": "0\n",
-        "Node_ID": 45,
+        "Node_ID": 93,
         "Operation": "SEQ",
         "Type": "Assign"
     }

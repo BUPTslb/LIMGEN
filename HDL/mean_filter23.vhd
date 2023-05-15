@@ -35,29 +35,59 @@ begin
         shift_reg  <=  0;
         shift_reg_cnt  <=  0;
         done <= 0;
+
+        sum<=r xor c;--代替判断
         pixels  <= not input;
         sum  <=  sum + pixels;
         b  <=  not pixels;
         shift_reg<=not pixels;
         shift_reg_cnt <= shift_reg_cnt + 1;
-        if shift_reg_cnt = 3 then -- 满3个像素进行计算
-            --将乘法拆解成加法
-            sum <=sum + sum;
-            sum <=sum + sum;
-            sum <=sum + sum;
-            sum <=sum + pixels;
-            output <= not sum; --将sum调整为8位，交给output
-            sum <= sum + b;
-            r <= r + 1;
-            if r = 3 then
-                r <= 0;
-                c <= c + 1;
-            end if;
-            if c = 3 then
-                done <= 12; -- 计算完成
-            end if;
-            shift_reg_cnt <= 0;
-        end if;
+        shift_reg_cnt <= shift_reg_cnt xor 3;
+
+
+        --将乘法拆解成加法
+        sum <=not pixels;
+        sum <=sum + pixels;
+        output <= not sum;
+        sum <= output +pixel;
+        sum <= sum + b;
+        output <= sum + pixel;
+        --将乘法拆解成加法
+        sum <=not pixels;
+        sum <=sum + pixels;
+        output <= not sum; --将sum调
+        sum <= output +pixel;
+        sum <= sum + b;
+        output <= sum + pixel;
+        --将乘法拆解成加法
+        sum <=not pixels;
+        sum <=sum + pixels;
+        output <= not sum; --将sum调
+        sum <= output +pixel;
+        sum <= sum + b;
+        output <= sum + pixel;
+        --将乘法拆解成加法
+        sum <=not pixels;
+        sum <=sum + pixels;
+        output <= not sum; --将sum调
+        sum <= output +pixel;
+        sum <= sum + b;
+        output <= sum + pixel;
+        r <= r + 1;
+        r <= r xor 3;
+
+        r <= 0;
+        c <= c + 1;
+        c <= c xor r;
+        r <= r xor 3;
+        c <= c xor r;
+        r <= r xor 3;
+        c <= c xor r;
+        r <= r xor 3;
+        done <= 12; -- 计算完成
+
+        shift_reg_cnt <= 0;
+
         done <= 0;
 
 end process;

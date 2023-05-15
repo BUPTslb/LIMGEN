@@ -379,7 +379,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
         return cap_array_lost(array_type, array_id, array_list1, array_list2, array_list3) +
                cap_array_cover(array_type, array_id, array_list1, array_list2, array_list3);
     };
-    cout<<"write_back--find_no_using"<<endl;
+//    cout<<"write_back--find_no_using"<<endl;
     vector<int> sa_no_using = find_no_using(0, 2, array_list1, array_list2, array_list3);
     vector<int> sa_waiting = waiting_array_list(0, 2, array_list1, array_list2, array_list3);
     vector<int> sa_list;

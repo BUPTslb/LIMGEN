@@ -83,10 +83,12 @@ struct sa_arr : public Array {
     int sa_type; // 1,csa 2,dsa 在建立的时候就需要确定
     int sa_direct;//接收直接输入
     int sa_out;//当前sa的输出
+    bool add_use;
     vector<int> store_node;//存储的节点操作数ID,规定：只存储=
 };
 
 struct magic_arr : public Array {
+    bool add_use;
     vector<int> store_node;//存储的节点操作数ID，规定：只存储=
 };
 

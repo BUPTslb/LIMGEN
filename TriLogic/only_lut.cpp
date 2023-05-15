@@ -294,7 +294,7 @@ double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
             if (op2int(node_now->depend1->operator_name) != 0) //依赖的是一个操作
             {
                 if (node_now->start_time == 0)
-                    node_now->start_time == node_now->depend1->end_time;
+                    node_now->start_time = node_now->depend1->end_time;
 
                 time1 = node_now->depend1->end_time;
             } else //依赖的是一个值节点，还需要看其阵列

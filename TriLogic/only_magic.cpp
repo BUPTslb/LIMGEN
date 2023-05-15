@@ -10,11 +10,9 @@ std::vector<double>  only_magic(vector<vector<Node *>> controlstep2,vector<lut_a
 
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
             int type_operation = op2int(controlstep2[i][j]->operator_name);
-
-
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
-            //TODO:规定，不存在A=B这种赋值操作
+            //规定，不存在A=B这种赋值操作
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
@@ -38,7 +36,6 @@ std::vector<double>  only_magic(vector<vector<Node *>> controlstep2,vector<lut_a
                 }
 
                 //有依赖,则依赖一定来自OP, from array
-                //TODO:分析一下，能否直接调用write_back函数？
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
                 double time_n = time_only_magic(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
@@ -232,7 +229,7 @@ double time_only_magic(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2
             if (op2int(node_now->depend1->operator_name) != 0) //依赖的是一个操作
             {
                 if (node_now->start_time == 0)
-                    node_now->start_time == node_now->depend1->end_time;
+                    node_now->start_time = node_now->depend1->end_time;
 
                 time1 = node_now->depend1->end_time;
             } else //依赖的是一个值节点，还需要看其阵列
@@ -551,7 +548,7 @@ void output_logic_magic(int decide_array_type, int decide_array_id, int op_type,
 
 void write_back_magic(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                       vector<magic_arr> &array_list3, int back_type, int back_id) {
-//TODO:可以写回多个地方：buffer/reg/ma,DSE决定吧,所有的ready
+//可以写回多个地方：buffer/reg/ma,DSE决定吧,所有的ready
 //写到buffer中，如果buffer中已经有数据了如何处理？
 
     //先列出magic和sa所有能写的阵列，按照优先级进行排序
@@ -736,12 +733,6 @@ void op_magic_only(int op_type, int decide_array_id, Node *now, double time_now,
     //更新能量
     energy_update( op_type, 3, decide_array_id, array_list1, array_list2, array_list3);
 }
-
-
-
-
-
-
 
 //
 // Created by shenlibo on 23-5-4.

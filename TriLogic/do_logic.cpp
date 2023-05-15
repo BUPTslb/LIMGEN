@@ -398,7 +398,6 @@ void op_lut(int op_type, int decide_array_id, Node *now, double time_now, vector
         {
             if (wb_empty(find_node_by_number(lut_out_now)))
             {
-                //TODO:设置优先级，buffer只能写回本阵列
                 write_back(1, find_node_by_number(lut_out_now)->finish_id, find_node_by_number(lut_out_now),
                            array_list1, array_list2, array_list3);
             }
@@ -419,6 +418,8 @@ void op_sa(int op_type, int decide_array_id, Node *now, double time_now, vector<
            vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     now->do_type = 2;
     now->finish_id = decide_array_id;//模块调用怎么写？
+    if (op_type==11)
+        array_list2[decide_array_id].add_use= true;
 
     if (array_list2[decide_array_id].sa_out > 0)  //节点id>=1
     {
@@ -455,6 +456,8 @@ void op_magic(int op_type, int decide_array_id, Node *now, double time_now, vect
               vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     now->do_type = 3;
     now->finish_id = decide_array_id;//模块调用怎么写？对操作进行拆解
+    if (op_type==11)
+        array_list3[decide_array_id].add_use= true;
     int row_need=op_row_need(op_type, 3);
     //判断中间值和结果是否需要写覆盖
     if (cap_array_lost(3, decide_array_id, array_list1, array_list2, array_list3) == 0) {

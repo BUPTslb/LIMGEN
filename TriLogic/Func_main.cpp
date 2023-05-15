@@ -43,7 +43,12 @@ int main() {
     map<int, bool> TvsF;//Branch斥互表, 遇到分支节点，正确和错误的不能相互依赖，每次遇到branch要清空重写
     map<int, int> inDegree;//入度表，记录每个节点的入度，id对应入度，数据1、2+直接控制，最大为3
     //1.先读一个节点让其输出
-    ifstream file("../hdlAst/mean_filter23.json");
+    ifstream file("../hdlAst/arithmetic_encoder23.json");
+//    ifstream file("../hdlAst/arithmetic_encoder23.json");
+//    ifstream file("../hdlAst/mean_filter.json");
+//    ifstream file("../hdlAst/mean_filter23.json");
+//    ifstream file("../hdlAst/des.json");
+
     stringstream hdlast;
     hdlast << file.rdbuf();
     string content(hdlast.str());
@@ -327,20 +332,31 @@ int main() {
     }
 
     int model_chosen[4] = {0, 1, 2, 3};
-    int model = model_chosen[2];
-    vector<double> best_latency = {10000, 10000, 1000000000000};//延迟、能耗,面积
-    vector<double> best_energy = {10000, 10000, 10000000000000};//延迟、能耗，面积
-    vector<double> best_area = {10000, 10000, 10000000000000};//延迟、能耗，面积
+    int model = model_chosen[3];
+    vector<double> best_latency = {100000, 10000, 1000000000000};//延迟、能耗,面积
+    vector<double> best_energy = {100000, 10000, 10000000000000};//延迟、能耗，面积
+    vector<double> best_area = {100000, 10000, 10000000000000};//延迟、能耗，面积
     vector<int> array_num_latency;
     vector<int> array_num_energy;
     vector<int> array_num_area;
 
     std::ofstream outFile;
-    outFile.open("mean_filter_sa.csv", std::ios::out);
+//    outFile.open("encoder_all.csv", std::ios::out);
+//    outFile.open("encoder_lut.csv", std::ios::out);
+//    outFile.open("encoder_sa.csv", std::ios::out);
+    outFile.open("encoder_magic.csv", std::ios::out);
+//    outFile.open("des_all_2.csv", std::ios::out);
+//    outFile.open("des_lut_2.csv", std::ios::out);
+//    outFile.open("des_sa_2.csv", std::ios::out);
+//    outFile.open("des_magic_2.csv", std::ios::out);
+//    outFile.open("mean_filter_all_2.csv", std::ios::out);
+//    outFile.open("mean_filter_lut.csv", std::ios::out);
+//    outFile.open("mean_filter_sa.csv", std::ios::out);
+//    outFile.open("mean_filter_magic.csv", std::ios::out);
     outFile << "latency/ns" << ',' << "energy/pJ" << ',' << "area/F^2" << ','
             << "lut_num" << ',' << "csa_num" << ',' << "dsa_num" << ',' << "magic_num" << ',' <<
             "Reg_write" << ',' << "Reg_read" << std::endl;
-    for (int p = 0; p < 10000; ++p) {
+    for (int p = 0; p < 100000; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1 = {};//lut阵列表
@@ -440,7 +456,7 @@ int main() {
     cout << "最优能耗时：三种阵列个数为：" << array_num_energy[0] << " " << array_num_energy[1] << " "
          << array_num_energy[2] << endl;
     cout << "最优面积时：延迟为" << best_area[0] << " 能耗为 " << best_area[1] <<"面积为 "<<best_area[2]<< endl;
-    cout << "最优能耗时：三种阵列个数为：" << array_num_area[0] << " " << array_num_area[1] << " "
+    cout << "最优面积时：三种阵列个数为：" << array_num_area[0] << " " << array_num_area[1] << " "
          << array_num_area[2] << endl;
 
     //绘制帕累托优化的解

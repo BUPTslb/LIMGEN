@@ -2,7 +2,7 @@
 #define SYNTHESIS_PARAMETER_H
 #include <vector>
 #include "mainfunc.h"
-// 1 GHz
+// 1 GHz : 1ns /cycle
 // 1 ns
 // 1 mm^2
 // 1 pJ
@@ -19,19 +19,44 @@ struct RRAM{
 };
 extern RRAM rram;
 
-extern double controler_magic;//控制器的面积
-extern double controler_sa;
-extern double controler_lut;
-extern double decoder_power;//整体的时间*powerr得到其能耗
-extern double decoder_latency;//decoder的延迟
+extern double controler_area;//控制器的面积
+extern double controler_power;//控制器的功耗
+extern double controler_latency;//控制器的延迟
+extern double sa_decoder_area;//sa译码器的面积
+extern double sa_decoder_power;//sa译码器的功耗
+extern double sa_decoder_latency;//sa译码器的延迟
+extern double sa_driver_area;//SA驱动器的面积
+extern double sa_driver_power;//sa驱动器的功耗
+extern double sa_driver_latency;//sa驱动器的延迟
+extern double sa_direct_area;//sa直接输入
+extern double sa_wb_area;//sa写回面积
+extern double sa_arr_wb_area;//sa写回面积
+extern double lut_decoder_area;//lut译码器的面积
+extern double lut_decoder_power;//lut译码器的功耗
+extern double lut_decoder_latency;//lut译码器的延迟
+extern double lut_driver_area;//lut驱动器的面积
+extern double lut_driver_power;//lut驱动器的功耗
+extern double lut_driver_latency;//lut驱动器的延迟
+extern double magic_decoder_area;//magic译码器的面积
+extern double magic_decoder_power;//magic译码器的功耗
+extern double magic_decoder_latency;//magic译码器的延迟
+extern double magic_add;//magic add的面积
+
+extern double mux16_area;
+extern double mux16_latency;
+extern double mux16_power;
+extern double mux64_area;
+extern double mux64_power;
+extern double mux64_latency;
+
 
 //单个Reg 1KB
 struct REG{
     double reg_read_time;//ns
-    double reg_write_time;//ns
+    double reg_write_time;//ns 0.09
     double reg_read_energy;//pj
-    double reg_write_energy;//更新不需要乘以位数
-    double reg_area;//F^2 单个bit
+    double reg_write_energy;//按照32位的算
+    double reg_area;//F^2 32bit
 };
 extern REG reg;
 
@@ -129,8 +154,7 @@ struct Lut_Record{
     int lut6_level;
 };
 
-extern double lut4_out_area;
-extern double lut6_out_area;
+extern double lut_sa;
 
 std::vector<Lut_Record> lut_records();//获得lut的参数
 extern std::vector<Lut_Record> lut_record;//全局

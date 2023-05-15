@@ -23,11 +23,6 @@ unsigned int arr_size() {
 void find_input(int &array_type, int &array_id, Node *node_depend) {
 
     //存在依赖，这个依赖是一个节点
-//    cout << "数据依赖所在的节点： " << node_depend->node_id << endl
-//         << "其算子类型: " << op2int(node_depend->operator_name) << endl
-//         << "其执行阵列的类型" << node_depend->do_type << endl
-//         << "其存储位置的数量：" << num_node_position(node_depend) << endl
-//         << "该依赖节点的结束时间为：" << node_depend->end_time << endl;
     //如果是out,看时间是否对等
     if (node_depend->do_type == 1 || node_depend->do_type == 2) {
         //判断当前的阵列输出是不是这个节点
@@ -45,7 +40,6 @@ void find_input(int &array_type, int &array_id, Node *node_depend) {
             if (!node_depend->wb_pos[i].empty())
                 type_list.push_back(i);
         }
-        //TODO:DSE,从写回表中挑选一个出来使用
         //type_list可能是空的
         array_type = type_list[rand() % (type_list.size())];
         array_id = node_depend->wb_pos[array_type][rand() % node_depend->wb_pos[array_type].size()];
@@ -72,7 +66,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
     switch (decide_array_type) {
         case 1: {
             lut_arr now1;
-            //TODO:如果是lut4,数字为16
+            //如果是lut4,数字为16
             //初始化id
             now1.array_id = array_list1.size();
             //初始化is_using
@@ -111,8 +105,10 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now2.array_id = array_list2.size();
             //初始化is_using
             now2.is_using = false;
+            now2.add_use=false;
+            if (op_type==11)
+                now2.add_use= true;
             //初始化外围电路的类型
-            //TODO：DSE
             int sa_type_ready[2]={1,2};
             int type_chosen=rand()%2;
             now2.sa_type=sa_type_ready[type_chosen];
@@ -145,6 +141,9 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now3.array_id = array_list3.size();
             //初始化is_using
             now3.is_using = false;
+            now3.add_use= false;
+            if (op_type==11)
+                now3.add_use=true;
             //初始化大小
             now3.row_num = bit_num_operand;
             now3.col_num = bit_num_operand;

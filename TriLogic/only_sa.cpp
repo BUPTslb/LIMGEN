@@ -21,9 +21,9 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
 
                     //更新出度
                     out_degree(controlstep2[i][j]);
-                    double time = time_only_sa(array_list1, array_list2, array_list3, controlstep2[i][j]);
+                    double time_n = time_only_sa(array_list1, array_list2, array_list3, controlstep2[i][j]);
                     //update the time of do_array
-                    time_update(0, -1, -1, time, controlstep2[i][j], array_list1, array_list2, array_list3);
+                    time_update(0, -1, -1, time_n, controlstep2[i][j], array_list1, array_list2, array_list3);
                     //update the energy of reg
                     energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                     //更新wb_pos,表示写到了寄存器中
@@ -32,7 +32,6 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
                     continue;//进行下一个循环
                 }
 
-                //有依赖,则依赖一定来自OP, from array
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
                 double time_n = time_only_sa(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
@@ -56,12 +55,11 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
                             int sa_out_now = array_list2[controlstep2[i][j]->depend1->finish_id].sa_out;
                             //当前lut-out的节点的操作类型
                             int on_op = op2int(find_node_by_number(sa_out_now)->operator_name);
-                            if (on_op > 0) //不是等号，直接更新lut-out
+                            if (on_op > 0) //不是等号，直接更新sa-out
                                 array_list2[controlstep2[i][j]->depend1->finish_id].sa_out = controlstep2[i][j]->node_id;
                             else //否则判断一下其写回表和出度
                             {
-                                if (find_node_by_number(sa_out_now)->out_degree > 0 &&
-                                    wb_empty(find_node_by_number(sa_out_now)))
+                                if (wb_empty(find_node_by_number(sa_out_now)))
                                 {
                                     write_back_sa(2, find_node_by_number(sa_out_now)->finish_id,
                                                find_node_by_number(sa_out_now),
@@ -141,7 +139,10 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
             controlstep2[i][j]->do_type = do_array_type;
             //如果要执行的类型当前没有阵列，则建立
             if (array_list2.empty() )
-                do_array_id = build(2, type_operation, array_list1, array_list2, array_list3);
+            {
+                int id=build(2, type_operation, array_list1, array_list2, array_list3);
+                do_array_id = id;
+            }
             //决定执行阵列的id
             do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
                                           array_list2, array_list3, input1_type, input1_id, input2_type, input2_id);
@@ -228,7 +229,7 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
             if (op2int(node_now->depend1->operator_name) != 0) //依赖的是一个操作
             {
                 if (node_now->start_time == 0)
-                    node_now->start_time == node_now->depend1->end_time;
+                    node_now->start_time = node_now->depend1->end_time;
 
                 time1 = node_now->depend1->end_time;
             } else //依赖的是一个值节点，还需要看其阵列
@@ -252,8 +253,6 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         if (node_now->depend1 != nullptr) //有依赖
         {
             time1 = node_now->depend1->end_time;
-//            cout << "time1 = " << time1 << endl;
-//            cout << "wb_empty(node_now->depend1)没有问题：" << wb_empty(node_now->depend1) << endl;
             if ((time_do_array > time1 || time3 > time1) &&
                 wb_empty(node_now->depend1)) //控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
@@ -1011,9 +1010,7 @@ void op_sa_only(int op_type, int decide_array_id, Node *now, double time_now, ve
             array_list2[decide_array_id].sa_out = now->node_id;
         else //否则判断一下其写回表和出度
         {
-            if (find_node_by_number( sa_out_now)->out_degree > 0 &&
-                wb_empty(find_node_by_number( sa_out_now))) {
-                //TODO:设置优先级，buffer只能写回本阵列
+            if ( wb_empty(find_node_by_number( sa_out_now))) {
                 write_back_sa( 2, find_node_by_number( sa_out_now)->finish_id, find_node_by_number( sa_out_now),
                               array_list1, array_list2, array_list3);
             }

@@ -108,9 +108,6 @@ int op2int(string operation){
     return -1;
 }
 
-//database
-extern double lut6_out_area=11712;
-extern double lut4_out_area=4824;
 
 vector<Lut_Record> lut_record= lut_records();
 vector<Lut_Record> lut_records()

@@ -278,8 +278,6 @@ begin
         l <= l xor r;
         --15次循环，执行xor操作
 
-
-
         -- 逆 IP 置换
         data_out <=not ip_inv;
         -- IP 逆置换

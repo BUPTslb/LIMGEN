@@ -3,7 +3,7 @@
 //此时sa和magic不用考虑容量，让决定id的去考虑，只需要把可用的放进队列去
 vector<int> find_no_using(int op_type, int decide_array_type, vector<lut_arr> &array_list1,
                           vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
-    vector<int> find_no_using={};
+    vector<int> find_no_using;
     switch (decide_array_type) {
         case 1://找LUT,需要算子支持，并且能用
         {
