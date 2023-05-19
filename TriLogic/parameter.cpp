@@ -261,7 +261,7 @@ double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vecto
             array1_area += mux16_area * i.lut_num;
         else
             array1_area += mux64_area * i.lut_num;
-        cout<<"lut_area:"<<array1_area<<endl;
+//        cout<<"lut_area:"<<array1_area<<endl;
         area_all+=array1_area;
     }
     for (auto i: array_list2) {
@@ -283,7 +283,7 @@ double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vecto
             if (i.add_use== true)
                 array2_area += DSA.SA_add_area * i.col_num;
         }
-        cout<<"sa_area: "<<array2_area<<endl;
+//        cout<<"sa_area: "<<array2_area<<endl;
         area_all+=array2_area;
     }
 
@@ -295,7 +295,7 @@ double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vecto
         array3_area += i.row_num * magic_decoder_area + i.col_num * magic_decoder_area;
         if (i.add_use)
             array3_area+=i.row_num*magic_add;
-        cout<<"magic_area: "<<array3_area<<endl;
+//        cout<<"magic_area: "<<array3_area<<endl;
         area_all+=array3_area;
     }
     //寄存器的面积都一样

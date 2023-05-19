@@ -1,0 +1,911 @@
+[
+    {
+        "Dst": "A",
+        "Input": "0\n",
+        "Node_ID": 1,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "reset",
+            "1\n"
+        ],
+        "Node_ID": 2,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "reset",
+        "Input": 2,
+        "Node_ID": 3,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "state",
+        "Input": "0\n",
+        "Node_ID": 4,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "round",
+        "Input": "0\n",
+        "Node_ID": 5,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "0\n"
+        ],
+        "Node_ID": 6,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 6,
+        "Node_ID": 7,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "plaintext",
+            "state"
+        ],
+        "Node_ID": 8,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 8,
+        "Node_ID": 9,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 10,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 10,
+        "Node_ID": 11,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 12,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 12,
+        "Node_ID": 13,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 14,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 14,
+        "Node_ID": 15,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 16,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 16,
+        "Node_ID": 17,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 18,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 19,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 19,
+        "Node_ID": 20,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 21,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 21,
+        "Node_ID": 22,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 23,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 23,
+        "Node_ID": 24,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 25,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 25,
+        "Node_ID": 26,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 27,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 28,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 28,
+        "Node_ID": 29,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 30,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 30,
+        "Node_ID": 31,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 32,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 32,
+        "Node_ID": 33,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 34,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 34,
+        "Node_ID": 35,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 36,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 37,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 37,
+        "Node_ID": 38,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 39,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 39,
+        "Node_ID": 40,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 41,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 41,
+        "Node_ID": 42,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 43,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 43,
+        "Node_ID": 44,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 45,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 46,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 46,
+        "Node_ID": 47,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 48,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 48,
+        "Node_ID": 49,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 50,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 50,
+        "Node_ID": 51,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 52,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 52,
+        "Node_ID": 53,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 54,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 55,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 55,
+        "Node_ID": 56,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 57,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 57,
+        "Node_ID": 58,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 59,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 59,
+        "Node_ID": 60,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 61,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 61,
+        "Node_ID": 62,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 63,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 64,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 64,
+        "Node_ID": 65,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 66,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 66,
+        "Node_ID": 67,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 68,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 68,
+        "Node_ID": 69,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 70,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 70,
+        "Node_ID": 71,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 72,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 73,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 73,
+        "Node_ID": 74,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 75,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 75,
+        "Node_ID": 76,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 77,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 77,
+        "Node_ID": 78,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 79,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 79,
+        "Node_ID": 80,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 81,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 82,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 82,
+        "Node_ID": 83,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 84,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 84,
+        "Node_ID": 85,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 86,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 86,
+        "Node_ID": 87,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 88,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 88,
+        "Node_ID": 89,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 90,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 91,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 91,
+        "Node_ID": 92,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 93,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 93,
+        "Node_ID": 94,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 95,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 95,
+        "Node_ID": 96,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 97,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 97,
+        "Node_ID": 98,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 99,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 100,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 100,
+        "Node_ID": 101,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 102,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 102,
+        "Node_ID": 103,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 104,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 104,
+        "Node_ID": 105,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 106,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 106,
+        "Node_ID": 107,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 108,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "A"
+        ],
+        "Node_ID": 109,
+        "Operation": "HdlOpType.NEG",
+        "Type": "Op"
+    },
+    {
+        "Dst": "A",
+        "Input": 109,
+        "Node_ID": 110,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "state",
+            "A"
+        ],
+        "Node_ID": 111,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "state",
+        "Input": 111,
+        "Node_ID": 112,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "1\n"
+        ],
+        "Node_ID": 113,
+        "Operation": "HdlOpType.ADD",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 113,
+        "Node_ID": 114,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Input": [
+            "round",
+            "12\n"
+        ],
+        "Node_ID": 115,
+        "Operation": "HdlOpType.XOR",
+        "Type": "Op"
+    },
+    {
+        "Dst": "round",
+        "Input": 115,
+        "Node_ID": 116,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    },
+    {
+        "Dst": "ciphertext",
+        "Input": "state",
+        "Node_ID": 117,
+        "Operation": "SEQ",
+        "Type": "Assign"
+    }
+]

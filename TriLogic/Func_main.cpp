@@ -43,11 +43,15 @@ int main() {
     map<int, bool> TvsF;//Branch斥互表, 遇到分支节点，正确和错误的不能相互依赖，每次遇到branch要清空重写
     map<int, int> inDegree;//入度表，记录每个节点的入度，id对应入度，数据1、2+直接控制，最大为3
     //1.先读一个节点让其输出
-    ifstream file("../hdlAst/arithmetic_encoder23.json");
+//    ifstream file("../hdlAst/arithmetic_encoder23.json");
 //    ifstream file("../hdlAst/arithmetic_encoder23.json");
 //    ifstream file("../hdlAst/mean_filter.json");
 //    ifstream file("../hdlAst/mean_filter23.json");
 //    ifstream file("../hdlAst/des.json");
+    ifstream file("../hdlAst/TEA.json");
+//    ifstream file("../hdlAst/TEA23.json");
+//    ifstream file("../hdlAst/RCA.json");
+//    ifstream file("../hdlAst/RCA23.json");
 
     stringstream hdlast;
     hdlast << file.rdbuf();
@@ -332,7 +336,7 @@ int main() {
     }
 
     int model_chosen[4] = {0, 1, 2, 3};
-    int model = model_chosen[3];
+    int model = model_chosen[0];
     vector<double> best_latency = {100000, 10000, 1000000000000};//延迟、能耗,面积
     vector<double> best_energy = {100000, 10000, 10000000000000};//延迟、能耗，面积
     vector<double> best_area = {100000, 10000, 10000000000000};//延迟、能耗，面积
@@ -344,17 +348,26 @@ int main() {
 //    outFile.open("encoder_all.csv", std::ios::out);
 //    outFile.open("encoder_lut.csv", std::ios::out);
 //    outFile.open("encoder_sa.csv", std::ios::out);
-    outFile.open("encoder_magic.csv", std::ios::out);
+//    outFile.open("encoder_magic.csv", std::ios::out);
 //    outFile.open("des_all_2.csv", std::ios::out);
 //    outFile.open("des_lut_2.csv", std::ios::out);
 //    outFile.open("des_sa_2.csv", std::ios::out);
 //    outFile.open("des_magic_2.csv", std::ios::out);
+    outFile.open("TEA_all.csv", std::ios::out);
+//    outFile.open("TEA_lut.csv", std::ios::out);
+//    outFile.open("TEA_sa.csv", std::ios::out);
+//    outFile.open("TEA_magic.csv", std::ios::out);
+//    outFile.open("RCA_all.csv", std::ios::out);
+//    outFile.open("RCA_lut.csv", std::ios::out);
+//    outFile.open("RCA_sa.csv", std::ios::out);
+//    outFile.open("RCA_magic.csv", std::ios::out);
+
 //    outFile.open("mean_filter_all_2.csv", std::ios::out);
 //    outFile.open("mean_filter_lut.csv", std::ios::out);
 //    outFile.open("mean_filter_sa.csv", std::ios::out);
 //    outFile.open("mean_filter_magic.csv", std::ios::out);
     outFile << "latency/ns" << ',' << "energy/pJ" << ',' << "area/F^2" << ','
-            << "lut_num" << ',' << "csa_num" << ',' << "dsa_num" << ',' << "magic_num" << ',' <<
+            << "lut_num" << ',' << "csa_num" << ',' << "dsa_num" << ',' << "magic_num" << ',' <<"array_num"<<','<<
             "Reg_write" << ',' << "Reg_read" << std::endl;
     for (int p = 0; p < 100000; ++p) {
         reset_nodes2();
@@ -386,6 +399,7 @@ int main() {
                          array_list1, array_list2, array_list3);
                 outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
                         << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
 
             }
@@ -404,6 +418,7 @@ int main() {
                          array_list1, array_list2, array_list3);
                 outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
                         << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
 
             }
@@ -422,6 +437,7 @@ int main() {
                          array_list1, array_list2, array_list3);
                 outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
                         << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
             }
                 break;
@@ -439,6 +455,7 @@ int main() {
                          array_list1, array_list2, array_list3);
                 outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
                         << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                        <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
             }
                 break;
