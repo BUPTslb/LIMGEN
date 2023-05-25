@@ -38,6 +38,7 @@ begin
         E<=0;
         F<=0;
         ROUNDS<=32;
+        reset<=1;
         plaintext<=1215154;
         key_schedule<=100011101;
 

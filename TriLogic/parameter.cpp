@@ -42,7 +42,6 @@ double mux64_latency=0.3;
 
 
 //单位 ns pj F^2
-//RRAM rram = {1, 1, 0.02, 0.13, 6, 1e12};//RRAM参数 全局 ns pj
 RRAM rram = {1, 1, 0.02, 0.13, 6, 1e12};//RRAM参数 全局 ns pj
 REG reg = {0.09, 0.09, 0.003, 0.003, 5214.8};//单个reg的索引 32bit
 Register Reg_sum = {0, 0, 0, 0, 0};
@@ -65,7 +64,7 @@ Sa_op DSA_nor = {9, 0.18, 0.02}; //or + not
 Sa_op DSA_xor = {10, 0.10, 0.025};
 Sa_op DSA_add = {11, 0.12, 0.026};
 std::vector<Sa_op> dsa = {DSA_and, DSA_or, DSA_not, DSA_nor, DSA_xor, DSA_add};
-SA DSA = {0.09, 0.010, 720, 240, dsa}; //读时间 读能量 面积 操作
+SA DSA = {0, 0.010, 720, 240, dsa}; //读时间 读能量 面积 操作
 
 //TODO:verilog-A仿真一下，magic能耗过高，时间太慢，参数都需要更新
 Ma_op ma_seq = {0, rram.write_time, rram.write_energy};//用set reset平均（0.219+0.034）/2
@@ -135,8 +134,8 @@ double sa_latency(int op_type, int sa_type) {
     double sa_latency = 0;
     //译码延迟
     sa_latency += controler_latency;
-    sa_latency += sa_decoder_latency;
-    sa_latency += sa_driver_latency;
+//    sa_latency += sa_decoder_latency;
+//    sa_latency += sa_driver_latency;
     if (op_type == 0) return sa_latency+rram.write_time;//write_back
     if (sa_type == 1) //CSA
     {

@@ -39,7 +39,8 @@ begin
         F<=0;
         ROUNDS<=32;
         plaintext<=1215154;
-        key_schedule<=100011101;
+        key_schedule<=11101;
+        reset <= 1;
         if reset = 1 then
             v0 <= 0;
             v1 <= 0;

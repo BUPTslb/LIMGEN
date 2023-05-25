@@ -165,10 +165,12 @@ double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
 //只有写操作和执行的时候才会调用
 void time_update(int op_type, int do_type, int decide_array_id, double time_now, Node *node_now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
+
+//    cout<<node_now->node_id<<"节点 开始"<<node_now->start_time<<" 结束"<<node_now->end_time<<endl;
     //set start time of node
     if (node_now->start_time == 0 || op_type == 0)
         node_now->start_time = time_now;
-    if (op_type == 0) //写的操作,目标肯定只有 -1 3 4 5 6
+    if (op_type == 0) //写的操作,目标肯定只有 -1(reg) 3(ma) 4(lut-buffer) 5(sa-buffer) 6(sa)
     {
         //对不合理情况进行判断
         if (do_type == 1 || do_type == 2)
@@ -192,17 +194,18 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 break;
             case 4://lut buffer
             {
-                node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
+                node_now->end_time = time_now + buffer.buffer_write_time * 32;
             }
                 break;
             case 5://sa buffer
             {
-                node_now->end_time = time_now + buffer.buffer_write_time * bit_num_operand;
+                node_now->end_time = time_now + buffer.buffer_write_time * 32;
             }
             case 6://sa存储
             {
                 array_list2[decide_array_id].start_time = time_now;
                 double time_up = sa_latency(op_type,array_list2[decide_array_id].sa_type);
+//                cout<<"sa memory time up = "<< time_up<<endl;
                 node_now->end_time = time_now + time_up;
                 array_list2[decide_array_id].over_time = node_now->end_time;
                 //set is_using
@@ -233,7 +236,9 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
             case 2://SA
             {
                 array_list2[decide_array_id].start_time = time_now;
+//                cout<<"time_now= "<<time_now<<endl;
                 double time_up = sa_latency(op_type, array_list2[decide_array_id].sa_type);
+//                cout<<"op_type = "<<op_type <<" time_up= "<<time_up<<endl;
                 node_now->end_time = time_now + time_up;
                 array_list2[decide_array_id].over_time = node_now->end_time;
                 //set is_using
@@ -255,7 +260,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
                 break;
         }
     }
-
 
 }
 
@@ -299,7 +303,7 @@ void read_time_update(int array_type, int array_id, double time_now, Node *now, 
         case 6: //sa
         {
             array_list2[array_id].start_time = max(array_list2[array_id].start_time, time_now);
-            double time_up = sa_latency(8,array_list2[array_id].sa_type)+controler_latency+sa_decoder_area;
+            double time_up = sa_latency(8,array_list2[array_id].sa_type)+controler_latency+sa_decoder_latency;
             now->end_time = time_now + time_up;
             array_list2[array_id].over_time = now->end_time;
 //set is_using

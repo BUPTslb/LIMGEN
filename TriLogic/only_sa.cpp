@@ -9,6 +9,8 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
         for (int j = 0; j < controlstep2[i].size(); ++j) {
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
             int type_operation = op2int(controlstep2[i][j]->operator_name);
+//            if (controlstep2[i][j]->node_id==53)
+//                cout<<"初始时间："<<controlstep2[i][j]->node_id<<" "<<controlstep2[i][j]->start_time<<" "<<controlstep2[i][j]->end_time<<endl;
 
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
@@ -24,6 +26,7 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
                     double time_n = time_only_sa(array_list1, array_list2, array_list3, controlstep2[i][j]);
                     //update the time of do_array
                     time_update(0, -1, -1, time_n, controlstep2[i][j], array_list1, array_list2, array_list3);
+
                     //update the energy of reg
                     energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                     //更新wb_pos,表示写到了寄存器中
@@ -212,8 +215,8 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
     //虽然操作并行可能会让op类型比=先执行，但时间和能量均不影响
     if (decide_array_type == 2)
         time_do_array = array_list2[decide_array_id].over_time;
-
-//    cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
+//    if (time_do_array>3000)
+//        cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
     int op_type = op2int(node_now->operator_name);//操作类型
     //先看控制依赖
     if (node_now->control != nullptr) {

@@ -47,73 +47,73 @@ begin
         end if;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 1212;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         if round = 12 then
-            ciphertext <= state;
+            ciphertext <= 111;
         end if;
 
     end process;

@@ -244,9 +244,9 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
     double all_area= area_all_lut(array_list1,array_list2,array_list3);
-    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
-    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
-    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
+//    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
+//    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
+//    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
 
 //    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
     std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
@@ -278,14 +278,14 @@ double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         default:
             break;
     }
-    cout << "time_now_lut" << endl;
+//    cout << "time_now_lut" << endl;
     int op_type = op2int(node_now->operator_name);//操作类型
     //先看控制依赖
     if (node_now->control != nullptr) {
         time3 = node_now->control->end_time;
         time_n = max(time_n, time3);
     }
-    cout << "控制依赖 time3 =" << time3 << endl;
+//    cout << "控制依赖 time3 =" << time3 << endl;
     if (op_type == 0) //写操作,只有一个数据依赖，可能有控制依赖
     {
         if (node_now->depend1 != nullptr) //有依赖 A=b A=B OP C

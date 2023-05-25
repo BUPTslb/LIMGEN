@@ -2,13 +2,15 @@
 
 using namespace std;
 
+//将尺寸设置为>=操作数的2的幂
 unsigned int arr_size() {
     unsigned int arr_size;
     unsigned m = 1;
     while (m < bit_num_operand) {
-        m <<= 1;
+        m <<= 1; //向左移动一位数字
     }
-    arr_size = (m <= 64) ? m : 64;
+    arr_size = m;
+
     return arr_size;
 }
 
@@ -109,9 +111,12 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             if (op_type==11)
                 now2.add_use= true;
             //初始化外围电路的类型
-            int sa_type_ready[2]={1,2};
-            int type_chosen=rand()%2;
-            now2.sa_type=sa_type_ready[type_chosen];
+//            int sa_type_ready[2]={1,2};
+//            int type_chosen=rand()%2;
+//
+//            now2.sa_type=sa_type_ready[type_chosen];
+            now2.sa_type=2;//only csa
+//            now2.sa_type=2;//only dsa
             //初始化大小
             now2.row_num = bit_num_operand;
             now2.col_num = bit_num_operand;
@@ -132,6 +137,8 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now2.sa_out = -1;//将新建阵列的输出设置为-1，>=0为节点
             array_list2.push_back(now2);
             build = array_list2.size() - 1;
+
+//            cout<<"new SA array "<<now2.start_time<<" time "<<now2.over_time<<endl;
 
         }
             break;

@@ -49,73 +49,73 @@ begin
         round <= round + 1;
         round <= round xor 12;
 
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
        round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
         A<= not A;
         state <= state xor A;
         round <= round + 1;
         round <= round xor 12;
-            ciphertext <= state;
+            ciphertext <= 111;
 
 
     end process;
