@@ -15,7 +15,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
 
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
-            //TODO:显然加密算法中存在大量的A=B赋值操作
+
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
@@ -39,7 +39,6 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
                 }
 
                 //有依赖,则依赖一定来自OP, from array
-                //TODO:分析一下，能否直接调用write_back函数？
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
                 double time_n = time_now(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
@@ -53,7 +52,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
                         break;
                     case 1: //来自lut的执行结果
                     {
-                        //TODO：先假设其执行类型为lut-out,但是不更新时间能量，到再次使用时候再更新
+
                         controlstep2[i][j]->end_time = time_n;//暂时设置时间
                         //node
                         controlstep2[i][j]->do_type = 1;//LUT-OUT
@@ -69,7 +68,6 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
                             {
                                 if (find_node_by_number(lut_out_now)->out_degree > 0 &&
                                     wb_empty(find_node_by_number(lut_out_now))) {
-                                    //TODO:设置优先级，buffer只能写回本阵列
                                     write_back(1, find_node_by_number(lut_out_now)->finish_id,
                                                find_node_by_number(lut_out_now),
                                                array_list1, array_list2, array_list3);
@@ -272,10 +270,6 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
     double all_area= area_all(array_list1,array_list2,array_list3);
-//    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
-//    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
-//    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
-//    cout << "整体架构的面积为： " <<all_area << "F^2"<<endl;
 
 //    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
     std::vector<double> latency_energy_area={all_latency,all_energy,all_area};

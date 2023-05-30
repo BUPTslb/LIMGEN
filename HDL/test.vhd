@@ -19,6 +19,8 @@ begin
 --当前只处理两个操作数的情况，多个呢？
 process(clk)
 begin
+    i1 <= 101;
+    i2 <= 010;
     in1 <= i1;
     in2 <= i2;
 	A <= in1 and in2;
@@ -29,26 +31,14 @@ begin
 --有elseif的当前不太会处理
 	if   A<0    then
 		A <= not A;
-	else
-		A<= not A;
 	end if;
 
 	if   B=0    then
-    		B <= not B;
+    	B <= not B;
     end if;
 
-	if D>0 then
-	    D<=D sll 1;
-	else
-	    D<=D srl 1;
-	end if;
-
---立即数
-	A <= 10010111;
-	B <= 123;
-	C <= 555;
 	while A<0 loop
-	    A <= A srl 1;
+	    A <= A xor 1;
 	end loop;
 
 --嵌套
@@ -59,7 +49,7 @@ begin
 	        end if;
 	    end if;
 
-		D <= D sll 1;
+		D <= not D ;
 	end loop ; -- identifier
 
 

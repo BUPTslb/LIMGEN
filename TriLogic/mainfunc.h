@@ -32,7 +32,6 @@ struct Node {
     Node *control = NULL;//控制依赖
     double start_time;//开始时间
     double end_time;//结束时间
-    //TODO:规定：写回buffer时候要更新end_time,第一次写回阵列时候也要更新end_time
     int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-latch 5 SA-BUFFER 6 SA存储
     int finish_id;//节点执行完（输出）的位置
     int out_degree;//出度
@@ -65,6 +64,8 @@ public:
     double start_time;
     double over_time;
     double energy;//在RRAM/lux上消耗的能量
+    //与array_list1中阵列的数据交换次数表
+    vector<vector<int>> data_exchange;//0:register,1:lut,2:sa,3:ma
 };
 
 //继承
@@ -75,7 +76,6 @@ struct lut_arr : public Array {
     int op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
     int lut_level;
-    //TODO:使用模块时，增大lut阵列的尺寸，使其专用化，一个阵列直接完成功能
 };
 
 struct sa_arr : public Array {

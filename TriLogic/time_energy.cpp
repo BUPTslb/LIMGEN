@@ -2,7 +2,6 @@
 #include "parameter.h"
 
 //现在已经决定了从哪里找操作数，在哪里执行，可以直接进行时间更新
-//TODO:时间更新策略有问题
 //注意，现在只是获取开始的时间
 //这里只根据依赖的阵列、节点来获取时间，对reg,buffer更新不需要调用，直接在节点上更改
 double time_now(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
@@ -178,7 +177,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
         switch (do_type) {
             case -1://REG
             {
-                //TODO:设置为写到寄存器中的时间
                 node_now->end_time = time_now + reg.reg_write_time;//寄存器写
             }
                 break;
@@ -266,7 +264,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
 //每次读取都得调用这个函数更新时间
 //这里的array_type和写回表一样 -1 1 2 3 4 5
 //读，主要更新的是阵列的时间。阵列的时间对节点的时间产生连锁反应
-//TODO:now应该是一个数字“=”类型
 void read_time_update(int array_type, int array_id, double time_now, Node *now, vector<lut_arr> &array_list1,
                       vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
 
@@ -316,7 +313,6 @@ void read_time_update(int array_type, int array_id, double time_now, Node *now, 
     }
 }
 
-//TODO:，每次读都得调用这个函数来更新其能量
 void read_energy_update(int array_type, int array_id, Node *node_now,
                         vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //对不合理情况进行判断

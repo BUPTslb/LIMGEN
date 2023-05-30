@@ -432,7 +432,6 @@ void op_sa(int op_type, int decide_array_id, Node *now, double time_now, vector<
         {
             if (find_node_by_number(sa_out_now)->out_degree > 0 &&
                 wb_empty(find_node_by_number(sa_out_now))) {
-                //TODO:设置优先级，buffer只能写回本阵列
                 write_back(2, find_node_by_number(sa_out_now)->finish_id,find_node_by_number(sa_out_now),
                            array_list1, array_list2, array_list3);
             }

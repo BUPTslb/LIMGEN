@@ -156,7 +156,6 @@ void op_sa(int op_type, int decide_array_id, Node *now, double time_now, vector<
 void op_sa_only(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
                 vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 //magic执行逻辑
-//TODO:控制节点的OP类型，其结果也要存储
 void op_magic(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
               vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 void op_magic_only(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
@@ -170,7 +169,6 @@ void out_degree(Node *now);
 //num of node stored
 int num_node_position(Node *now);
 
-//TODO:写覆盖,应该有目标阵列才对
 //row_need,代表需要写覆盖的行数
 void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
@@ -197,6 +195,11 @@ void array_erase_node(int erase_node, int array_type, int array_id,
 //更新阵列的存储节点，写入
 void array_add_node(int array_type, int array_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     vector<magic_arr> &array_list3);
+
+//更新阵列之间的数据传输
+void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
+                         vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
+
 
 //阵列尺寸设定函数，一定是方形的
 unsigned int arr_size();

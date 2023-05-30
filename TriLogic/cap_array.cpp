@@ -9,7 +9,7 @@ int cap_array_lost(int decide_array_type, int decide_array_id, vector<lut_arr> &
             break;
         case 2://SA
         {
-            //TODO:根据store_node,计算实际容量,有修改空间
+
             //需要一个函数，计算当前存储节点占用的空间
             //检验越界
 //            cout<<"选中sa阵列的行数："<<array_list2[decide_array_id].row_num<<endl;

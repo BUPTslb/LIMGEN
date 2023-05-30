@@ -74,7 +74,6 @@ void decode_params(const vector<double>& encoded_params, vector<double>& decoded
 
 // 评估函数，计算目标函数值和检查设计限制
 void evaluate(const vector<double>& params, double& area, double& time, double& energy) {
-    // TODO: 根据实际问题，计算目标函数值和检查设计限制
     // 将计算结果存储在 area, time, energy 中
     // 示例中使用随机生成的值作为示范
 
@@ -148,7 +147,6 @@ int des() {
 
             //
             // 变异操作
-            //TODO:设置max_params 和 min_params的范围
             vector<double> max_params;
             vector<double> min_params;
             for (int i = 0; i < 10; ++i) {

@@ -43,17 +43,8 @@ int main() {
     map<int, bool> TvsF;//Branch斥互表, 遇到分支节点，正确和错误的不能相互依赖，每次遇到branch要清空重写
     map<int, int> inDegree;//入度表，记录每个节点的入度，id对应入度，数据1、2+直接控制，最大为3
     //1.先读一个节点让其输出
-//    ifstream file("../hdlAst/arithmetic_encoder.json");
-//    ifstream file("../hdlAst/arithmetic_encoder23.json");
-//    ifstream file("../hdlAst/mean_filter.json");
-//    ifstream file("../hdlAst/mean_filter23.json");
-//    ifstream file("../hdlAst/des.json");
-//    ifstream file("../hdlAst/TEA.json");
-//    ifstream file("../hdlAst/TEA23.json");
-    ifstream file("../hdlAst/image_bin23.json");
-//    ifstream file("../hdlAst/image_bin.json");
-//    ifstream file("../hdlAst/RCA.json");
-//    ifstream file("../hdlAst/RCA23.json");
+    ifstream file("../hdlAst/test.json");
+
 
 
     stringstream hdlast;
@@ -148,7 +139,7 @@ int main() {
             Node *con_node = find_node_by_number1(con);//条件节点的指针
             int sizeofT = d[i]["Statement_when_true"].Size();//T的节点数目
             int sizeofF = d[i]["Statement_when_false"].Size();//F的节点数目
-            //TODO：HOW do control node?
+
             con_node->out_degree = sizeofF + sizeofT;//更新条件节点的出度,让其相加
 
             cout << "分支节点依赖" << endl << "条件节点:" << con << "  size of true:" << sizeofT << endl;
@@ -339,7 +330,7 @@ int main() {
     }
 
     int model_chosen[4] = {0, 1, 2, 3};
-    int model = model_chosen[2];
+    int model = model_chosen[0];
     vector<double> best_latency = {100000, 10000, 1000000000000};//延迟、能耗,面积
     vector<double> best_energy = {100000, 10000, 10000000000000};//延迟、能耗，面积
     vector<double> best_area = {100000, 10000, 10000000000000};//延迟、能耗，面积
@@ -348,36 +339,13 @@ int main() {
     vector<int> array_num_area;
 
     std::ofstream outFile;
-//    outFile.open("encoder_all.csv", std::ios::out);
-//    outFile.open("encoder_lut.csv", std::ios::out);
-//    outFile.open("encoder_dsa.csv", std::ios::out);
-//    outFile.open("encoder_magic.csv", std::ios::out);
-//    outFile.open("des_all.csv", std::ios::out);
-//    outFile.open("des_lut_2.csv", std::ios::out);
-//    outFile.open("des_csa.csv", std::ios::out);
-//    outFile.open("des_magic_2.csv", std::ios::out);
-//    outFile.open("TEA_all.csv", std::ios::out);
-//    outFile.open("TEA_lut.csv", std::ios::out);
-//    outFile.open("TEA_sa.csv", std::ios::out);
-//    outFile.open("TEA_dsa.csv", std::ios::out);
-//    outFile.open("TEA_csa.csv", std::ios::out);
-//    outFile.open("TEA_magic.csv", std::ios::out);
-//    outFile.open("RCA_all.csv", std::ios::out);
-//    outFile.open("RCA_lut.csv", std::ios::out);
-//    outFile.open("RCA_Dsa.csv", std::ios::out);
-//    outFile.open("RCA_magic.csv", std::ios::out);
-//    outFile.open("image_bin_lut.csv", std::ios::out);
-//    outFile.open("image_bin_ma.csv", std::ios::out);
-    outFile.open("image_bin_dsa.csv", std::ios::out);
 
-//    outFile.open("mean_filter_all.csv", std::ios::out);
-//    outFile.open("mean_filter_lut.csv", std::ios::out);
-//    outFile.open("mean_filter_Dsa.csv", std::ios::out);
-//    outFile.open("mean_filter_magic.csv", std::ios::out);
+    outFile.open("test.csv", std::ios::out);
+
     outFile << "latency/ns" << ',' << "energy/pJ" << ',' << "area/F^2" << ','
             << "lut_num" << ',' << "csa_num" << ',' << "dsa_num" << ',' << "magic_num" << ',' <<"array_num"<<','<<
             "Reg_write" << ',' << "Reg_read" << std::endl;
-    for (int p = 0; p < 10000; ++p) {
+    for (int p = 0; p < 1; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1 = {};//lut阵列表

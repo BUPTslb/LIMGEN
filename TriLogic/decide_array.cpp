@@ -6,7 +6,6 @@ int decide_array_type(int op_type, int design_target) {
     srand(seed);
     int dse = rand() % 3;
     vector<int> type_list = {1, 2, 3};
-    //TODO：DSE,决定阵列的执行类型
     int decide_array_type = type_list[dse];
     if (1 <= op_type && op_type <= 3 || op_type == 12 || op_type == 13) {
         decide_array_type = 1;//比较，乘法,除法 直接用lut

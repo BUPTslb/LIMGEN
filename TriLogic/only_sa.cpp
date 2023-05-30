@@ -643,7 +643,6 @@ void output_logic_sa(int decide_array_type, int decide_array_id, int op_type, No
 //来源：-1.reg 2.sa-out 5.sa-buffer 6.sa 可以写回的位置 0  reg  2 sa  5sa-buffer
 void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                    vector<magic_arr> &array_list3, int back_type, int back_id) {
-//TODO:可以写回多个地方：buffer/reg/sa,DSE决定吧,所有的ready
 //写到buffer中，如果buffer中已经有数据了如何处理？
 
     //先列出magic和sa所有能写的阵列，按照优先级进行排序
@@ -728,7 +727,6 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
                 break;
             case 6: //来自sa存储，写回顺位：寄存器0、sa存储 2
             {
-                //TODO:DSE
                 vector<int> ready_type = {0, 2};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];

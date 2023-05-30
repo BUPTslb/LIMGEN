@@ -89,7 +89,6 @@ Node * find_node_by_number1(int node_id) {
     }
 }
 
-//TODO：把操作的数字都改一下
 int op2int(string operation){
     if (operation == seq)           return 0;//赋值，写操作
     if (operation == l_eq)          return 1;//相等

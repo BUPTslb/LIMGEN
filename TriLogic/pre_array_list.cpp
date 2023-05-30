@@ -21,7 +21,6 @@ vector<int> find_no_using(int op_type, int decide_array_type, vector<lut_arr> &a
                 //空闲，并且算子可以使用
                 if (!i.is_using)//空闲，算子不可用，但是还有空间，可以添加算子
                 {
-                    //TODO:模块调用 1 2 3 11 12 13
 //                    if (op_type==1||op_type==2||op_type==3||op_type==11||op_type==12||op_type==13)
 //                        module_need=true;
 //                    //1. no module_need

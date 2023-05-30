@@ -19,7 +19,6 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
 
             //先讨论写回的情况:
             //假设初始输入和立即数被放在外部的寄存器中，因为我们无法索引他（in1 in2 没有id）
-            //TODO:规定，不存在A=B这种赋值操作
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
             {
@@ -45,7 +44,6 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
                 }
 
                 //有依赖,则依赖一定来自OP, from array
-                //TODO:分析一下，能否直接调用write_back_lut函数？
                 //统一，更改节点的执行结束id和do_type
                 controlstep2[i][j]->finish_id = controlstep2[i][j]->depend1->finish_id; //op的结束阵列id
                 double time_n = time_only_lut(array_list1, array_list2, array_list3, controlstep2[i][j]);//开始执行当前节点的时间
@@ -70,7 +68,6 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
                         break;
                     case 1: //来自lut的执行结果
                     {
-                        //TODO：先假设其执行类型为lut-out,但是不更新时间能量，到再次使用时候再更新
                         controlstep2[i][j]->end_time = time_n;//暂时设置时间
                         //node
                         controlstep2[i][j]->do_type = 1;//LUT-OUT
@@ -85,7 +82,6 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
                             else //否则判断一下其写回表和出度
                             {
                                 if (wb_empty(find_node_by_number(lut_out_now))) {
-                                    //TODO:设置优先级，buffer只能写回本阵列
                                     int back_type_ready[3] = {0, 3, 4};
                                     int back_type = back_type_ready[rand() % 3];
                                     int back_id = 0;
@@ -775,7 +771,6 @@ void write_back_lut(int from_type, int from_id, Node *now, vector<lut_arr> &arra
             {
                 vector<int> ready_type = {4, 3, 0}; //写回的顺位
                 vector<int> ready_array;
-                //TODO:DSE
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 4) //buffer,只写回自己阵列
                 {

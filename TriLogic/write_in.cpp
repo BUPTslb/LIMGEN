@@ -45,7 +45,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
     {
         //写入sa
         if (pos_array == 2) {
-            int erase_node = erase_node_list.front();//TODO:DSE
+            int erase_node = erase_node_list.front();
             //第一个出队
             erase_node_list.pop_front();
             //将该阵列从被擦除的节点的写回表中擦除
@@ -63,7 +63,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                     }
                 } else {
                     //更新do_type finish_id
-                    vector<int> do_type_ready; //TODO:DSE
+                    vector<int> do_type_ready;
                     for (int i = 0; i < 6; ++i) {
                         if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                             switch (i) {
@@ -131,7 +131,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
         //写入magic
         if (pos_array == 3) {
             //取第一个
-            int erase_node = erase_node_list.front();//TODO:DSE
+            int erase_node = erase_node_list.front();
             //第一个出队
             erase_node_list.pop_front();
             //将该阵列从此节点的写回表中擦除
@@ -149,7 +149,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                     }
                 } else {
                     //更新do_type finish_id
-                    vector<int> do_type_ready; //TODO:DSE
+                    vector<int> do_type_ready;
                     for (int i = 0; i < 6; ++i) {
                         if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                             switch (i) {
@@ -219,7 +219,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
         if (pos_array == 2) {
             for (int i = 0; i < row_need; ++i) {
                 //取第一个
-                int erase_node = erase_node_list.front();//TODO:DSE
+                int erase_node = erase_node_list.front();
                 //第一个出队
                 erase_node_list.pop_front();
                 //将该阵列从被擦除的节点的写回表中擦除
@@ -237,7 +237,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                         }
                     } else {
                         //更新do_type finish_id
-                        vector<int> do_type_ready; //TODO:DSE
+                        vector<int> do_type_ready;
                         for (int i = 0; i < 6; ++i) {
                             if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                                 switch (i) {
@@ -291,7 +291,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
         if (pos_array == 3) {
             for (int i = 0; i < row_need; ++i) {
                 //取第一个
-                int erase_node = erase_node_list.front();//TODO:DSE
+                int erase_node = erase_node_list.front();
                 //第一个出队
                 erase_node_list.pop_front();
                 //将该阵列从此节点的写回表中擦除
@@ -309,7 +309,7 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
                         }
                     } else {
                         //更新do_type finish_id
-                        vector<int> do_type_ready; //TODO:DSE
+                        vector<int> do_type_ready;
                         for (int i = 0; i < 6; ++i) {
                             if (!find_node_by_number(erase_node)->wb_pos[i].empty()) {
                                 switch (i) {
@@ -371,7 +371,6 @@ void write_cover(int op_type, Node *now, int pos_array, int pos_id, int row_need
 //更新：阵列的存储节点，时间，能量；节点的写回表，do_type,finish_id,时间
 void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                 vector<magic_arr> &array_list3, int back_type, int back_id) {
-//TODO:可以写回多个地方：buffer/reg/ma/sa,DSE决定吧,所有的ready
 //写到buffer中，如果buffer中已经有数据了如何处理？
 
     //先列出magic和sa所有能写的阵列，按照优先级进行排序
@@ -407,13 +406,11 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
         switch (from_type) {
             case -1: //来自寄存器，要写到阵列中
             {
-                //TODO:DSE
                 vector<int> ready_type = {2, 3};//sa和magic
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 2) {
                     //将所有能进行写入的阵列全部列出，进行DSE
-                    //TODO：想一想写回的优先级？
                     ready_array = sa_list;
                     if (ready_array.empty())
                         ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
@@ -435,7 +432,6 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
             {
                 vector<int> ready_type = {4, 2, 3, 0}; //写回的顺位
                 vector<int> ready_array;
-                //TODO:DSE
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 4) //buffer,只写回自己阵列
                 {
@@ -443,7 +439,6 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 }
                 if (write_type == 2) {
                     //将所有能进行写入的阵列全部列出，进行DSE
-                    //TODO：想一想写回的优先级？
                     ready_array = sa_list;
                     if (ready_array.empty())
                         ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
@@ -478,7 +473,6 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 if (write_type == 2) //sa
                 {
                     //将所有能进行写入的阵列全部列出，进行DSE
-                    //TODO：想一想写回的优先级？
                     ready_array = sa_list;
                     if (ready_array.empty())
                         ready_array.push_back(build(2, 0, array_list1, array_list2, array_list3));
@@ -589,7 +583,6 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 break;
             case 6: //来自sa存储，写回顺位：寄存器0、其他magic 3、sa存储 2
             {
-                //TODO:DSE
                 vector<int> ready_type = {0, 2, 3};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
