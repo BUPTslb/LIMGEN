@@ -5,7 +5,7 @@
 #include<fstream>
 #include<sstream>
 #include<map>
-#include<SDL2/SDL.h>
+//#include<SDL2/SDL.h>
 #include<typeinfo>
 #include <algorithm>
 #include"rapidjson/document.h"
@@ -64,8 +64,12 @@ public:
     double start_time;
     double over_time;
     double energy;//在RRAM/lux上消耗的能量
-    //与array_list1中阵列的数据交换次数表
+    //与array_list中阵列的数据交换次数表，从xx阵列中拿数据
     vector<vector<int>> data_exchange;//0:register,1:lut,2:sa,3:ma
+    //无参数构造函数
+    Array(){
+        data_exchange.resize(4);
+    }
 };
 
 //继承

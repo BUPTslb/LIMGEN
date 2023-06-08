@@ -1,4 +1,3 @@
-#include "logic_func.h"
 #include "mainfunc.h"
 #include <xls.h>
 

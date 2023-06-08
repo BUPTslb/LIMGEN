@@ -94,7 +94,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             if (op_type != 0)
                 now1.op_type=op_type;
 
-            now1.data_exchange = {};
+
             array_list1.push_back(now1);
 //            cout << "当前array_list1的大小为：" << array_list1.size() << endl;
             build = array_list1.size() - 1;
@@ -135,7 +135,6 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             //sa_direct -1是寄存器 >=0是节点
             now2.sa_direct = -2;//将直接输入设置为-2
             now2.sa_out = -1;//将新建阵列的输出设置为-1，>=0为节点
-            now2.data_exchange = {};
             array_list2.push_back(now2);
             build = array_list2.size() - 1;
 
@@ -165,7 +164,6 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now3.energy = 0;
             //初始化存储节点表
             now3.store_node = {};
-            now3.data_exchange = {};
             array_list3.push_back(now3);
             build = array_list3.size() - 1;
 
@@ -231,9 +229,7 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
         //更新读取次数
         Reg_sum.read_num_sum++;
         //更新数据传输次数
-        if (decide_array_type==1)   array_list1[decide_array_id].data_exchange[0][0]++;
-        if (decide_array_type==2)   array_list2[decide_array_id].data_exchange[0][0]++;
-        if (decide_array_type==3)   array_list3[decide_array_id].data_exchange[0][0]++;
+        array_data_transfer(-1, input_id, decide_array_type, decide_array_id,array_list1,array_list2, array_list3);
         //更新时间
         read_time_update(-1, -1, time_n, now, array_list1, array_list2, array_list3);
         //更新能量
@@ -244,9 +240,7 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
     if (input_type == 1 || input_type == 4) //来自lut阵列
     {
         //增加数据交换次数
-        if (decide_array_type==1 && decide_array_id!=input_id)   array_list1[decide_array_id].data_exchange[1][input_id]++;
-        if (decide_array_type==2)   array_list2[decide_array_id].data_exchange[2][input_id]++;
-        if (decide_array_type==3)   array_list3[decide_array_id].data_exchange[3][input_id]++;
+        array_data_transfer(1, input_id, decide_array_type, decide_array_id,array_list1,array_list2, array_list3);
         //两种情况
         //1.是lut的输出
         if (No_depend == 1) //depend1
@@ -329,10 +323,8 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
 
     if (input_type == 2 || input_type == 5 || input_type == 6) //sa三种情况 2:sa-out 5:sa-buffer 6:sa存储
     {
-        //增加数据交换次数
-        if (decide_array_type==1)   array_list1[decide_array_id].data_exchange[1][input_id]++;
-        if (decide_array_type==2 && decide_array_id!=input_id)   array_list2[decide_array_id].data_exchange[2][input_id]++;
-        if (decide_array_type==3)   array_list3[decide_array_id].data_exchange[3][input_id]++;
+        //从sa中拿数据，修改数据
+        array_data_transfer(2, input_id, decide_array_type, decide_array_id,array_list1,array_list2, array_list3);
 
         if (No_depend == 1) {
             if (input_type == 2) //来自是sa_out,写回表肯定是空的
@@ -443,9 +435,7 @@ void data_read(int No_depend, int &input_type, int &input_id, int decide_array_t
     if (input_type == 3)//MA 存储
     {
         //增加数据交换次数
-        if (decide_array_type==1 )   array_list1[decide_array_id].data_exchange[1][input_id]++;
-        if (decide_array_type==2)   array_list2[decide_array_id].data_exchange[2][input_id]++;
-        if (decide_array_type==3 && decide_array_id!=input_id )   array_list3[decide_array_id].data_exchange[3][input_id]++;
+        array_data_transfer(3, input_id, decide_array_type, decide_array_id,array_list1,array_list2, array_list3);
 
         //看阵列是否是本阵列，不对应时需要读取！！
         if (decide_array_type != input_type || decide_array_id != input_id) {

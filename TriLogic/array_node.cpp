@@ -42,24 +42,27 @@ void array_erase_node(int erase_node, int array_type, int array_id,
 //to_id从from_id取数据
 void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                          vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
-    int size1 = array_list1.size();
-    int size2 = array_list2.size();
-    int size3 = array_list3.size();
+    //当前的data_exchange<vector<vector>>只有{{}{}{}{}}，需要将to_type , to_id之前的填上0
     if (from_type == -1) //reg
     {
         switch (to_type) {
             case -1:
-
                 break;
-            case 1:
-
+            case 1: {
+                if (array_list1[to_id].data_exchange[0].size() == 0) array_list1[to_id].data_exchange[0].push_back(0);
+                //lut - to_id - reg - [0]交换次数++
+                array_list1[to_id].data_exchange[0][0]++;
+            }
                 break;
-            case 2:
-
+            case 2: {
+                if (array_list2[to_id].data_exchange[0].size() == 0) array_list2[to_id].data_exchange[0].push_back(0);
+                array_list2[to_id].data_exchange[0][0]++;
+            }
                 break;
-
-            case 3:
-
+            case 3: {
+                if (array_list3[to_id].data_exchange[0].size() == 0) array_list3[to_id].data_exchange[0].push_back(0);
+                array_list3[to_id].data_exchange[0][0]++;
+            }
                 break;
 
         }
@@ -68,31 +71,104 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
         switch (to_type) {
             case -1:
                 break;
-            case 1:
-                if (from_id == to_id) break;
-                else if (to_id < array_list1[to_id].data_exchange[1].size()) {
-                    array_list1[to_id].data_exchange[1][to_id]++;
-                } else {
-                    int now_size = array_list1[to_id].data_exchange[1].size();
-
-
+            case 1: {
+                //从lut到lut
+                while (array_list1[to_id].data_exchange[1].size() <= to_id) {
+                    array_list1[to_id].data_exchange[1].push_back(0);
                 }
+                if (to_id != from_id)
+                    array_list1[to_id].data_exchange[1][to_id]++;
+            }
                 break;
-            case 2:
-
+            case 2: {
+                //从lut到sa
+                while (array_list2[to_id].data_exchange[1].size() <= to_id) {
+                    array_list2[to_id].data_exchange[1].push_back(0);
+                }
+                //直接添加
+                array_list2[to_id].data_exchange[1][to_id]++;
+            }
                 break;
-
-            case 3:
-
+            case 3: {
+                //从lut到magic
+                while (array_list3[to_id].data_exchange[1].size() <= to_id) {
+                    array_list3[to_id].data_exchange[1].push_back(0);
+                }
+                //直接添加
+                array_list3[to_id].data_exchange[1][to_id]++;
+            }
                 break;
-
         }
 
     } else if (from_type == 2 || from_type == 5 || from_type == 6)//sa
     {
+        switch (to_type) {
+            case -1:
+                break;
+            case 1: {
+                //从sa到lut
+                while (array_list1[to_id].data_exchange[2].size() <= to_id) {
+                    array_list1[to_id].data_exchange[2].push_back(0);
+                }
+
+                    array_list1[to_id].data_exchange[2][to_id]++;
+            }
+                break;
+            case 2: {
+                //从sa到sa
+                while (array_list2[to_id].data_exchange[2].size() <= to_id) {
+                    array_list2[to_id].data_exchange[2].push_back(0);
+                }
+                if (to_id != from_id)
+                    array_list2[to_id].data_exchange[2][to_id]++;
+            }
+                break;
+            case 3: {
+                //从sa到magic
+                while (array_list3[to_id].data_exchange[2].size() <= to_id) {
+                    array_list3[to_id].data_exchange[2].push_back(0);
+                }
+                //直接添加
+                array_list3[to_id].data_exchange[2][to_id]++;
+            }
+                break;
+        }
 
     } else //magic
     {
+        switch (to_type) {
+            case -1:
+                break;
+            case 1: {
+                //从magic到lut
+
+                while (array_list1[to_id].data_exchange[3].size() <= to_id) {
+                    array_list1[to_id].data_exchange[3].push_back(0);
+                }
+
+                array_list1[to_id].data_exchange[3][to_id]++;
+            }
+                break;
+            case 2: {
+                //从magic到sa
+
+                while (array_list2[to_id].data_exchange[3].size() <= to_id) {
+                    array_list2[to_id].data_exchange[3].push_back(0);
+                }
+                if (to_id != from_id)
+                    array_list2[to_id].data_exchange[3][to_id]++;
+            }
+                break;
+            case 3: {
+                //从magic到magic
+                while (array_list3[to_id].data_exchange[3].size() <= to_id) {
+                    array_list3[to_id].data_exchange[3].push_back(0);
+                }
+                if (to_id != from_id)
+                    array_list3[to_id].data_exchange[3][to_id]++;
+            }
+                break;
+        }
 
     }
 

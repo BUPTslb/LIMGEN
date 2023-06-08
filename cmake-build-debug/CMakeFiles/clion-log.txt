@@ -1,4 +1,4 @@
-/home/shenlibo/Tool/clion-2022.2.4/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/shenlibo/Tool/clion-2022.2.4/bin/ninja/linux/ninja -G Ninja -S /home/shenlibo/CLionProjects/Synthesis -B /home/shenlibo/CLionProjects/Synthesis/cmake-build-debug
+"D:\JetBrains\CLion 2022.2.1\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_C_COMPILER=D:/JetBrains/CLion 2022.2.1/bin/mingw/bin/gcc.exe" "-DCMAKE_CXX_COMPILER=D:/JetBrains/CLion 2022.2.1/bin/mingw/bin/g++.exe" -G "CodeBlocks - MinGW Makefiles" -S D:\A_LIM-GEN\Synthesis -B D:\A_LIM-GEN\Synthesis\cmake-build-debug
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/shenlibo/CLionProjects/Synthesis/cmake-build-debug
+-- Build files have been written to: D:/A_LIM-GEN/Synthesis/cmake-build-debug
