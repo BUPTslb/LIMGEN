@@ -615,8 +615,10 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
     } else //指定写回的位置
     {
         switch (from_type) {
+            //在指定位置对数据交换次数进行更新
             case -1: //寄存器读，阵列写 2 3
             {
+                array_data_transfer(0, -1, back_type, back_id,array_list1, array_list2,array_list3);
                 //从寄存器中读取，更新能量
                 Reg_sum.read_num_sum++;
                 //将读取时间更新到节点身上
@@ -667,6 +669,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 switch (back_type) {
                     case 0://写回寄存器
                     {
+                        array_data_transfer(1, from_id, 0, -1,array_list1, array_list2,array_list3);
                         //更新寄存器写次数
                         Reg_sum.write_num_sum++;
                         //更新寄存器能量
@@ -686,6 +689,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 2://写回sa
                     {
+                        array_data_transfer(1,from_id,2,back_id,array_list1,array_list2,array_list3);
                         //阵列写次数++
                         array_list2[back_id].write_number++;
                         //判断是否需要写覆盖
@@ -710,6 +714,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 3: //写回magic
                     {
+                        array_data_transfer(1,from_id,3,back_id,array_list1,array_list2,array_list3);
                         //阵列写次数++
                         array_list3[back_id].write_number++;
                         //判断是否需要写覆盖
@@ -790,6 +795,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 switch (back_type) {
                     case 0://来自sa-out 2 写回寄存器 0/-1
                     {
+                        array_data_transfer(2, from_id, 0, -1,array_list1, array_list2,array_list3);
                         Reg_sum.write_num_sum++;
                         energy_update(0, -1, -1, array_list1, array_list2, array_list3);
                         //时间
@@ -806,6 +812,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 2://来自sa-out 2 写回sa(6)
                     {
+                        array_data_transfer(2,from_id,2,back_id,array_list1,array_list2,array_list3);
                         //阵列写次数++
                         array_list2[back_id].write_number++;
                         //判断是否需要写覆盖
@@ -828,6 +835,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 3: //来自sa-out 2 写回magic
                     {
+                        array_data_transfer(2,from_id,3,back_id,array_list1,array_list2,array_list3);
                         //阵列写次数++
                         array_list3[back_id].write_number++;
                         //判断是否需要写覆盖
@@ -901,6 +909,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 switch (back_type) {
                     case 0://来自magic 3 写回寄存器 0/-1
                     {
+                        array_data_transfer(0, -1, back_type, back_id,array_list1, array_list2,array_list3);
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //阵列读时间更新
@@ -923,6 +932,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 2://来自magic 3 写回sa
                     {
+                        array_data_transfer(3,from_id,2,back_id,array_list1,array_list2,array_list3);
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //判断是否需要写覆盖
@@ -956,8 +966,10 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 3: //来自magic 3 写回magic
                     {
+
                         //前提，两个magic不一样
                         if (from_id == back_id) break;
+                        array_data_transfer(3,from_id,3,back_id,array_list1,array_list2,array_list3);
                         //判断是否需要写覆盖
                         if (cap_array_lost(back_type, back_id, array_list1, array_list2, array_list3) == 0) {
                             write_cover(0, now, back_type, back_id, 1, array_list1, array_list2, array_list3);
@@ -997,6 +1009,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 break;
             case 4: //来自lut-buffer，类似于寄存器，buffer读，阵列、寄存器写
             {
+                array_data_transfer(1,from_id,back_type,back_id,array_list1,array_list2,array_list3);
                 //从buffer中读取，更新能量
                 buffer_sum.buffer_read_sum++;
                 //将读取时间更新到节点身上
@@ -1044,6 +1057,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 break;
             case 5: //来自sa-buffer,只能写回寄存器、sa、magic
             {
+                array_data_transfer(2,from_id,back_type,back_id,array_list1,array_list2,array_list3);
                 //从buffer中读取，更新能量
                 buffer_sum.buffer_read_sum++;
                 //将读取时间更新到节点身上
@@ -1094,6 +1108,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                 switch (back_type) {
                     case 0://来自sa存储6 写回寄存器 0/-1
                     {
+                        array_data_transfer(2, from_id, 0, -1,array_list1, array_list2,array_list3);
                         //从阵列中读数据
                         array_list2[from_id].read_number++;
                         //阵列读时间更新
@@ -1116,6 +1131,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 2://来自sa存储6 写回另一个sa
                     {
+                        array_data_transfer(2,from_id,2,back_id,array_list1,array_list2,array_list3);
                         //前提，两个sa不一样
                         if (from_id == back_id) break;
                         //从阵列中读数据
@@ -1151,6 +1167,7 @@ void write_back(int from_type, int from_id, Node *now, vector<lut_arr> &array_li
                         break;
                     case 3: //来自sa存储6 写回magic
                     {
+                        array_data_transfer(2,from_id,3,back_id,array_list1,array_list2,array_list3);
                         //从阵列中读数据
                         array_list3[from_id].read_number++;
                         //阵列读时间更新

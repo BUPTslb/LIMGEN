@@ -265,6 +265,60 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
 
         }
     }
+    //开始执行模拟退火布局布线
+    //将所有阵列进行编号
+    vector<Array_place> place_list;
+    int num_array=array_list1.size()+array_list2.size()+array_list3.size();//阵列个数
+    int data_transfer[num_array][num_array];//数据传输次数
+    memset(data_transfer,0,sizeof(data_transfer));
+    for (int i = 0; i < array_list1.size(); ++i) {
+        Array_place place_arr;
+        place_arr.array_id = i;
+        place_arr.array_type = 1;
+        place_arr.array_width = array_list1[i].col_num;
+        place_arr.array_height = array_list1[i].row_num;
+        place_arr.pos_x = 0;
+        place_arr.pos_y = 0;
+        place_list.push_back(place_arr);
+        array_list1[i].place_id=i;
+        //遍历array_list1的data_exchange
+        place_num(array_list1[i].data_exchange, data_transfer[0], i, num_array);//???
+    }
+    for (int i = array_list1.size(); i <array_list1.size()+array_list2.size(); ++i) {
+        Array_place place_arr;
+        place_arr.array_id = i;
+        place_arr.array_type = 2;
+        place_arr.array_width = array_list2[i-array_list1.size()].col_num;
+        place_arr.array_height = array_list2[i-array_list1.size()].row_num;
+        place_arr.pos_x = 0;
+        place_arr.pos_y = 0;
+        place_list.push_back(place_arr);
+        array_list2[i-array_list1.size()].place_id=i;
+        place_num(array_list2[i-array_list1.size()].data_exchange, data_transfer[0], i, num_array);//???
+    }
+    for (int i = array_list1.size()+array_list2.size(); i <array_list1.size()+array_list2.size()+array_list3.size(); ++i) {
+        Array_place place_arr;
+        place_arr.array_id = i;
+        place_arr.array_type = 3;
+        place_arr.array_width = array_list3[i-array_list1.size()-array_list2.size()].col_num;
+        place_arr.array_height = array_list3[i-array_list1.size()-array_list2.size()].row_num;
+        place_arr.pos_x = 0;
+        place_arr.pos_y = 0;
+        place_list.push_back(place_arr);
+        array_list3[i-array_list1.size()-array_list2.size()].place_id=i;
+        place_num(array_list3[i-array_list1.size()-array_list2.size()].data_exchange, data_transfer[0], i, num_array);//???
+    }
+    //place_list构建完成
+    for (int i = 0; i < num_array; ++i) {
+        for (int j = 0; j < num_array; ++j) {
+                cout<<data_transfer[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+
+
+
+
 
     //遍历完控制步，输出延迟、能耗、面积信息
     double all_latency=latency_all(array_list1, array_list2, array_list3);

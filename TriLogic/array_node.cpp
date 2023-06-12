@@ -43,6 +43,11 @@ void array_erase_node(int erase_node, int array_type, int array_id,
 void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                          vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //当前的data_exchange<vector<vector>>只有{{}{}{}{}}，需要将to_type , to_id之前的填上0
+    if (to_type == 0) to_type = -1;
+    else if (to_type == 4) to_type = 1;
+    else if (to_type == 5 || to_type == 6) to_type = 2;
+    if (from_type == 0) from_type = -1;
+
     if (from_type == -1) //reg
     {
         switch (to_type) {
@@ -69,7 +74,11 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
     } else if (from_type == 1 || from_type == 4) //lut
     {
         switch (to_type) {
-            case -1:
+            case -1: {
+                if (array_list1[from_id].data_exchange[0].size() == 0) array_list1[from_id].data_exchange[0].push_back(0);
+                //lut - to_id - reg - [0]交换次数++
+                array_list1[from_id].data_exchange[0][0]++;
+            }
                 break;
             case 1: {
                 //从lut到lut
@@ -78,6 +87,12 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
                 if (to_id != from_id)
                     array_list1[to_id].data_exchange[1][to_id]++;
+                //互相更新
+                while (array_list1[from_id].data_exchange[1].size() <= to_id) {
+                    array_list1[from_id].data_exchange[1].push_back(0);
+                }
+                if (to_id != from_id)
+                    array_list1[from_id].data_exchange[1][to_id]++;
             }
                 break;
             case 2: {
@@ -87,6 +102,11 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
                 //直接添加
                 array_list2[to_id].data_exchange[1][to_id]++;
+                //互相更新
+                while (array_list1[from_id].data_exchange[2].size() <= to_id) {
+                    array_list1[from_id].data_exchange[2].push_back(0);
+                }
+                array_list1[from_id].data_exchange[2][to_id]++;
             }
                 break;
             case 3: {
@@ -96,6 +116,11 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
                 //直接添加
                 array_list3[to_id].data_exchange[1][to_id]++;
+                //互相更新
+                while (array_list1[from_id].data_exchange[3].size() <= to_id) {
+                    array_list1[from_id].data_exchange[3].push_back(0);
+                }
+                array_list1[from_id].data_exchange[3][to_id]++;
             }
                 break;
         }
@@ -103,7 +128,12 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
     } else if (from_type == 2 || from_type == 5 || from_type == 6)//sa
     {
         switch (to_type) {
-            case -1:
+            case -1: {
+                if (array_list2[from_id].data_exchange[0].size() == 0) array_list2[from_id].data_exchange[0].push_back(0);
+                //lut - from_id - reg - [0]交换次数++
+                array_list2[from_id].data_exchange[0][0]++;
+
+            }
                 break;
             case 1: {
                 //从sa到lut
@@ -111,7 +141,12 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                     array_list1[to_id].data_exchange[2].push_back(0);
                 }
 
-                    array_list1[to_id].data_exchange[2][to_id]++;
+                array_list1[to_id].data_exchange[2][to_id]++;
+                //互相更新
+                while (array_list2[from_id].data_exchange[1].size() <= to_id) {
+                    array_list2[from_id].data_exchange[1].push_back(0);
+                }
+                array_list2[from_id].data_exchange[1][to_id]++;
             }
                 break;
             case 2: {
@@ -121,6 +156,12 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
                 if (to_id != from_id)
                     array_list2[to_id].data_exchange[2][to_id]++;
+                //互相更新
+                while (array_list2[from_id].data_exchange[2].size() <= to_id) {
+                    array_list2[from_id].data_exchange[2].push_back(0);
+                }
+                if (to_id != from_id)
+                    array_list2[from_id].data_exchange[2][to_id]++;
             }
                 break;
             case 3: {
@@ -130,6 +171,11 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
                 //直接添加
                 array_list3[to_id].data_exchange[2][to_id]++;
+                //互相更新
+                while (array_list2[from_id].data_exchange[3].size() <= to_id) {
+                    array_list2[from_id].data_exchange[3].push_back(0);
+                }
+                array_list2[from_id].data_exchange[3][to_id]++;
             }
                 break;
         }
@@ -137,7 +183,11 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
     } else //magic
     {
         switch (to_type) {
-            case -1:
+            case -1: {
+                if (array_list3[from_id].data_exchange[0].size() == 0) array_list3[from_id].data_exchange[0].push_back(0);
+                //lut - to_id - reg - [0]交换次数++
+                array_list3[from_id].data_exchange[0][0]++;
+            }
                 break;
             case 1: {
                 //从magic到lut
@@ -147,6 +197,11 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
 
                 array_list1[to_id].data_exchange[3][to_id]++;
+                //互相更新
+                while (array_list3[from_id].data_exchange[1].size() <= to_id) {
+                    array_list3[from_id].data_exchange[1].push_back(0);
+                }
+                array_list3[from_id].data_exchange[1][to_id]++;
             }
                 break;
             case 2: {
@@ -157,6 +212,12 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
                 if (to_id != from_id)
                     array_list2[to_id].data_exchange[3][to_id]++;
+                //互相更新
+                while (array_list3[from_id].data_exchange[2].size() <= to_id) {
+                    array_list3[from_id].data_exchange[2].push_back(0);
+                }
+                if (to_id != from_id)
+                    array_list3[from_id].data_exchange[2][to_id]++;
             }
                 break;
             case 3: {
@@ -166,12 +227,37 @@ void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                 }
                 if (to_id != from_id)
                     array_list3[to_id].data_exchange[3][to_id]++;
+                //互相更新
+                while (array_list3[from_id].data_exchange[3].size() <= to_id) {
+                    array_list3[from_id].data_exchange[3].push_back(0);
+                }
+                if (to_id != from_id)
+                    array_list3[from_id].data_exchange[3][to_id]++;
             }
                 break;
         }
 
     }
 
+}
+
+void place_num(vector<vector<int>> data_exchange, int *data_transfer, int array_id, int num) {
+    int arr[3];
+    arr[0] = data_exchange[1].size();
+    arr[1] = data_exchange[2].size();
+    arr[2] = data_exchange[3].size();
+    cout<<"与三种阵列的交换次数为："<<arr[0]<<" "<<arr[1]<<" "<<arr[2]<<" "<<endl;
+    for (int i = 1; i < 4; i++) {
+        for (int j = 0; j < data_exchange[i].size(); j++) {
+            int to_id;
+
+            if (i == 1) to_id = j;
+            else if (i == 2) to_id = j + arr[0];
+            else to_id = j + arr[0] + arr[1];
+            cout<<"from_id: "<<array_id<<" to_id: "<<to_id<<" 当前交换次数: "<<data_exchange[i][j]<<endl;
+            data_transfer[array_id*num+to_id] += data_exchange[i][j];
+        }
+    }
 }
 //
 // Created by shenlibo on 23-4-30.

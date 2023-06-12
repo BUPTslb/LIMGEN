@@ -40,6 +40,15 @@ struct Node {
     //存储节点写回的位置,0:register,1:lut,2:sa,3:ma,4:lut_latch,5:sa-buffer
 };
 
+struct Array_place{
+    int array_id;//阵列ID
+    int array_type;//阵列类型
+    int array_width;
+    int array_height;
+    int pos_x;//阵列位置
+    int pos_y;//阵列位置
+};
+
 extern vector<Node> nodes;//节点类型的向量，里面可以放下一个个节点
 
 extern vector<Node> nodes2;
@@ -56,6 +65,7 @@ int lut_level_op(int op_type, int lut_type);
 class Array {
 public:
     int array_id;
+    int place_id;
     bool is_using;//当前正在使用
     int row_num;//大小，行数
     int col_num;//大小，列数
@@ -69,6 +79,7 @@ public:
     //无参数构造函数
     Array(){
         data_exchange.resize(4);
+        place_id=0;
     }
 };
 
