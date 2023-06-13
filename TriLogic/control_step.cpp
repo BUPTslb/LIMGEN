@@ -268,6 +268,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
 
         }
     }
+
     //开始执行模拟退火布局布线
     //将所有阵列进行编号
     vector<Array_place> place_list;
@@ -285,7 +286,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
         Array_place place_arr;
         place_arr.array_id = i;
         place_arr.array_type = 1;
-        place_arr.array_width = array_list1[i].col_num;
+        place_arr.array_width = array_list1[i].lut_num;
         place_arr.array_height = array_list1[i].row_num;
         place_arr.pos_x = 0;
         place_arr.pos_y = 0;

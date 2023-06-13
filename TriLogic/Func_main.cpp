@@ -344,7 +344,7 @@ int main() {
     outFile << "latency/ns" << ',' << "energy/pJ" << ',' << "area/F^2" << ','
             << "lut_num" << ',' << "csa_num" << ',' << "dsa_num" << ',' << "magic_num" << ',' <<"array_num"<<','<<
             "Reg_write" << ',' << "Reg_read" << std::endl;
-    for (int p = 0; p < 1; ++p) {
+    for (int p = 0; p < 100; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1 = {};//lut阵列表
@@ -438,6 +438,9 @@ int main() {
                 break;
         }
         cout << "循环次数为：" << p + 1 << endl;
+        //在析构容器的时候会报错：SIGTRAP (Trace/breakpoint trap)
+        //原因：申请的空间和使用的空间不匹配
+        //调试时候发现是对array的释放
     }
     outFile.close();
 
