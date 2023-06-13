@@ -200,7 +200,7 @@ void array_add_node(int array_type, int array_id, Node *now, vector<lut_arr> &ar
 void array_data_transfer(int from_type, int from_id, int to_type, int to_id,
                          vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3);
 
-void place_num(vector<vector<int>>data_exchange,int *data_transfer,int array_id,int num);
+void place_num(vector<vector<int>>data_exchange,int **data_transfer,int array_id,int num,int list1_size,int list2_size,int list3_size);
 
 //阵列尺寸设定函数，一定是方形的
 unsigned int arr_size();

@@ -1,5 +1,8 @@
+#include <cmath>
 #include "mainfunc.h"
 #include "logic_func.h"
+#include "dse.h"
+
 
 std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                   vector<magic_arr> &array_list3) {
@@ -269,8 +272,15 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
     //将所有阵列进行编号
     vector<Array_place> place_list;
     int num_array=array_list1.size()+array_list2.size()+array_list3.size();//阵列个数
-    int data_transfer[num_array][num_array];//数据传输次数
-    memset(data_transfer,0,sizeof(data_transfer));
+    int **data_transfer=new int * [num_array];//数据传输次数
+    for (int i = 0; i < num_array; ++i) {
+        data_transfer[i]=new int[num_array];
+        for (int j = 0; j < num_array; ++j) {
+            data_transfer[i][j]=0;
+        }
+    }
+
+
     for (int i = 0; i < array_list1.size(); ++i) {
         Array_place place_arr;
         place_arr.array_id = i;
@@ -282,7 +292,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
         place_list.push_back(place_arr);
         array_list1[i].place_id=i;
         //遍历array_list1的data_exchange
-        place_num(array_list1[i].data_exchange, data_transfer[0], i, num_array);//???
+        place_num(array_list1[i].data_exchange, data_transfer, i, num_array,array_list1.size(),array_list2.size(),array_list3.size());//???
     }
     for (int i = array_list1.size(); i <array_list1.size()+array_list2.size(); ++i) {
         Array_place place_arr;
@@ -294,7 +304,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
         place_arr.pos_y = 0;
         place_list.push_back(place_arr);
         array_list2[i-array_list1.size()].place_id=i;
-        place_num(array_list2[i-array_list1.size()].data_exchange, data_transfer[0], i, num_array);//???
+        place_num(array_list2[i-array_list1.size()].data_exchange, data_transfer, i, num_array,array_list1.size(),array_list2.size(),array_list3.size());//???
     }
     for (int i = array_list1.size()+array_list2.size(); i <array_list1.size()+array_list2.size()+array_list3.size(); ++i) {
         Array_place place_arr;
@@ -306,7 +316,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
         place_arr.pos_y = 0;
         place_list.push_back(place_arr);
         array_list3[i-array_list1.size()-array_list2.size()].place_id=i;
-        place_num(array_list3[i-array_list1.size()-array_list2.size()].data_exchange, data_transfer[0], i, num_array);//???
+        place_num(array_list3[i-array_list1.size()-array_list2.size()].data_exchange, data_transfer, i, num_array,array_list1.size(),array_list2.size(),array_list3.size());//???
     }
     //place_list构建完成
     for (int i = 0; i < num_array; ++i) {
@@ -315,9 +325,34 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
         }
         cout<<endl;
     }
+    //规定xy的界限
+    int x_max=ceil(sqrt(num_array));
+    int y_max=x_max;
+    int **Place_array=new int *[x_max];
+    for (int i = 0; i < x_max; ++i) {
+        Place_array[i]=new int[y_max];
+        for (int j = 0; j < y_max; ++j) {
+            Place_array[i][j]=-1;
+        }
+    }
+    //向布局矩阵中填写阵列的id
+    double initialTemperature=1e10;
+    double finalTemperature=1e-10;
+    double coolingRate=0.95;
+    int maxIterations=1e6;
+    double threshold=1e-30;
 
-
-
+    simulateAnnealing(place_list,Place_array,data_transfer, num_array,x_max,y_max, initialTemperature, finalTemperature,
+            coolingRate, maxIterations, threshold);
+    //释放空间
+    for (int i = 0; i < num_array; ++i) {
+        delete [] data_transfer[i];
+    }
+    delete [] data_transfer;
+    for (int i = 0; i < x_max; ++i) {
+        delete [] Place_array[i];
+    }
+    delete [] Place_array;
 
 
     //遍历完控制步，输出延迟、能耗、面积信息

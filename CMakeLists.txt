@@ -28,5 +28,5 @@ add_executable(Synthesis
         TriLogic/only_lut.cpp
         TriLogic/only_sa.cpp
         TriLogic/only_magic.cpp
-        )
+        TriLogic/dse.h)
 
