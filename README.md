@@ -1,4 +1,4 @@
-# LIMGEN：A Data-guided Framework for Automated Generation of Heterogeneous Logic-in-Memory Architecture
+# LIMGEN：HLS of RRAM LIM
 2022/9/7
 this is the beginning of my research life!
 ## 主要内容 Main Content
