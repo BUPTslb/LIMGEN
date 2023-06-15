@@ -979,19 +979,19 @@ void NewRangeInsertCubePair( cubedist Dist, Cube* p1, Cube* p2 )
     }
     else
         assert(0);
-//      cout << endl << "DIST-" << (int)(Dist+2) << ": Have run out of queque space!" << endl;
+//      //cout << endl << "DIST-" << (int)(Dist+2) << ": Have run out of queque space!" << endl;
 }
 
 void PrintQuequeStats()
 {
 /*
-    cout << endl << "Queque statistics: ";
-    cout << " Alloc = " << s_nPosAlloc;
-    cout << "   DIST2 = " << GetPosDiff( s_Que[0].PosOut, s_Que[0].PosIn );
-    cout << "   DIST3 = " << GetPosDiff( s_Que[1].PosOut, s_Que[1].PosIn );
-    cout << "   DIST4 = " << GetPosDiff( s_Que[2].PosOut, s_Que[2].PosIn );
-    cout << endl;
-    cout << endl;
+    //cout << endl << "Queque statistics: ";
+    //cout << " Alloc = " << s_nPosAlloc;
+    //cout << "   DIST2 = " << GetPosDiff( s_Que[0].PosOut, s_Que[0].PosIn );
+    //cout << "   DIST3 = " << GetPosDiff( s_Que[1].PosOut, s_Que[1].PosIn );
+    //cout << "   DIST4 = " << GetPosDiff( s_Que[2].PosOut, s_Que[2].PosIn );
+    //cout << endl;
+    //cout << endl;
 */
 }
 

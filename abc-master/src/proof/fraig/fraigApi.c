@@ -41,7 +41,7 @@ ABC_NAMESPACE_IMPL_START
 
 ***********************************************************************/
 Fraig_NodeVec_t * Fraig_ManReadVecInputs( Fraig_Man_t * p )                   { return p->vInputs;            }
-Fraig_NodeVec_t * Fraig_ManReadVecOutputs( Fraig_Man_t * p )                  { return p->vOutputs;           }
+Fraig_NodeVec_t * Fraig_ManReadVe//coutputs( Fraig_Man_t * p )                  { return p->vOutputs;           }
 Fraig_NodeVec_t * Fraig_ManReadVecNodes( Fraig_Man_t * p )                    { return p->vNodes;             }
 Fraig_Node_t **   Fraig_ManReadInputs ( Fraig_Man_t * p )                     { return p->vInputs->pArray;    }
 Fraig_Node_t **   Fraig_ManReadOutputs( Fraig_Man_t * p )                     { return p->vOutputs->pArray;   }

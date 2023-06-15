@@ -332,7 +332,7 @@ void If_ObjPerformMappingAnd( If_Man_t * p, If_Obj_t * pObj, int Mode, int fPrep
                 if ( (p->pPars->fEnableCheck75 || p->pPars->fEnableCheck75u) && pCut->nLeaves == 5 && pCut->nLimit == 5 )
                 {
                     extern int If_CluCheckDecInAny( word t, int nVars );
-                    extern int If_CluCheckDecOut( word t, int nVars );
+                    extern int If_CluCheckDe//cout( word t, int nVars );
                     unsigned TruthU = *If_CutTruth(p, pCut);
                     word Truth = (((word)TruthU << 32) | (word)TruthU);
                     p->nCuts5++;
@@ -344,11 +344,11 @@ void If_ObjPerformMappingAnd( If_Man_t * p, If_Obj_t * pObj, int Mode, int fPrep
                 else if ( p->pPars->fVerbose && pCut->nLeaves == 5 )
                 {
                     extern int If_CluCheckDecInAny( word t, int nVars );
-                    extern int If_CluCheckDecOut( word t, int nVars );
+                    extern int If_CluCheckDe//cout( word t, int nVars );
                     unsigned TruthU = *If_CutTruth(p, pCut);
                     word Truth = (((word)TruthU << 32) | (word)TruthU);
                     p->nCuts5++;
-                    if ( If_CluCheckDecInAny( Truth, 5 ) || If_CluCheckDecOut( Truth, 5 ) )
+                    if ( If_CluCheckDecInAny( Truth, 5 ) || If_CluCheckDe//cout( Truth, 5 ) )
                         p->nCuts5a++;
                 }
             }

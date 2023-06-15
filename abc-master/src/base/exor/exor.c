@@ -306,9 +306,9 @@ int ReduceEsopCover()
 /*  ////////////////////////////////////////////////////////////////////
     // Print statistics
     printf( "\nShallow simplification time is ";
-    cout << (float)(clk2 - clk1)/(float)(CLOCKS_PER_SEC) << " sec\n" );
+    //cout << (float)(clk2 - clk1)/(float)(CLOCKS_PER_SEC) << " sec\n" );
     printf( "Deep simplification time is ";
-    cout << (float)(Abc_Clock() - clk2)/(float)(CLOCKS_PER_SEC) << " sec\n" );
+    //cout << (float)(Abc_Clock() - clk2)/(float)(CLOCKS_PER_SEC) << " sec\n" );
     printf( "Cover after iterative simplification = " << s_nCubesInUse << endl;
     printf( "Reduced by initial cube writing      = " << g_CoverInfo.nCubesBefore-nCubesAfterWriting << endl;
     printf( "Reduced by shallow simplification    = " << nCubesAfterWriting-nCubesAfterShallow << endl;
@@ -325,7 +325,7 @@ int ReduceEsopCover()
     assert ( g_CoverInfo.nCubesInUse + g_CoverInfo.nCubesFree == g_CoverInfo.nCubesAlloc );
 
 //  printf( "\nThe output cover is\n" );
-//  PrintCoverDebug( cout );
+//  PrintCoverDebug( //cout );
 
     return 0;
 }
@@ -576,7 +576,7 @@ alu4 = 435   70 secs
         if ( g_CoverInfo.Verbosity == 2 )
         printf( "\nITERATION #" << ++nIterCount << endl << endl;
         else if ( g_CoverInfo.Verbosity == 1 )
-        cout << '.';
+        //cout << '.';
 
         GainTotal  = 0;
         GainTotal += IterativelyApplyExorLink( DIST2, 1|2|0 );
@@ -641,7 +641,7 @@ alu4 = 435   70 secs
         if ( g_CoverInfo.Verbosity == 2 )
         printf( "\nITERATION #" << ++nIterCount << endl << endl;
         else if ( g_CoverInfo.Verbosity == 1 )
-        cout << '.';
+        //cout << '.';
 
         GainTotal  = 0;
         GainTotal += IterativelyApplyExorLink2( 1|2|0 );

@@ -1452,19 +1452,19 @@ void Bbl_ManSimpleDemo()
     .inputs b     // ID = 2
     .inputs cin   // ID = 3
     .outputs s    // ID = 4
-    .outputs cout // ID = 5
+    .outputs //cout // ID = 5
     .names a b cin s_driver   // ID = 6
     100 1
     010 1
     001 1
     111 1
-    .names a b cin cout_driver // ID = 7
+    .names a b cin //cout_driver // ID = 7
     -11 1
     1-1 1
     11- 1
     .names s_driver s
     1 1
-    .names cout_driver cout
+    .names //cout_driver //cout
     1 1
     .end
 */
@@ -1477,21 +1477,21 @@ void Bbl_ManSimpleDemo()
     Bbl_ManCreateObject( p, BBL_OBJ_CI, 3, 0, NULL ); // cin
     // create COs
     Bbl_ManCreateObject( p, BBL_OBJ_CO, 4, 1, NULL ); // s
-    Bbl_ManCreateObject( p, BBL_OBJ_CO, 5, 1, NULL ); // cout
+    Bbl_ManCreateObject( p, BBL_OBJ_CO, 5, 1, NULL ); // //cout
     // create internal nodes
     Bbl_ManCreateObject( p, BBL_OBJ_NODE, 6, 3, "100 1\n010 1\n001 1\n111 1\n" ); // s_driver
-    Bbl_ManCreateObject( p, BBL_OBJ_NODE, 7, 3, "-11 1\n1-1 1\n11- 1\n" );        // cout_driver
+    Bbl_ManCreateObject( p, BBL_OBJ_NODE, 7, 3, "-11 1\n1-1 1\n11- 1\n" );        // //cout_driver
     // add fanins of node 6
     Bbl_ManAddFanin( p, 6, 1 ); // s_driver <- a
     Bbl_ManAddFanin( p, 6, 2 ); // s_driver <- b
     Bbl_ManAddFanin( p, 6, 3 ); // s_driver <- cin
     // add fanins of node 7
-    Bbl_ManAddFanin( p, 7, 1 ); // cout_driver <- a
-    Bbl_ManAddFanin( p, 7, 2 ); // cout_driver <- b
-    Bbl_ManAddFanin( p, 7, 3 ); // cout_driver <- cin
+    Bbl_ManAddFanin( p, 7, 1 ); // //cout_driver <- a
+    Bbl_ManAddFanin( p, 7, 2 ); // //cout_driver <- b
+    Bbl_ManAddFanin( p, 7, 3 ); // //cout_driver <- cin
     // add fanins of COs
     Bbl_ManAddFanin( p, 4, 6 ); // s <- s_driver
-    Bbl_ManAddFanin( p, 5, 7 ); // cout <- cout_driver
+    Bbl_ManAddFanin( p, 5, 7 ); // //cout <- //cout_driver
     // sanity check
     Bbl_ManCheck( p );
     // write BLIF file as a sanity check

@@ -117,7 +117,7 @@ void Dsd_Decompose( Dsd_Manager_t * pDsdMan, DdNode ** pbFuncs, int nFuncs )
     abctime clk;
     Dsd_Node_t * pTemp;
     int SumMaxGateSize = 0;
-    int nDecOutputs = 0;
+    int nDe//coutputs = 0;
     int nCBFOutputs = 0;
 /*
 s_Loops1 = 0;
@@ -171,7 +171,7 @@ s_Loops2Useless = 0;
         s_nCascades = ddMax( s_nCascades, nCascades );
         pTemp = Dsd_Regular(pDsdMan->pRoots[i]);
         if ( pTemp->Type != DSD_NODE_PRIME || pTemp->nDecs != Extra_bddSuppSize(dd,pTemp->S) )
-            nDecOutputs++;
+            nDe//coutputs++;
         if ( MaxBlock < 3 )
             nCBFOutputs++;
         SumMaxGateSize += MaxBlock;
@@ -198,7 +198,7 @@ s_Loops2Useless = 0;
         printf( "\n" );
         printf( "The cumulative decomposability statistics:\n" );
         printf( "  Total outputs                             = %5d\n", nFuncs );
-        printf( "  Decomposable outputs                      = %5d\n", nDecOutputs );
+        printf( "  Decomposable outputs                      = %5d\n", nDe//coutputs );
         printf( "  Completely decomposable outputs           = %5d\n", nCBFOutputs );
         printf( "  The sum of max gate sizes                 = %5d\n", SumMaxGateSize );
         printf( "  Shared BDD size                           = %5d\n", Cudd_SharingSize( pbFuncs, nFuncs ) );
@@ -1253,7 +1253,7 @@ EXIT:
     if ( dsdKernelVerifyDecomposition(dd, pThis) == 0 )
     {
         // write the function, for which verification does not work
-        cout << endl << "Internal verification failed!"" );
+        //cout << endl << "Internal verification failed!"" );
 
         // create the variable mask
         static int s_pVarMask[MAXINPUTS];
@@ -1265,7 +1265,7 @@ EXIT:
             if ( s_pVarMask[k] )
                 nInputCounter++;
 
-        cout << endl << "The problem function is "" );
+        //cout << endl << "The problem function is "" );
 
         DdNode * zNewFunc = Cudd_zddIsopCover( dd, bF, bF ); Cudd_Ref( zNewFunc );
         cuddWriteFunctionSop( stdout, dd, zNewFunc, -1, dd->size, "1", s_pVarMask );

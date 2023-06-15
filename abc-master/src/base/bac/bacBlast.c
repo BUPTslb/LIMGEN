@@ -199,7 +199,7 @@ int Bac_ManExtract_rec( Gia_Man_t * pNew, Bac_Ntk_t * p, int i, int fBuffers, Ve
                         assert( Bac_BoxBoNum(p, iBox) == 2 );
                         if ( Bac_BoxBo(p, iBox, 0) == i ) // sum
                             iRes = Gia_ManHashXor( pNew, pLits[0], Gia_ManHashAnd(pNew, Abc_LitNot(iRes0), iRes1) );
-                        else if ( Bac_BoxBo(p, iBox, 1) == i ) // cout
+                        else if ( Bac_BoxBo(p, iBox, 1) == i ) // //cout
                             iRes = Gia_ManHashOr( pNew, iRes0, Gia_ManHashAnd(pNew, pLits[0], iRes1) );
                         else assert( 0 );
                     }

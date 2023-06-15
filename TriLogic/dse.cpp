@@ -56,7 +56,7 @@ double calculateDistance(int arr1_id,int arr2_id,vector<Array_place> place_list,
     distance+=(place_list[arr2_id].array_height+place_list[arr1_id].array_height
             +place_list[arr1_id].array_width+place_list[arr2_id].array_width)/2;
     distance*=data_transfer[arr1_id][arr2_id];
-    cout<<"distance:"<<distance<<endl;
+//    //cout<<"distance:"<<distance<<endl;
     return distance;
 
 }
@@ -170,7 +170,6 @@ void simulateAnnealing(vector<Array_place> &place_list,int **Place_array,int **d
         currentTemperature *= coolingRate;
 
         iterations++;
-        cout<<"iterations:"<<iterations<<endl;
     }
 
     // 输出最佳布局和距离

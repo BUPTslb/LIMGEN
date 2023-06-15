@@ -3060,7 +3060,7 @@ static inline int Abc_TtCheckOutDec( word * pTruth, int nVars, int v, word * pOu
     }
     return -1;
 }
-static inline word Abc_TtCheckDecOutOne7( word * t, int * piVar, int * pType )
+static inline word Abc_TtCheckDe//coutOne7( word * t, int * piVar, int * pType )
 {
     int v, Type, Type2; word Out[2];
     for ( v = 6; v >= 0; v-- )
@@ -3075,7 +3075,7 @@ static inline word Abc_TtCheckDecOutOne7( word * t, int * piVar, int * pType )
         }
     return 0;
 }
-static inline word Abc_TtCheckDecOutOne8( word * t, int * piVar1, int * piVar2, int * pType1, int * pType2 )
+static inline word Abc_TtCheckDe//coutOne8( word * t, int * piVar1, int * piVar2, int * pType1, int * pType2 )
 {
     int v, Type1, Type12, Type2, Type22; word Out[4], Out2[2];
     for ( v = 7; v >= 0; v-- )

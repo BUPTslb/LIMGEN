@@ -127,7 +127,7 @@ static inline void Abc_SclTimeNodePrint( SC_Man * p, Abc_Obj_t * pObj, int fRise
     printf( "%7.1f ps  ",       -Abc_AbsFloat(Abc_SclObjTimeOne(p, pObj, 0) - Abc_SclObjTimeOne(p, pObj, 1)) );
     printf( "S =%6.1f ps  ",    Abc_SclObjSlewMax(p, pObj) );
     printf( "Cin =%5.1f ff  ",  pCell ? SC_CellPinCapAve(pCell) : 0.0 );
-    printf( "Cout =%6.1f ff  ", Abc_SclObjLoadMax(p, pObj) );
+    printf( "//cout =%6.1f ff  ", Abc_SclObjLoadMax(p, pObj) );
     printf( "Cmax =%6.1f ff  ", pCell ? SC_CellPin(pCell, pCell->n_inputs)->max_out_cap : 0.0 );
     printf( "G =%5d  ",         pCell ? (int)(100.0 * Abc_SclObjLoadAve(p, pObj) / SC_CellPinCapAve(pCell)) : 0 );
 //    printf( "SL =%6.1f ps",     Abc_SclObjSlackMax(p, pObj, p->MaxDelay0) );
@@ -635,7 +635,7 @@ SC_Man * Abc_SclManStart( SC_Lib * pLib, Abc_Ntk_t * pNtk, int fUseWireLoads, in
     SC_Man * p = Abc_SclManAlloc( pLib, pNtk );
     if ( nTreeCRatio )
     {
-        p->EstLoadMax = 0.01 * nTreeCRatio;  // max ratio of Cout/Cave when the estimation is used
+        p->EstLoadMax = 0.01 * nTreeCRatio;  // max ratio of //cout/Cave when the estimation is used
         p->EstLinear  = 100;                  // linear coefficient
     }
     Abc_SclMioGates2SclGates( pLib, pNtk );

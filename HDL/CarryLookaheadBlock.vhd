@@ -4,7 +4,7 @@ begin
 	A <= X xor Y;
 	B <= A and Cin;
 	Sum <= A xor Cin;
-	Cout <= B or (X and Y);
+	//cout <= B or (X and Y);
 end architecture DataFlow;
 
 -- A body of entity TestBench:
@@ -12,7 +12,7 @@ library Test;
 use Test.Components.all;
 architecture Structure of TestBench is
 	component Full_Adder
-		port (X, Y, Cin: Bit; Cout, Sum: out Bit);
+		port (X, Y, Cin: Bit; //cout, Sum: out Bit);
 	end component;
 	signal A,B,C,D,E,F,G: Bit;
 	signal OK: Boolean;

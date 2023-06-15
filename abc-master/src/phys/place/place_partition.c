@@ -413,8 +413,8 @@ void repartitionHMetis(Partition *parent) {
          parent->m_sub2->m_numMembers);
   */
 
-  // cout << "HMET-21 : \t\t\tloc: " << initial_cut <<  " targetting: " << targets*100/parent->m_members.length() << "%" << endl;
-  // cout << "HMET-22 : \t\t\tstarting cuts= " << beforeCuts << " final cuts= " << afterCuts << endl;
+  // //cout << "HMET-21 : \t\t\tloc: " << initial_cut <<  " targetting: " << targets*100/parent->m_members.length() << "%" << endl;
+  // //cout << "HMET-22 : \t\t\tstarting cuts= " << beforeCuts << " final cuts= " << afterCuts << endl;
 
   free(edgeConnections);
   free(vertexWeights);
@@ -621,7 +621,7 @@ void repartitionFM(Partition *parent) {
 
         moved_back++;
     }
-    // cout << "\tmoved back: " << moved_back << endl;
+    // //cout << "\tmoved back: " << moved_back << endl;
     // check_list(bin, locked, targets); // DEBUG    
     
     max_gain = FM_MAX_BIN;
@@ -645,7 +645,7 @@ void repartitionFM(Partition *parent) {
 
         num_moves++;
         current->locked = true;
-        // cout << "moving cell " << current->cell->getID() << " gain=" << current->gain << " pins= " << current->cell->getPins().length() << " from " << current->loc;
+        // //cout << "moving cell " << current->cell->getID() << " gain=" << current->gain << " pins= " << current->cell->getPins().length() << " from " << current->loc;
 
         // change partition marking and areas
         if (current->loc == 1) {
@@ -664,7 +664,7 @@ void repartitionFM(Partition *parent) {
             count_1[net->getID()]--;
             count_2[net->getID()]++;
 
-            // cout << "\tnet " << net->getID() << " was " << count_1[net->getID()]+1 << "/" << count_2[net->getID()]-1 << " now " << count_1[net->getID()] << "/" << count_2[net->getID()] << endl;
+            // //cout << "\tnet " << net->getID() << " was " << count_1[net->getID()]+1 << "/" << count_2[net->getID()]-1 << " now " << count_1[net->getID()] << "/" << count_2[net->getID()] << endl;
 
             // if net becomes critical, update gains on attached cells and resort bins
             if (count_1[net->getID()] == 0) { current_cuts--; FM_updateGains(net, 2, -1, target, bin, count_1, count_2); }
@@ -688,7 +688,7 @@ void repartitionFM(Partition *parent) {
             count_2[net->getID()]--;
             count_1[net->getID()]++;
 
-            // cout << "\tnet " << net->getID() << " was " << count_1[net->getID()]-1 << "/" << count_2[net->getID()]+1 << " now " << count_1[net->getID()] << "/" << count_2[net->getID()] << endl;
+            // //cout << "\tnet " << net->getID() << " was " << count_1[net->getID()]-1 << "/" << count_2[net->getID()]+1 << " now " << count_1[net->getID()] << "/" << count_2[net->getID()] << endl;
 
             if (count_2[net->getID()] == 0) { current_cuts--; FM_updateGains(net, 2, -1, target, bin, count_1, count_2); }
             if (count_1[net->getID()] == 1) { current_cuts++; FM_updateGains(net, 1, -1, target, bin, count_1, count_2); }
@@ -697,22 +697,22 @@ void repartitionFM(Partition *parent) {
         }
         }
 
-        //cout << " cuts=" << current_cuts << endl;
+        ////cout << " cuts=" << current_cuts << endl;
 
         // move current to locked
 
 /*
-        cout << "b=" << bin[bin_num] << " ";
-        cout << current->prev << "-> ";
+        //cout << "b=" << bin[bin_num] << " ";
+        //cout << current->prev << "-> ";
         if (current->prev == 0)
-        cout << "X";
-        else cout << current->prev->next;
-        cout  << "=" << current << "=";
+        //cout << "X";
+        else //cout << current->prev->next;
+        //cout  << "=" << current << "=";
         if (current->next == 0)
-        cout << "X";
+        //cout << "X";
         else
-        cout << current->next->prev;
-        cout << " ->" << current->next << endl;
+        //cout << current->next->prev;
+        //cout << " ->" << current->next << endl;
 */
 
         if (bin[bin_num] == current)
@@ -723,17 +723,17 @@ void repartitionFM(Partition *parent) {
         current->next->prev = current->prev;
 
 /*
-        cout << "b=" << bin[bin_num] << " ";
-        cout << current->prev << "-> ";
+        //cout << "b=" << bin[bin_num] << " ";
+        //cout << current->prev << "-> ";
         if (current->prev == 0)
-        cout << "X";
-        else cout << current->prev->next;
-        cout  << "=" << current << "=";
+        //cout << "X";
+        else //cout << current->prev->next;
+        //cout  << "=" << current << "=";
         if (current->next == 0)
-        cout << "X";
+        //cout << "X";
         else
-        cout << current->next->prev;
-        cout << " ->" << current->next << endl;
+        //cout << current->next->prev;
+        //cout << " ->" << current->next << endl;
 */
 
         current->prev = 0;
@@ -749,11 +749,11 @@ void repartitionFM(Partition *parent) {
         while(bin[max_gain] == 0 && max_gain > 0) max_gain--;
     }
 
-    // cout << "\tcurrent cuts= " << current_cuts << " moves= " << num_moves << endl;
+    // //cout << "\tcurrent cuts= " << current_cuts << " moves= " << num_moves << endl;
     }
 
     // reassign members to subpartitions
-    cout << "FIDM-20 : \tbalance before " << parent->m_sub1->m_members.length() << "/"
+    //cout << "FIDM-20 : \tbalance before " << parent->m_sub1->m_members.length() << "/"
        << parent->m_sub2->m_members.length() << " ";
     parent->m_sub1->m_members.clear();
     parent->m_sub1->m_area = 0;
@@ -769,12 +769,12 @@ void repartitionFM(Partition *parent) {
         parent->m_sub2->m_area += (*it)->getArea();
     }
     }
-    cout << " after " << parent->m_sub1->m_members.length() << "/"
+    //cout << " after " << parent->m_sub1->m_members.length() << "/"
        << parent->m_sub2->m_members.length() << endl;
 
 
-    cout << "FIDM-21 : \tloc: " << initial_cut <<  " targetting: " << targets*100/parent->m_members.length() << "%" << endl;
-    cout << "FIDM-22 : \tstarting cuts= " << before_cuts << " final cuts= " << current_cuts << endl;
+    //cout << "FIDM-21 : \tloc: " << initial_cut <<  " targetting: " << targets*100/parent->m_members.length() << "%" << endl;
+    //cout << "FIDM-22 : \tstarting cuts= " << before_cuts << " final cuts= " << current_cuts << endl;
 #endif
 }
 

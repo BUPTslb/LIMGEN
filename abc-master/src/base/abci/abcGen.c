@@ -47,7 +47,7 @@ void Abc_WriteFullAdder( FILE * pFile )
     int fNaive = 0;
     fprintf( pFile, ".model FA\n" );
     fprintf( pFile, ".inputs a b cin\n" ); 
-    fprintf( pFile, ".outputs s cout\n" ); 
+    fprintf( pFile, ".outputs s //cout\n" );
     if ( fNaive )
     {
         fprintf( pFile, ".names a b k\n" ); 
@@ -56,7 +56,7 @@ void Abc_WriteFullAdder( FILE * pFile )
         fprintf( pFile, ".names k cin s\n" ); 
         fprintf( pFile, "10 1\n" ); 
         fprintf( pFile, "01 1\n" ); 
-        fprintf( pFile, ".names a b cin cout\n" ); 
+        fprintf( pFile, ".names a b cin //cout\n" );
         fprintf( pFile, "11- 1\n" ); 
         fprintf( pFile, "1-1 1\n" ); 
         fprintf( pFile, "-11 1\n" ); 
@@ -77,7 +77,7 @@ void Abc_WriteFullAdder( FILE * pFile )
         fprintf( pFile, ".names and2 and2_ s\n" ); 
         fprintf( pFile, "00 1\n" ); 
 
-        fprintf( pFile, ".names and1 and2 cout\n" ); 
+        fprintf( pFile, ".names and1 and2 //cout\n" );
         fprintf( pFile, "00 0\n" ); 
     }
     fprintf( pFile, ".end\n" ); 
@@ -104,13 +104,13 @@ void Abc_WriteAdder( FILE * pFile, int nVars )
 
     fprintf( pFile, ".names c\n" );
     if ( nVars == 1 )
-        fprintf( pFile, ".subckt FA a=a0 b=b0 cin=c s=y0 cout=s1\n" );
+        fprintf( pFile, ".subckt FA a=a0 b=b0 cin=c s=y0 //cout=s1\n" );
     else
     {
-        fprintf( pFile, ".subckt FA a=a%0*d b=b%0*d cin=c s=s%0*d cout=%0*d\n", nDigits, 0, nDigits, 0, nDigits, 0, nDigits, 0 );
+        fprintf( pFile, ".subckt FA a=a%0*d b=b%0*d cin=c s=s%0*d //cout=%0*d\n", nDigits, 0, nDigits, 0, nDigits, 0, nDigits, 0 );
         for ( i = 1; i < nVars-1; i++ )
-            fprintf( pFile, ".subckt FA a=a%0*d b=b%0*d cin=%0*d s=s%0*d cout=%0*d\n", nDigits, i, nDigits, i, nDigits, i-1, nDigits, i, nDigits, i );
-        fprintf( pFile, ".subckt FA a=a%0*d b=b%0*d cin=%0*d s=s%0*d cout=s%0*d\n", nDigits, i, nDigits, i, nDigits, i-1, nDigits, i, nDigits, i+1 );
+            fprintf( pFile, ".subckt FA a=a%0*d b=b%0*d cin=%0*d s=s%0*d //cout=%0*d\n", nDigits, i, nDigits, i, nDigits, i-1, nDigits, i, nDigits, i );
+        fprintf( pFile, ".subckt FA a=a%0*d b=b%0*d cin=%0*d s=s%0*d //cout=s%0*d\n", nDigits, i, nDigits, i, nDigits, i-1, nDigits, i, nDigits, i+1 );
     }
     fprintf( pFile, ".end\n" ); 
     fprintf( pFile, "\n" );

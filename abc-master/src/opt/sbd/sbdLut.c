@@ -200,8 +200,8 @@ int Sbd_ProblemSolve( Gia_Man_t * p, Vec_Int_t * vMirrors,
     int nVars      = Vec_IntSize( vDivSet );
     int nPars      = Sbd_ProblemCountParams( nStrs, pStr0 );
 
-    int VarCecOut  = Vec_IntSize(vWinObjs) + Vec_IntSize(vTfo) + Vec_IntSize(vRoots);
-    int VarCecPar  = VarCecOut + nStrs;
+    int VarCe//cout  = Vec_IntSize(vWinObjs) + Vec_IntSize(vTfo) + Vec_IntSize(vRoots);
+    int VarCecPar  = VarCe//cout + nStrs;
 
     int VarQbfPar  = 0;
     int VarQbfFree = nPars;
@@ -218,7 +218,7 @@ int Sbd_ProblemSolve( Gia_Man_t * p, Vec_Int_t * vMirrors,
     Vec_IntForEachEntry( vDivSet, iVar, i )
         pVarsCec[i] = iVar;
     for ( i = 0; i < nStrs; i++ )
-        pVarsCec[nVars + i] = VarCecOut + i;
+        pVarsCec[nVars + i] = VarCe//cout + i;
     for ( i = 0; i < nPars; i++ )
         pVarsCec[nVars + nStrs + i] = VarCecPar + i;
 
@@ -268,11 +268,11 @@ int Sbd_ProblemSolve( Gia_Man_t * p, Vec_Int_t * vMirrors,
             if ( fVerbose )
                 printf( "%d", sat_solver_var_value(pSatCec, iVar) );
         }
-        iLit = Abc_Var2Lit( pVarsQbf[nVars], sat_solver_var_value(pSatCec, VarCecOut) );
+        iLit = Abc_Var2Lit( pVarsQbf[nVars], sat_solver_var_value(pSatCec, VarCe//cout) );
         status = sat_solver_addclause( pSatQbf, &iLit, &iLit + 1 );
         assert( status );
         if ( fVerbose )
-            printf( " %d\n", !sat_solver_var_value(pSatCec, VarCecOut) );
+            printf( " %d\n", !sat_solver_var_value(pSatCec, VarCe//cout) );
         // add clauses to the QBF problem
         if ( !Sbd_ProblemAddClauses( pSatQbf, nVars, nStrs, pVarsQbf, pStr0 ) )
             break; // solution does not exist

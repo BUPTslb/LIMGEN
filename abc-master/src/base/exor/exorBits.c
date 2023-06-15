@@ -168,12 +168,12 @@ void PrepareBitSetModule()
     // verify bit groups
     int n = 4368;
     char Buff[100];
-    cout << "The number is " << n << endl;
-    cout << "The binary is " << itoa(n,Buff,2) << endl;
-    cout << "BitGroupNumbers[n] is " << (int)BitGroupNumbers[n] << endl;
-    cout << "The group literals are ";
+    //cout << "The number is " << n << endl;
+    //cout << "The binary is " << itoa(n,Buff,2) << endl;
+    //cout << "BitGroupNumbers[n] is " << (int)BitGroupNumbers[n] << endl;
+    //cout << "The group literals are ";
     for ( int g = 0; g < 4; g++ )
-        cout << " " << (int)GroupLiterals[BitGroupNumbers[n]][g];
+        //cout << " " << (int)GroupLiterals[BitGroupNumbers[n]][g];
 */
 }
 

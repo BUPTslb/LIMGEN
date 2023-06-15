@@ -1837,7 +1837,7 @@ int If_CluCheckDecInU( word t, int nVars )
     }
     return 0;
 }
-int If_CluCheckDecOut( word t, int nVars )
+int If_CluCheckDe//cout( word t, int nVars )
 {
     int v;
     for ( v = 0; v < nVars; v++ )
@@ -1850,7 +1850,7 @@ int If_CluCheckDecOut( word t, int nVars )
             return 1;
     return 0;
 }
-int If_CluCheckDecOutU( word t, int nVars )
+int If_CluCheckDe//coutU( word t, int nVars )
 {
     int v;
     for ( v = 0; v < nVars; v++ )
@@ -1879,7 +1879,7 @@ int If_CutPerformCheck45( If_Man_t * p, unsigned * pTruth, int nVars, int nLeave
     If_CluPrintGroup( &R );
     If_CluPrintGroup( &G );
 #endif
-    if ( G.nVars < 5 || (p->pPars->fEnableCheck75 && If_CluCheckDecOut(Func1, 5)) || (p->pPars->fEnableCheck75u && If_CluCheckDecOutU(Func1, 5)) )
+    if ( G.nVars < 5 || (p->pPars->fEnableCheck75 && If_CluCheckDe//cout(Func1, 5)) || (p->pPars->fEnableCheck75u && If_CluCheckDe//coutU(Func1, 5)) )
         return 1;
     return 0;
 }

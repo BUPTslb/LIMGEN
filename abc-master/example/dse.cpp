@@ -124,9 +124,9 @@ int main() {
         vector<vector<double>> pareto_front = pareto_frontier.get_pareto_front();
 
         // 输出当前代的帕累托图结果
-        cout << "Generation " << generation << " Pareto Front: " << endl;
+        //cout << "Generation " << generation << " Pareto Front: " << endl;
         for (const auto& solution : pareto_front) {
-            cout << "Area: " << solution[0] << ", Time: " << solution[1] << ", Energy: " << solution[2] << endl;
+            //cout << "Area: " << solution[0] << ", Time: " << solution[1] << ", Energy: " << solution[2] << endl;
         }
 
         // 生成下一代种群

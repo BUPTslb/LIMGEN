@@ -796,7 +796,7 @@ int CmdCommandSetVariable( Abc_Frame_t * pAbc, int argc, char **argv )
 //        flag_value = argc == 2 ? NULL : Extra_UtilStrsav(argv[2]);
         st__insert( pAbc->tFlags, Extra_UtilStrsav(argv[1]), flag_value );
 
-        if ( strcmp( argv[1], "abcout" ) == 0 )
+        if ( strcmp( argv[1], "ab//cout" ) == 0 )
         {
             if ( pAbc->Out != stdout )
                 fclose( pAbc->Out );

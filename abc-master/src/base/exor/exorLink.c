@@ -396,8 +396,8 @@ int ExorLinkCubeIteratorStart( Cube** pGroup, Cube* pC1, Cube* pC2, cubedist Dis
     nDifferentVars = FindDiffVars( DiffVars, pCA, pCB );
     if ( nCubes != nDifferentVars )
     {
-//      cout << "ExorLinkCubeIterator(): Distance mismatch";
-//      cout << " nCubes = " << nCubes << " nDiffVars = " << nDifferentVars << endl;
+//      //cout << "ExorLinkCubeIterator(): Distance mismatch";
+//      //cout << " nCubes = " << nCubes << " nDiffVars = " << nDifferentVars << endl;
         fWorking = 0;
         return 0;
     }

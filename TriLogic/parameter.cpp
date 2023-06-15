@@ -139,7 +139,7 @@ double sa_latency(int op_type, int sa_type) {
     if (sa_type == 1) //CSA
     {
         //在CSA的参数表中找到延迟数据，并返回
-        for (auto i: CSA.sa_op) {
+        for (auto &i: CSA.sa_op) {
             if (i.op_type == op_type) {
                 if (op_type == 11)//add
                     sa_latency += i.op_latency * bit_num_operand;
@@ -149,7 +149,7 @@ double sa_latency(int op_type, int sa_type) {
         }
     } else //DSA
     {
-        for (auto i: DSA.sa_op) {
+        for (auto &i: DSA.sa_op) {
             if (i.op_type == op_type) {
                 if (op_type == 11)//add
                     sa_latency += i.op_latency * bit_num_operand;
@@ -174,14 +174,14 @@ double sa_energy(int op_type, int sa_type) {
     if (sa_type == 1) //CSA
     {
         //在CSA的参数表中找到延迟数据，并返回
-        for (auto i: CSA.sa_op) {
+        for (auto &i: CSA.sa_op) {
             if (i.op_type == op_type) {
                 sa_energy += bit_num_operand * i.op_energy;
             }
         }
     } else //DSA
     {
-        for (auto i: DSA.sa_op) {
+        for (auto &i: DSA.sa_op) {
             if (i.op_type == op_type) {
                 sa_energy += bit_num_operand * i.op_energy;
             }
@@ -195,7 +195,7 @@ double ma_latency(int op_type) {
     double ma_latency = 0;
     ma_latency+=controler_latency;
     ma_latency+=2*magic_decoder_latency;//加上译码器的时间
-    for (auto i: magic_op) {
+    for (auto &i: magic_op) {
         if (i.op_type == op_type) {
             if (op_type == 11) //加法
                 ma_latency += (bit_num_operand + i.op_time * bit_num_operand + 7.8);//N*1 + N+4
@@ -214,7 +214,7 @@ double ma_energy(int op_type) {
     {
         ma_energy+=bit_num_operand*rram.write_energy;
     }
-    for (auto i: magic_op) {
+    for (auto &i: magic_op) {
         if (i.op_type == op_type)
             ma_energy += bit_num_operand * i.op_energy;
     }
@@ -226,17 +226,17 @@ double ma_energy(int op_type) {
 //延迟,所有时间中的最大值
 double latency_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     double latency_all = 0;
-    for (auto i: nodes2) {
-        latency_all = max(latency_all, i.end_time);
+    for (int i=0;i< nodes2.size();i++) {
+        latency_all = max(latency_all, nodes2[i].end_time);
     }
-    for (auto i: array_list1) {
-        latency_all = max(latency_all, i.over_time);
+    for (int i1=0;i1< array_list1.size();i1++) {
+        latency_all = max(latency_all, array_list1[i1].over_time);
     }
-    for (auto i: array_list2) {
-        latency_all = max(latency_all, i.over_time);
+    for (int i2=0;i2<array_list2.size();i2++) {
+        latency_all = max(latency_all, array_list2[i2].over_time);
     }
-    for (auto i: array_list3) {
-        latency_all = max(latency_all, i.over_time);
+    for (int i3=0;i3<array_list3.size();i3++) {
+        latency_all = max(latency_all, array_list3[i3].over_time);
     }
     return latency_all;
 
@@ -248,52 +248,52 @@ double area_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vecto
     double area_all = 0;
     area_all+=reg.reg_area * Reg_sum.write_num_sum /2;
     //阵列的面积
-    for (auto i: array_list1) {
+    for (int i=0;i< array_list1.size();i++) {
         double array1_area=0;
         //注意，这里lut_num才代表真实的列数，col_num只代表输出的列数
         array1_area+=controler_area;//一个阵列一个控制器
         array1_area+=lut_decoder_area;//一个阵列一个译码器
-        array1_area+=i.lut_num * lut_driver_area;//一列一个驱动
-        array1_area += i.row_num * i.lut_num * rram.t1r1_area; //RRAM的面积
-        if (i.row_num == 16)
-            array1_area += mux16_area * i.lut_num;
+        array1_area+=array_list1[i].lut_num * lut_driver_area;//一列一个驱动
+        array1_area += array_list1[i].row_num * array_list1[i].lut_num * rram.t1r1_area; //RRAM的面积
+        if (array_list1[i].row_num == 16)
+            array1_area += mux16_area * array_list1[i].lut_num;
         else
-            array1_area += mux64_area * i.lut_num;
-//        cout<<"lut_area:"<<array1_area<<endl;
+            array1_area += mux64_area * array_list1[i].lut_num;
+//        //cout<<"lut_area:"<<array1_area<<endl;
         area_all+=array1_area;
     }
-    for (auto i: array_list2) {
+    for (int i=0;i< array_list2.size();i++) {
         double array2_area=0;
-        array2_area += i.col_num * i.row_num * rram.t1r1_area;
+        array2_area += array_list2[i].col_num * array_list2[i].row_num * rram.t1r1_area;
         array2_area+=controler_area;
         array2_area+=sa_decoder_area;
-        array2_area+=i.col_num*sa_driver_area;
-        array2_area+=sa_direct_area*i.col_num;//sa直接输入
-        array2_area+=sa_wb_area*i.col_num;//写回
-        if (i.sa_type == 1) {
+        array2_area+=array_list2[i].col_num*sa_driver_area;
+        array2_area+=sa_direct_area*array_list2[i].col_num;//sa直接输入
+        array2_area+=sa_wb_area*array_list2[i].col_num;//写回
+        if (array_list2[i].sa_type == 1) {
             //加上csa的面积
-            array2_area += CSA.SA_area * i.col_num;
-            if (i.add_use== true)
-                array2_area+=CSA.SA_add_area*i.col_num;
+            array2_area += CSA.SA_area * array_list2[i].col_num;
+            if (array_list2[i].add_use== true)
+                array2_area+=CSA.SA_add_area*array_list2[i].col_num;
         } else {
             //加上dsa的面积
-            array2_area += DSA.SA_area * i.col_num;
-            if (i.add_use== true)
-                array2_area += DSA.SA_add_area * i.col_num;
+            array2_area += DSA.SA_area * array_list2[i].col_num;
+            if (array_list2[i].add_use== true)
+                array2_area += DSA.SA_add_area * array_list2[i].col_num;
         }
-//        cout<<"sa_area: "<<array2_area<<endl;
+//        //cout<<"sa_area: "<<array2_area<<endl;
         area_all+=array2_area;
     }
 
 
-    for (auto i: array_list3) {
+    for (int i=0;i<array_list3.size();i++) {
         double array3_area=0;
         array3_area += controler_area;
-        array3_area += i.col_num * i.row_num * rram.t1r1_area;
-        array3_area += i.row_num * magic_decoder_area + i.col_num * magic_decoder_area;
-        if (i.add_use)
-            array3_area+=i.row_num*magic_add;
-//        cout<<"magic_area: "<<array3_area<<endl;
+        array3_area += array_list3[i].col_num * array_list3[i].row_num * rram.t1r1_area;
+        array3_area += array_list3[i].row_num * magic_decoder_area + array_list3[i].col_num * magic_decoder_area;
+        if (array_list3[i].add_use)
+            array3_area+=array_list3[i].row_num*magic_add;
+//        //cout<<"magic_area: "<<array3_area<<endl;
         area_all+=array3_area;
     }
     //寄存器的面积都一样
@@ -305,23 +305,30 @@ double area_all_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, v
     area_all+=reg.reg_area * Reg_sum.write_num_sum /2;
 
     //阵列的面积
-    for (auto i: array_list1) {
+    for (int i=0;i< array_list1.size();i++) {
+        double array1_area=0;
         //注意，这里lut_num才代表真实的列数，col_num只代表输出的列数
-        area_all+=controler_area;//一个阵列一个控制器
-        area_all+=lut_decoder_area;//一个阵列一个译码器
-        area_all+=i.lut_num * lut_driver_area;//一列一个驱动
-        area_all += i.row_num * i.lut_num * rram.t1r1_area; //RRAM的面积
-        if (i.row_num == 16)
-            area_all += mux16_area * i.lut_num;
+        array1_area+=controler_area;//一个阵列一个控制器
+        array1_area+=lut_decoder_area;//一个阵列一个译码器
+        array1_area+=array_list1[i].lut_num * lut_driver_area;//一列一个驱动
+        array1_area += array_list1[i].row_num * array_list1[i].lut_num * rram.t1r1_area; //RRAM的面积
+        if (array_list1[i].row_num == 16)
+            array1_area += mux16_area * array_list1[i].lut_num;
         else
-            area_all += mux64_area * i.lut_num;
+            array1_area += mux64_area * array_list1[i].lut_num;
+//        //cout<<"lut_area:"<<array1_area<<endl;
+        area_all+=array1_area;
     }
 
-    for (auto i: array_list3) {
-        area_all += controler_area;
-        area_all += i.col_num * i.row_num * rram.t1r1_area;
-        area_all += lut_decoder_area;
-        area_all += i.row_num * lut_driver_area;//一列一个驱动
+    for (int i=0;i<array_list3.size();i++) {
+        double array3_area=0;
+        array3_area += controler_area;
+        array3_area += array_list3[i].col_num * array_list3[i].row_num * rram.t1r1_area;
+        array3_area += array_list3[i].row_num * magic_decoder_area + array_list3[i].col_num * magic_decoder_area;
+        if (array_list3[i].add_use)
+            array3_area+=array_list3[i].row_num*magic_add;
+//        //cout<<"magic_area: "<<array3_area<<endl;
+        area_all+=array3_area;
     }
 
     return area_all;
@@ -334,14 +341,14 @@ double area_all_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, v
 //能耗,阵列+buffer+Reg
 double energy_all(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     double energy_all = 0;
-    for (auto i: array_list1) {
-        energy_all += i.energy;
+    for (int i=0;i< array_list1.size();i++) {
+        energy_all += array_list1[i].energy;
     }
-    for (auto i: array_list2) {
-        energy_all += i.energy;
+    for (int i=0;i< array_list2.size();i++) {
+        energy_all += array_list2[i].energy;
     }
-    for (auto i: array_list3) {
-        energy_all += i.energy;
+    for (int i=0;i< array_list3.size();i++) {
+        energy_all += array_list3[i].energy;
     }
     energy_all += Reg_sum.read_energy_sum;
     energy_all += Reg_sum.write_energy_sum;

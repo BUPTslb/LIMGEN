@@ -498,7 +498,7 @@ Wlc_Ntk_t * Wlc_NtkIntroduceChoices( Wlc_Ntk_t * pNtk, Vec_Int_t * vBlacks, Vec_
         int isSigned, range;
         if ( i == nOrigObjNum ) 
         {
-            // cout << "break at " << i << endl;
+            // //cout << "break at " << i << endl;
             break;
         }
 

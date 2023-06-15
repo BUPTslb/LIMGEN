@@ -438,7 +438,7 @@ int Dtc_ManCompare2( int * pCut0, int * pCut1 )
     if ( pCut0[4] > pCut1[4] ) return  1;
     return 0;
 }
-// returns array of 5-tuples containing inputs/sum/cout of each full adder
+// returns array of 5-tuples containing inputs/sum///cout of each full adder
 Vec_Int_t * Gia_ManDetectFullAdders( Gia_Man_t * p, int fVerbose, Vec_Int_t ** pvCutsXor2 )
 {
     Vec_Int_t * vCutsXor, * vCutsMaj, * vFadds;

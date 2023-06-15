@@ -62,13 +62,13 @@ static Bac_Trip_t s_Types[100] =
     { (Bac_ObjType_t)-1, "VERIFIC_PMOS",          "111",    {"c","d","o"} },
     { (Bac_ObjType_t)-1, "VERIFIC_CMOS",          "1111",   {"d","nc","pc","o"} },
     { (Bac_ObjType_t)-1, "VERIFIC_TRAN",          "111",    {"inout1","inout2","control"} },
-    { BAC_BOX_ADD      , "VERIFIC_FADD",          "11111",  {"cin","a","b","o","cout"} },
+    { BAC_BOX_ADD      , "VERIFIC_FADD",          "11111",  {"cin","a","b","o","//cout"} },
     { (Bac_ObjType_t)-1, "VERIFIC_RCMOS",         "1111",   {"d","nc","pc","o"} },
     { (Bac_ObjType_t)-1, "VERIFIC_RNMOS",         "111",    {"c","d","o"} },
     { (Bac_ObjType_t)-1, "VERIFIC_RPMOS",         "111",    {"c","d","o"} },
     { (Bac_ObjType_t)-1, "VERIFIC_RTRAN",         "111",    {"inout1","inout2","control"} },
     { (Bac_ObjType_t)-1, "VERIFIC_HDL_ASSERTION", "1",      {"condition"} },
-    { BAC_BOX_ADD      , "add_",                  "1aba1",  {"cin","a","b","o","cout"} },
+    { BAC_BOX_ADD      , "add_",                  "1aba1",  {"cin","a","b","o","//cout"} },
     { BAC_BOX_MUL      , "mult_",                 "ab?",    {"a","b","o"} },            // ? = a * b
     { BAC_BOX_DIV      , "div_",                  "ab?",    {"a","b","o"} },            // ? = 
     { BAC_BOX_MOD      , "mod_",                  "ab?",    {"a","b","o"} },            // ? =

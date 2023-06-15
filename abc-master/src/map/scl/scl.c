@@ -831,7 +831,7 @@ int Scl_CommandStime( Abc_Frame_t * pAbc, int argc, char **argv )
 usage:
     fprintf( pAbc->Err, "usage: stime [-X num] [-capdth]\n" );
     fprintf( pAbc->Err, "\t         performs STA using Liberty library\n" );
-    fprintf( pAbc->Err, "\t-X     : min Cout/Cave ratio for tree estimations [default = %d]\n", nTreeCRatio );
+    fprintf( pAbc->Err, "\t-X     : min //cout/Cave ratio for tree estimations [default = %d]\n", nTreeCRatio );
     fprintf( pAbc->Err, "\t-c     : toggle using wire-loads if specified [default = %s]\n", fUseWireLoads? "yes": "no" );
     fprintf( pAbc->Err, "\t-a     : display timing information for all nodes [default = %s]\n", fShowAll? "yes": "no" );
     fprintf( pAbc->Err, "\t-p     : display timing information for critical path [default = %s]\n", fPrintPath? "yes": "no" );

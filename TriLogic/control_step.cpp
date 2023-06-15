@@ -4,8 +4,8 @@
 #include "dse.h"
 
 
-std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                  vector<magic_arr> &array_list3) {
+std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                                 vector<magic_arr> &array_list3) {
     for (int i = 0; i < controlstep2.size(); i++) {
         for (int j = 0; j < controlstep2[i].size(); ++j) {
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
@@ -169,57 +169,86 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
 
                 continue;//进行下一个循环
             }//下面的操作没有=了
+            //cout<<"no error with = "<<endl;
 
             //首先确定操作数的个数
             int operand_num = 2;
             if (type_operation == 8) operand_num = 1;//NOT
+            //cout<<"control step 1 "<<endl;
             //第一步，取操作数,这里的type,id都指的是阵列
             int input1_type = 0, input2_type = 0, input1_id = -1, input2_id = -1;
             //寻找的是节点存储的ID,或者执行完毕的输出位置
             if (operand_num == 1) //1个操作数
             {
+                //cout<<"control step 2 "<<endl;
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 //判断立即数
                 if (controlstep2[i][j]->depend1 != nullptr)
+                {
+                    //cout<<"control step 3 "<<endl;
                     find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
+                    //cout<<"no error with find_input "<<endl;
+                }
                 else {
+                    //cout<<"control step 4 "<<endl;
                     //立即数
                     input1_type = -1;
                     input1_id = -1;
+                    //cout<<"control step 5 "<<endl;
                 }
             } else    //2个操作数
             {
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 if (controlstep2[i][j]->depend1 != nullptr)
+                {
+                    //cout<<"control step 6 "<<endl;
                     find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
+                    //cout<<"no error with find_input "<<endl;
+                }
                 else {
+                    //cout<<"control step 7 "<<endl;
                     //立即数
                     input1_type = -1;
                     input1_id = -1;
+                    //cout<<"control step 8 "<<endl;
                 }
                 if (controlstep2[i][j]->depend2 != nullptr)
+                {
+                    //cout<<"control step 9 "<<endl;
                     find_input(input2_type, input2_id, controlstep2[i][j]->depend2);
+                    //cout<<"no error with find_input "<<endl;
+                }
                 else {
+                    //cout<<"control step 10 "<<endl;
                     //立即数
                     input2_type = -1;
-                    input2_id = -1;
+                    input2_id = -1;//cout<<"control step 11 "<<endl;
                 }
             }
 
             //先决定执行类型
             int do_array_type = 0, do_array_id = -1;//执行阵列的类型,id
+            //cout<<"control step 12 "<<endl;
             do_array_type = decide_array_type(type_operation, design_target);//决定执行阵列类型 1 2 3
+            //cout<<"no error with decide_array_type "<<endl;
             //更新节点的do_type,执行节点的do_type只有1:lut-out 2:sa-out 3:magic
             controlstep2[i][j]->do_type = do_array_type;
+            //cout<<"control step 13 "<<endl;
             //如果要执行的类型当前没有阵列，则建立
             if (do_array_type == 1 && array_list1.empty() ||
                 do_array_type == 2 && array_list2.empty() ||
                 do_array_type == 3 && array_list3.empty())
+            {
+                //cout<<"control step 14 "<<endl;
                 do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
+                //cout<<"no error with build "<<endl;
+            }
 
+            //cout<<"control step 15 "<<endl;
             //决定执行阵列的id
             do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
                                           array_list2, array_list3, input1_type, input1_id, input2_type, input2_id);
+            //cout<<"no error with decide_array_id "<<endl;
 
             /*现在已知：
              * 操作数1所在阵列类型，id；
@@ -234,18 +263,22 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
             //input_type的类型有：-1(寄存器) 1(lut) 2(sa) 3(magic)
             if (operand_num == 1) //只有一个操作数，读取
             {
-//                cout << "操作数个数为1" << endl;
+                //cout << "opnum 1 data_read" << endl;
                 data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
+                //cout << "opnum 1 data_read 2" << endl;
             } else //有两个操作数
             {
-//                cout << "操作数个数为2" << endl;
+                //cout << "opnum 2-1 data_read 1" << endl;
                 data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
+                //cout << "opnum 2-1 data_read 2" << endl;
                 data_read(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
+                //cout << "opnum 2-1 data_read 3" << endl;
             }
-//            cout << "date_read运行正常" << endl;
+            //cout<<"no error with data read "<<endl;
+//            //cout << "date_read运行正常" << endl;
             //现在已经知道了操作数的个数operand_num
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
@@ -253,11 +286,13 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
             input_logic(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
                         controlstep2[i][j],
                         array_list1, array_list2, array_list3);
+            //cout<<"no error with input logic "<<endl;
             //执行运算,要更新finish_id
             output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
+            //cout<<"no error with output logic "<<endl;
 
-//            cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
+//            //cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
             //写回在最开始，不用在执行
             //只要有写操作，就存在-内部有覆盖的情况，更新出度，清除被覆盖的节点，节点出度为0，找到存储他的阵列，将其擦除
             //补充控制节点，设计比较器件 ，看是否需要加其他运算器，如ALU
@@ -265,6 +300,7 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
 
             //更新出度
             out_degree(controlstep2[i][j]);
+            //cout<<"no error with out_degree "<<" i "<<i<<" j "<<j<<endl;
 
         }
     }
@@ -272,60 +308,90 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
     //开始执行模拟退火布局布线
     //将所有阵列进行编号
     vector<Array_place> place_list;
+    //cout<<"no error with vector<Array_place> place_list; "<<endl;
     int num_array=array_list1.size()+array_list2.size()+array_list3.size();//阵列个数
+    //cout<<"no error with num_array "<<endl;
     int **data_transfer=new int * [num_array];//数据传输次数
+    //cout<<"no error with **data_transfer "<<endl;
     for (int i = 0; i < num_array; ++i) {
         data_transfer[i]=new int[num_array];
         for (int j = 0; j < num_array; ++j) {
             data_transfer[i][j]=0;
         }
     }
+    //cout<<"no error with **data_transfer [][]"<<endl;
 
-
+    //cout<<"controlstep array_list1.size = "<<array_list1.size()<<endl;
     for (int i = 0; i < array_list1.size(); ++i) {
+        //cout<<"controlstep array_list1 "<<i <<"  1"<<endl;
         Array_place place_arr;
+        //cout<<"controlstep array_list1 "<<i <<"  2"<<endl;
         place_arr.array_id = i;
+        //cout<<"controlstep array_list1 "<<i <<"  3"<<endl;
         place_arr.array_type = 1;
+        //cout<<"controlstep array_list1 "<<i <<"  4"<<endl;
         place_arr.array_width = array_list1[i].lut_num;
+        //cout<<"controlstep array_list1 "<<i <<"  5"<<endl;
         place_arr.array_height = array_list1[i].row_num;
+        //cout<<"controlstep array_list1 "<<i <<"  6"<<endl;
         place_arr.pos_x = 0;
+        //cout<<"controlstep array_list1 "<<i <<"  7"<<endl;
         place_arr.pos_y = 0;
+        //cout<<"controlstep array_list1 "<<i <<"  8"<<endl;
         place_list.push_back(place_arr);
-        array_list1[i].place_id=i;
+        //cout<<"controlstep array_list1 "<<i <<"  9"<<endl;
         //遍历array_list1的data_exchange
-        place_num(array_list1[i].data_exchange, data_transfer, i, num_array,array_list1.size(),array_list2.size(),array_list3.size());//???
+        place_num(array_list1[i].data_exchange, data_transfer, i, array_list1.size(), array_list2.size());//???
+        //cout<<"controlstep array_list1 "<<i <<"  10"<<endl;
     }
+    //cout<<"no error with array_list1 "<<endl;
+    //cout<<"controlstep array_list2.size = "<<array_list2.size()<<endl;
     for (int i = array_list1.size(); i <array_list1.size()+array_list2.size(); ++i) {
-        Array_place place_arr;
+        Array_place place_arr{};
+        //cout<<"controlstep array_list2 "<<i <<"  1"<<endl;
         place_arr.array_id = i;
+        //cout<<"controlstep array_list2 "<<i <<"  2"<<endl;
         place_arr.array_type = 2;
+        //cout<<"controlstep array_list2 "<<i <<"  3"<<endl;
         place_arr.array_width = array_list2[i-array_list1.size()].col_num;
+        //cout<<"controlstep array_list2 "<<i <<"  4"<<endl;
         place_arr.array_height = array_list2[i-array_list1.size()].row_num;
+        //cout<<"controlstep array_list2 "<<i <<"  5"<<endl;
         place_arr.pos_x = 0;
+        //cout<<"controlstep array_list2 "<<i <<"  6"<<endl;
         place_arr.pos_y = 0;
+        //cout<<"controlstep array_list2 "<<i <<"  7"<<endl;
         place_list.push_back(place_arr);
-        array_list2[i-array_list1.size()].place_id=i;
-        place_num(array_list2[i-array_list1.size()].data_exchange, data_transfer, i, num_array,array_list1.size(),array_list2.size(),array_list3.size());//???
+        //cout<<"controlstep array_list2 "<<i <<"  8"<<endl;
+        place_num(array_list2[i - array_list1.size()].data_exchange, data_transfer, i, array_list1.size(),
+                  array_list2.size());//???
+        //cout<<"controlstep array_list2 "<<i <<"  9"<<endl;
     }
+    //cout<<"no error with array_list2 "<<endl;
+    //cout<<"controlstep array_list3.size = "<<array_list3.size()<<endl;
     for (int i = array_list1.size()+array_list2.size(); i <array_list1.size()+array_list2.size()+array_list3.size(); ++i) {
-        Array_place place_arr;
+        Array_place place_arr{};
+        //cout<<"controlstep array_list3 "<<i <<"  1"<<endl;
         place_arr.array_id = i;
+        //cout<<"controlstep array_list3 "<<i <<"  2"<<endl;
         place_arr.array_type = 3;
+        //cout<<"controlstep array_list3 "<<i <<"  3"<<endl;
         place_arr.array_width = array_list3[i-array_list1.size()-array_list2.size()].col_num;
+        //cout<<"controlstep array_list3 "<<i <<"  4"<<endl;
         place_arr.array_height = array_list3[i-array_list1.size()-array_list2.size()].row_num;
+        //cout<<"controlstep array_list3 "<<i <<"  5"<<endl;
         place_arr.pos_x = 0;
+        //cout<<"controlstep array_list3 "<<i <<"  6"<<endl;
         place_arr.pos_y = 0;
+        //cout<<"controlstep array_list3 "<<i <<"  7"<<endl;
         place_list.push_back(place_arr);
-        array_list3[i-array_list1.size()-array_list2.size()].place_id=i;
-        place_num(array_list3[i-array_list1.size()-array_list2.size()].data_exchange, data_transfer, i, num_array,array_list1.size(),array_list2.size(),array_list3.size());//???
+        //cout<<"controlstep array_list3 "<<i <<"  8"<<endl;
+        place_num(array_list3[i - array_list1.size() - array_list2.size()].data_exchange, data_transfer, i,
+                  array_list1.size(), array_list2.size());//???
+        //cout<<"controlstep array_list3 "<<i <<"  9"<<endl;
     }
-    //place_list构建完成
-    for (int i = 0; i < num_array; ++i) {
-        for (int j = 0; j < num_array; ++j) {
-                cout<<data_transfer[i][j]<<" ";
-        }
-        cout<<endl;
-    }
+    //cout<<"no error with array_list3 "<<endl;
+
     //规定xy的界限
     int x_max=ceil(sqrt(num_array));
     int y_max=x_max;
@@ -342,26 +408,34 @@ std::vector<double> control_step(vector<vector<Node *>> &controlstep2, vector<lu
     double coolingRate=0.95;
     int maxIterations=1e6;
     double threshold=1e-30;
-
+    //cout<<"control step  simulateAnnealing 1"<<endl;
     simulateAnnealing(place_list,Place_array,data_transfer, num_array,x_max,y_max, initialTemperature, finalTemperature,
             coolingRate, maxIterations, threshold);
+    //cout<<"control step  simulateAnnealing 2"<<endl;
     //释放空间
     for (int i = 0; i < num_array; ++i) {
         delete [] data_transfer[i];
     }
     delete [] data_transfer;
+    //cout<<"no error with delete [] data_transfer; "<<endl;
+    //cout<<"x_max = "<<x_max<<endl;
     for (int i = 0; i < x_max; ++i) {
+        //cout<<"Place_array delete "<<i<<endl;
         delete [] Place_array[i];
     }
     delete [] Place_array;
+    //cout<<"no error with delete [] Place_array; "<<endl;
 
 
     //遍历完控制步，输出延迟、能耗、面积信息
     double all_latency=latency_all(array_list1, array_list2, array_list3);
+    //cout<<"no error with latency_all "<<endl;
     double all_energy=energy_all(array_list1, array_list2, array_list3);
+    //cout<<"no error with energy_all "<<endl;
     double all_area= area_all(array_list1,array_list2,array_list3);
+    //cout<<"no error with area_all "<<endl;
 
-//    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
+//    redirect//coutToFile(controlstep2, array_list1, array_list2, array_list3);
     std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
     return latency_energy_area;
 

@@ -137,7 +137,7 @@ void WriteTableIntoFile( FILE * pFile )
 {
     int v, w;
     Cube * p;
-    int cOutputs;
+    int //coutputs;
     int nOutput;
     int WordSize;
 
@@ -161,7 +161,7 @@ void WriteTableIntoFile( FILE * pFile )
         fprintf( pFile, " " );
 
         // write the output variables
-        cOutputs = 0;
+        //coutputs = 0;
         nOutput = g_CoverInfo.nVarsOut;
         WordSize = 8*sizeof( unsigned );
         for ( w = 0; w < g_CoverInfo.nWordsOut; w++ )
@@ -171,7 +171,7 @@ void WriteTableIntoFile( FILE * pFile )
                     fprintf( pFile, "1" );
                 else
                     fprintf( pFile, "0" );
-                if ( ++cOutputs == nOutput )
+                if ( ++//coutputs == nOutput )
                     break;
             }
         fprintf( pFile, "\n" );

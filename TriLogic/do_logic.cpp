@@ -5,33 +5,37 @@
 //write_back中读取、写入都有
 //目前得到：操作数个数、操作数来源的类型、操作数来源的阵列位置
 void input_logic(int operand_num, int input1_type, int input1_id, int input2_type, int input2_id,
-                 int decide_array_type, int decide_array_id, Node *now,
+                 int decide_array_type, int decide_array_id, Nodes *now,
                  vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
-//    cout << "input_logic中的decide_array_type= " << decide_array_type << endl;
-    int op_type= op2int(now->operator_name);
+    //cout << "input_logic decide_array_type= " << decide_array_type << endl;
     switch (decide_array_type) {
         case 1://LUT
         {
-            if (array_list1.empty()) //以防万一，如果lut阵列是空的
-            {
-                int build_new=build(1,op_type, array_list1,array_list2, array_list3);
-                decide_array_id=build_new;
-            }
+            //cout<<"input_logic 1"<<endl;
             return;//LUT输入无需写入
         }
 
         case 2: //执行阵列的类型是SA
         {
+            //cout<<"input_logic 2"<<endl;
             if (operand_num == 1) //假设只有一个操作数
             {
+                //cout<<"input_logic 3"<<endl;
                 //在阵列中：跳过
                 //不在阵列中：直接输到sa_direct(依赖的节点id)
                 //如果不在一个阵列中，更新
                 if (input1_type != 6 || input1_id != decide_array_id) {
+                    //cout<<"input_logic 4"<<endl;
                     if (now->depend1 != nullptr) //不是立即数
+                    {
+                        //cout<<"input_logic 5"<<endl;
                         array_list2[decide_array_id].sa_direct = now->depend1->node_id;
+                    }
                     else
+                    {
+                        //cout<<"input_logic 6"<<endl;
                         array_list2[decide_array_id].sa_direct = -1;
+                    }
                 }
 
             } else    //有两个操作数，一个输入到sa_direct,一个写入sa
@@ -41,15 +45,19 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                 if (input1_type == 6 && input1_id == decide_array_id &&
                     input2_type == 6 && input2_id == decide_array_id)
                     return;
-
+                //cout<<"input_logic 7"<<endl;
                 // 2. 1在 2不在   2输送到direct
                 if (input1_type == 6 && input1_id == decide_array_id &&
                     (input2_type != 6 || input2_id != decide_array_id)) {
                     //对立即数进行判断
                     if (now->depend2 != nullptr) {
+                        //cout<<"input_logic 8"<<endl;
                         array_list2[decide_array_id].sa_direct = now->depend2->node_id;
+                        //cout<<"input_logic 9"<<endl;
                     } else {
+                        //cout<<"input_logic 10"<<endl;
                         array_list2[decide_array_id].sa_direct = -1;
+                        //cout<<"input_logic 11"<<endl;
                     }
                 }
 
@@ -58,9 +66,13 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                     (input1_type != 6 || input1_id != decide_array_id)) {
                     //对立即数进行判断
                     if (now->depend1 != nullptr) {
+                        //cout<<"input_logic 12"<<endl;
                         array_list2[decide_array_id].sa_direct = now->depend1->node_id;
+                        //cout<<"input_logic 13"<<endl;
                     } else {
+                        //cout<<"input_logic 14"<<endl;
                         array_list2[decide_array_id].sa_direct = -1;
+                        //cout<<"input_logic 15"<<endl;
                     }
                 }
 
@@ -70,14 +82,14 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                     //随机选择一种
                     //4.1 1写入 2direct
                     //4.2 2写入 1direct
-                    vector<int> idea_ready = {1, 2};
+                    //cout<<"input_logic 16"<<endl;
+                    int idea_ready[2] = {1, 2};
                     int idea_dse = idea_ready[rand() % 2];
+                    //cout<<"input_logic 17"<<endl;
                     array_list2[decide_array_id].write_number++;
-                    //获取现在的时间
-//                    cout << "执行阵列的类型为sa,其decide_array_type = " << decide_array_type << endl;
-                    //当前节点为now,获取其可以执行的时间：依赖的节点、依赖的阵列
+                    //cout<<"input_logic 18"<<endl;
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type,decide_array_id);
-//                    cout<<"input_logic中的time_now正常运行"<<endl;
+                    //cout<<"input_logic 19"<<endl;
                     //1.depend1写入,注意时间的节点
                     //将时间更新到depend1
                     if (idea_dse == 1) {
@@ -86,58 +98,79 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                         //对立即数进行讨论
                         if (now->depend1!= nullptr) //depend1不是立即数,则是一个=节点, 写入sa阵列中
                         {
-                            if (cap_array_lost(2, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                            int cap_now=cap_array_lost(2, decide_array_id, array_list1, array_list2, array_list3);
+                            if (cap_now== 0) {
+                                //cout<<"input_logic 20"<<endl;
                                 write_cover(0, now->depend1, 2, decide_array_id,1, array_list1, array_list2, array_list3);
+                                //cout<<"input_logic 21"<<endl;
                             }
                             else
                             {
+                                //cout<<"input_logic 22"<<endl;
                                 //更新阵列的存储节点表
                                 array_add_node(2,decide_array_id,now->depend1, array_list1, array_list2,array_list3);
+                                //cout<<"input_logic 23"<<endl;
                                 //更新节点的写回表
                                 now->depend1->wb_pos[2].push_back(decide_array_id);
+                                //cout<<"input_logic 24"<<endl;
                                 //更新节点的do_type sa存储 6
                                 now->depend1->do_type = 6;
+                                //cout<<"input_logic 25"<<endl;
                                 //更新节点的finish_id
                                 now->depend1->finish_id = decide_array_id;
+                                //cout<<"input_logic 26"<<endl;
                                 //更新1的节点的时间、阵列的时间
                                 //将节点now.depend1写入阵列阵列中，执行类型应该是6而不是2
                                 time_update(0, 6, decide_array_id, time_n, now->depend1, array_list1,
                                             array_list2, array_list3);
+                                //cout<<"input_logic 27"<<endl;
                             }
                         }
                         else //depend1是立即数,只需要更新写入阵列这段时间,将阵列依赖时间延长了
                         {
                             //判断是否需要写覆盖,这里op_type只要不是0，就不会用到now,只进行写覆盖
                             if (cap_array_lost(2, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                                //cout<<"input_logic 28"<<endl;
                                 write_cover(100, now, 2, decide_array_id,1, array_list1, array_list2, array_list3);
+                                //cout<<"input_logic 29"<<endl;
                             }
                             else
                             {
+                                //cout<<"input_logic 30"<<endl;
                                 array_list2[decide_array_id].start_time = time_n;
                                 double time_up = sa_latency(0, array_list2[decide_array_id].sa_type);
                                 array_list2[decide_array_id].over_time = time_n + time_up;
                                 //set is_using
                                 array_list2[decide_array_id].is_using = true;
+                                //cout<<"input_logic 31"<<endl;
                             }
 
                         }
                         //更新能量，对type-id阵列执行了写入（0）操作
+                        //cout<<"input_logic 32"<<endl;
                         energy_update(0, 6, decide_array_id, array_list1, array_list2, array_list3);
+                        //cout<<"input_logic 33"<<endl;
                         //2直接到direct
                         array_list2[decide_array_id].sa_direct =(now->depend2== nullptr)? -1: now->depend2->node_id;
+                        //cout<<"input_logic 34"<<endl;
                     }
                     else//2.depend2写入
                     {
                         //更新阵列的写次数
+                        //cout<<"input_logic 35"<<endl;
                         array_list2[decide_array_id].write_number++;
+                        //cout<<"input_logic 36"<<endl;
                         //对立即数进行讨论
                         if (now->depend2!= nullptr) //depend1不是立即数,则是一个=节点, 写入sa阵列中
                         {
                             if (cap_array_lost(2, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                                //cout<<"input_logic 37"<<endl;
                                 write_cover(0, now->depend2, 2, decide_array_id,1, array_list1, array_list2, array_list3);
+                                //cout<<"input_logic 38"<<endl;
                             }
                             else
                             {
+                                //cout<<"input_logic 39"<<endl;
                                 //更新阵列的存储节点表
                                 array_add_node(2,decide_array_id,now->depend2, array_list1, array_list2,array_list3);
                                 //更新节点的写回表
@@ -147,8 +180,10 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                                 //更新节点的finish_id
                                 now->depend2->finish_id = decide_array_id;
                                 //更新1的节点的时间、阵列的时间
+                                //cout<<"input_logic 40"<<endl;
                                 time_update(0, 6, decide_array_id, time_n, now->depend2, array_list1,
                                             array_list2, array_list3);
+                                //cout<<"input_logic 41"<<endl;
                             }
                         }
                         else //depend2是立即数,只需要更新写入阵列这段时间
@@ -156,20 +191,27 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
 
                             //判断是否需要写覆盖,这里op_type只要不是0，就不会用到now,只进行写覆盖
                             if (cap_array_lost(2, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                                //cout<<"input_logic 42"<<endl;
                                 write_cover(100, now, 2, decide_array_id,1, array_list1, array_list2, array_list3);
+                                //cout<<"input_logic 43"<<endl;
                             }
+                            //cout<<"input_logic 44"<<endl;
                             array_list2[decide_array_id].start_time = time_n;
                             double time_up = sa_latency(0, array_list2[decide_array_id].sa_type);
                             array_list2[decide_array_id].over_time = time_n + time_up;
                             //set is_using
                             array_list2[decide_array_id].is_using = true;
+                            //cout<<"input_logic 45"<<endl;
 
                         }
                         //更新能量，对type-id阵列执行了写入（0）操作
                         //写入sa阵列，= do_type类型为6
+                        //cout<<"input_logic 46"<<endl;
                         energy_update(0, 6, decide_array_id, array_list1, array_list2, array_list3);
+                        //cout<<"input_logic 47"<<endl;
                         //2直接到direct
                         array_list2[decide_array_id].sa_direct =(now->depend2== nullptr)? -1: now->depend2->node_id;
+                        //cout<<"input_logic 48"<<endl;
                     }
                 }
             }
@@ -182,8 +224,9 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                 //不在一个阵列中，写入
                 if (input1_type != 3 || input1_id != decide_array_id) {
                     //获取现在的时间
+                    //cout<<"input_logic 49"<<endl;
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-//                    cout<<"input_logic中的time_now正常运行"<<endl;
+                    //cout<<"input_logic 50"<<endl;
                     //更新阵列的写次数
                     array_list3[decide_array_id].write_number++;
                     //判断立即数
@@ -191,7 +234,9 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                     {
                         //判断是否需要写覆盖
                         if (cap_array_lost(3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                            //cout<<"input_logic 51"<<endl;
                             write_cover(0, now, 3,decide_array_id, 1,array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 52"<<endl;
                         }
                         else
                         {
@@ -204,16 +249,21 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                             //更新节点的finish_id
                             now->depend1->finish_id = decide_array_id;
                             //更新节点的时间、能量
+                            //cout<<"input_logic 53"<<endl;
                             time_update(0, decide_array_type, decide_array_id, time_n, now->depend1, array_list1, array_list2,
                                         array_list3);
+                            //cout<<"input_logic 54"<<endl;
                             energy_update(0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 55"<<endl;
                         }
 
                     }
                     else //是立即数
                     {
                         if (cap_array_lost(3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                            //cout<<"input_logic 56"<<endl;
                             write_cover(100, now, 3,decide_array_id, 1,array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 57"<<endl;
                         }
                         else
                         {
@@ -222,7 +272,9 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                             array_list3[decide_array_id].over_time = time_n + time_up;
                             //set is_using
                             array_list3[decide_array_id].is_using = true;
+                            //cout<<"input_logic 58"<<endl;
                             energy_update(0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 59"<<endl;
                         }
 
                     }
@@ -234,8 +286,10 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                 //1不在一个阵列中，写入
                 if (input1_type != 3 || input1_id != decide_array_id) {
                     //获取现在的时间
+                    //cout<<"input_logic 60"<<endl;
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-//                    cout<<"input_logic中的time_now正常运行"<<endl;
+                    //cout<<"input_logic 61"<<endl;
+//                    //cout<<"input_logic中的time_now正常运行"<<endl;
                     //更新阵列的写次数
                     array_list3[decide_array_id].write_number++;
                     //判断立即数
@@ -243,10 +297,13 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                     {
                         //判断是否需要写覆盖
                         if (cap_array_lost(3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                            //cout<<"input_logic 62"<<endl;
                             write_cover(0, now, 3,decide_array_id, 1,array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 63"<<endl;
                         }
                         else
                         {
+                            //cout<<"input_logic 64"<<endl;
                             //更新阵列的存储节点表
                             array_list3[decide_array_id].store_node.push_back(now->depend1->node_id);
                             //更新节点的写回表
@@ -258,14 +315,18 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                             //更新节点的时间、能量
                             time_update(0, decide_array_type, decide_array_id, time_n, now->depend1, array_list1, array_list2,
                                         array_list3);
+                            //cout<<"input_logic 65"<<endl;
                             energy_update(0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 66"<<endl;
                         }
 
                     }
                     else //是立即数
                     {
                         if (cap_array_lost(3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                            //cout<<"input_logic 67"<<endl;
                             write_cover(100, now, 3,decide_array_id, 1,array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 68"<<endl;
                         }
                         else
                         {
@@ -274,7 +335,9 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                             array_list3[decide_array_id].over_time = time_n + time_up;
                             //set is_using
                             array_list3[decide_array_id].is_using = true;
+                            //cout<<"input_logic 69"<<endl;
                             energy_update(0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 70"<<endl;
                         }
 
                     }
@@ -284,8 +347,10 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                 //2不在一个阵列中，写入
                 if (input2_type != 3 || input2_id != decide_array_id) {
                     //获取现在的时间
+                    //cout<<"input_logic 71"<<endl;
                     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-//                    cout<<"input_logic中的time_now正常运行"<<endl;
+                    //cout<<"input_logic 72"<<endl;
+//                    //cout<<"input_logic中的time_now正常运行"<<endl;
                     //更新阵列的写次数
                     array_list3[decide_array_id].write_number++;
                     //判断立即数
@@ -293,7 +358,9 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                     {
                         //判断是否需要写覆盖
                         if (cap_array_lost(3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                            //cout<<"input_logic 73"<<endl;
                             write_cover(0, now, 3,decide_array_id, 1,array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 74"<<endl;
                         }
                         else
                         {
@@ -306,16 +373,21 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                             //更新节点的finish_id
                             now->depend2->finish_id = decide_array_id;
                             //更新节点的时间、能量
+                            //cout<<"input_logic 76"<<endl;
                             time_update(0, decide_array_type, decide_array_id, time_n, now->depend2, array_list1, array_list2,
                                         array_list3);
+                            //cout<<"input_logic 77"<<endl;
                             energy_update(0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 78"<<endl;
                         }
 
                     }
                     else //是立即数
                     {
                         if (cap_array_lost(3, decide_array_id, array_list1, array_list2, array_list3) == 0) {
+                            //cout<<"input_logic 79"<<endl;
                             write_cover(100, now, 3,decide_array_id, 1,array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 80"<<endl;
                         }
                         else
                         {
@@ -324,7 +396,9 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
                             array_list3[decide_array_id].over_time = time_n + time_up;
                             //set is_using
                             array_list3[decide_array_id].is_using = true;
+                            //cout<<"input_logic 81"<<endl;
                             energy_update(0, decide_array_type, decide_array_id, array_list1, array_list2, array_list3);
+                            //cout<<"input_logic 82"<<endl;
                         }
 
                     }
@@ -344,7 +418,7 @@ void input_logic(int operand_num, int input1_type, int input1_id, int input2_typ
 
 //此时已经确定的条件：阵列可用、阵列类型、阵列id
 //数据都已经准备完毕
-void output_logic(int decide_array_type, int decide_array_id, int op_type, Node *now, \
+void output_logic(int decide_array_type, int decide_array_id, int op_type, Nodes *now, \
                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //执行期间对阵列的影响
     //对节点：需要调用模块时，更新finish_id
@@ -352,12 +426,14 @@ void output_logic(int decide_array_type, int decide_array_id, int op_type, Node 
     //1.是否需要调用模块 LUT SA MA 都有设计好的模块供调用
     //获取时间
     double time_n = time_now(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-//    cout<<"output_logic中的time_now正常运行"<<endl;
+
+    //cout<<"no error output_logic time_now"<<endl;
     switch (decide_array_type) {
         case 1: //LUT
         {
-//            cout<<"outlogic使用的执行阵列类型为 lut,现在lut阵列的个数为 "<<array_list1.size()<<endl;
+//            //cout<<"outlogic使用的执行阵列类型为 lut,现在lut阵列的个数为 "<<array_list1.size()<<endl;
             op_lut(op_type, decide_array_id, now, time_n, array_list1, array_list2, array_list3);
+            //cout<<"no error output_logic op_lut"<<endl;
             //需要一个函数判断是否需要调用模块
             //根据op_type，进行每一个阵列下的操作：lut_op\sa_op\ma_op
             return;
@@ -365,11 +441,13 @@ void output_logic(int decide_array_type, int decide_array_id, int op_type, Node 
 
         case 2: {
             op_sa(op_type, decide_array_id, now, time_n, array_list1, array_list2, array_list3);
+            //cout<<"no error output_logic op_sa"<<endl;
             return;
         }
 
         case 3: {
             op_magic(op_type, decide_array_id, now, time_n, array_list1, array_list2, array_list3);
+            //cout<<"no error output_logic op_magic"<<endl;
             return;
         }
 
@@ -380,7 +458,7 @@ void output_logic(int decide_array_type, int decide_array_id, int op_type, Node 
 }
 
 //lut执行逻辑
-void op_lut(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
+void op_lut(int op_type, int decide_array_id, Nodes *now, double time_now, vector<lut_arr> &array_list1,
             vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //重新确认节点的执行类型
     now->do_type = 1;
@@ -414,7 +492,7 @@ void op_lut(int op_type, int decide_array_id, Node *now, double time_now, vector
 }
 
 //sa执行逻辑
-void op_sa(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
+void op_sa(int op_type, int decide_array_id, Nodes *now, double time_now, vector<lut_arr> &array_list1,
            vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     now->do_type = 2;
     now->finish_id = decide_array_id;//模块调用怎么写？
@@ -451,7 +529,7 @@ void op_sa(int op_type, int decide_array_id, Node *now, double time_now, vector<
 
 //magic执行逻辑
 //涉及到中间值的时候，需要进行写入
-void op_magic(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
+void op_magic(int op_type, int decide_array_id, Nodes *now, double time_now, vector<lut_arr> &array_list1,
               vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     now->do_type = 3;
     now->finish_id = decide_array_id;//模块调用怎么写？对操作进行拆解

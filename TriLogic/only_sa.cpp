@@ -2,15 +2,15 @@
 #include "logic_func.h"
 //对照实验，只选用sa来实现功能
 //可以存储的位置 6.sa 5.sa-buffer -1.reg  写回要重新调用
-std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-              vector<magic_arr> &array_list3)
+std::vector<double>  only_sa(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                             vector<magic_arr> &array_list3)
 {
     for (int i = 0; i < controlstep2.size(); i++) {
         for (int j = 0; j < controlstep2[i].size(); ++j) {
             //一层层遍历控制步，获取操作数，获取算子，分配阵列，计算速度、功耗、面积
             int type_operation = op2int(controlstep2[i][j]->operator_name);
 //            if (controlstep2[i][j]->node_id==53)
-//                cout<<"初始时间："<<controlstep2[i][j]->node_id<<" "<<controlstep2[i][j]->start_time<<" "<<controlstep2[i][j]->end_time<<endl;
+//                //cout<<"初始时间："<<controlstep2[i][j]->node_id<<" "<<controlstep2[i][j]->start_time<<" "<<controlstep2[i][j]->end_time<<endl;
 
             if (type_operation == 0)//等号，其操作数为op或者立即数
                 //不一定有依赖，如果常用的立即数，会将其交给寄存器
@@ -188,9 +188,9 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
     }
 
     //遍历完控制步，输出延迟、能耗、面积信息
-//    cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
-//    cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
-//    cout << "整体架构的面积为： " << area_all(array_list1, array_list2, array_list3) << "F^2"<<endl;
+//    //cout << "整体架构的延迟为： " << latency_all(array_list1, array_list2, array_list3) << "ns" << endl;
+//    //cout << "整体架构的能耗为： " << energy_all(array_list1, array_list2, array_list3) << "pJ"<<endl;
+//    //cout << "整体架构的面积为： " << area_all(array_list1, array_list2, array_list3) << "F^2"<<endl;
 
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
@@ -201,7 +201,7 @@ std::vector<double>  only_sa(vector<vector<Node *>> controlstep2,vector<lut_arr>
 }
 
 double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                    vector<magic_arr> &array_list3, Node *node_now, int decide_array_type, int decide_array_id) {
+                    vector<magic_arr> &array_list3, Nodes *node_now, int decide_array_type, int decide_array_id) {
     //函数执行的操作：
     //执行阵列：更新开始时间和结束时间，将使用的阵列置为is_using=true
     //其他阵列，如果当前执行阵列的开始时间比其结束时间要大,将is_using置为false
@@ -210,20 +210,20 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
     double time2 = 0; //depend2的时间
     double time3 = 0; //control的时间
     double time_do_array = 0; //阵列的时间
-//    cout << "time_now函数中的decide_array_type = " << decide_array_type << endl;
+//    //cout << "time_now函数中的decide_array_type = " << decide_array_type << endl;
     //假设确定了使用的阵列，那节点开始执行的时间就是使用阵列的结束时间
     //虽然操作并行可能会让op类型比=先执行，但时间和能量均不影响
     if (decide_array_type == 2)
         time_do_array = array_list2[decide_array_id].over_time;
 //    if (time_do_array>3000)
-//        cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
+//        //cout << "time_now函数中阵列的over_time: " << time_do_array << endl;
     int op_type = op2int(node_now->operator_name);//操作类型
     //先看控制依赖
     if (node_now->control != nullptr) {
         time3 = node_now->control->end_time;
         time_n = max(time_n, time3);
     }
-//    cout << "控制依赖 time3 =" << time3 << endl;
+//    //cout << "控制依赖 time3 =" << time3 << endl;
     if (op_type == 0) //写操作,只有一个数据依赖，可能有控制依赖
     {
         if (node_now->depend1 != nullptr) //有依赖 A=b A=B OP C
@@ -264,7 +264,7 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     write_back_sa( node_now->depend1->do_type, node_now->depend1->finish_id, node_now->depend1,
                                   array_list1, array_list2, array_list3);
                 }
-//                cout << "time_only_sa中的write_back_sa没问题" << endl;
+//                //cout << "time_only_sa中的write_back_sa没问题" << endl;
                 time_n = time_only_sa( array_list1, array_list2, array_list3, node_now, decide_array_type,
                                       decide_array_id);//更新时间
             }
@@ -275,7 +275,7 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         if (node_now->depend2 != nullptr) //2有依赖
         {
             time2 = node_now->depend2->end_time;
-//            cout << "time2 = " << time2 << endl;
+//            //cout << "time2 = " << time2 << endl;
             if ((time_do_array > time2 || time3 > time2) &&
                 wb_empty(node_now->depend2)) //阵列结束时间、控制依赖更晚，对于sa_out和lut-out需要在buffer中保存
             {
@@ -293,6 +293,7 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         //存储后时间会被更新
         //对立即数进行讨论
         auto ft = ([=] {
+            int ft=0;
             if (node_now->depend1 == nullptr || node_now->depend2 == nullptr)
                 return 0;
             else {
@@ -300,6 +301,7 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                 if (time2 > time1 && wb_empty(node_now->depend1)) return 2;//存储1
                 if (time1 == time2) return 0;
             }
+            return ft;
         });
         if (node_now->depend2 != nullptr) //将2存储起来，但是2可能是个立即数，也可能已经存了
         {
@@ -329,7 +331,7 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
     }
 
     //update the is_using of array
-    for (auto i: array_list2) {
+    for (auto &i: array_list2) {
         if (i.over_time < time_n)
             i.is_using = false;
     }
@@ -339,28 +341,28 @@ double time_only_sa(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
 
 }
 
-void data_read_sa(int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Node *now,
+void data_read_sa(int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Nodes *now,
                   vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //如果当前操作数来自寄存器，需要调用寄存器读函数
     //时间和能量加在哪里？
     //根据当前节点，获取当前的时间
     double time_n = time_only_sa( array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-//    cout << "data_read中的time_only_sa运行正常" << endl;
+//    //cout << "data_read中的time_only_sa运行正常" << endl;
     //从数据读取开始，op节点开始执行
     if (now->start_time == 0)
         now->start_time = time_n;
     if (input_type == -1)//register
     {
-//        cout << "data来自寄存器：" << endl;
+//        //cout << "data来自寄存器：" << endl;
         //调用数据读取函数
         //更新读取次数
         Reg_sum.read_num_sum++;
         //更新时间
         read_time_update( -1, -1, time_n, now, array_list1, array_list2, array_list3);
-//        cout << "date_read中的read_time_update运行正常" << endl;
+//        //cout << "date_read中的read_time_update运行正常" << endl;
         //更新能量
         read_energy_update( -1, -1, now, array_list1, array_list2, array_list3);
-//        cout << "date_read中的read_energy_update运行正常" << endl;
+//        //cout << "date_read中的read_energy_update运行正常" << endl;
         //读数
         return;
     }
@@ -478,9 +480,9 @@ void data_read_sa(int No_depend, int &input_type, int &input_id, int decide_arra
 }
 
 void input_logic_sa(int operand_num, int input1_type, int input1_id, int input2_type, int input2_id,
-                    int decide_array_type, int decide_array_id, Node *now,
+                    int decide_array_type, int decide_array_id, Nodes *now,
                     vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
-//    cout << "input_logic中的decide_array_type= " << decide_array_type << endl;
+//    //cout << "input_logic中的decide_array_type= " << decide_array_type << endl;
     int op_type = op2int(now->operator_name);
 
     if (operand_num == 1) //假设只有一个操作数
@@ -535,10 +537,10 @@ void input_logic_sa(int operand_num, int input1_type, int input1_id, int input2_
             int idea_dse = idea_ready[rand() % 2];
             array_list2[decide_array_id].write_number++;
             //获取现在的时间
-//            cout << "执行阵列的类型为sa,其decide_array_type = " << decide_array_type << endl;
+//            //cout << "执行阵列的类型为sa,其decide_array_type = " << decide_array_type << endl;
             double time_n = time_only_sa( array_list1, array_list2, array_list3, now, decide_array_type,
                                          decide_array_id);
-//            cout << "input_logic中的time_only_sa正常运行" << endl;
+//            //cout << "input_logic中的time_only_sa正常运行" << endl;
             //1.depend1写入,注意时间的节点
             //将时间更新到depend1
             if (idea_dse == 0) {
@@ -628,7 +630,7 @@ void input_logic_sa(int operand_num, int input1_type, int input1_id, int input2_
 }
 
 
-void output_logic_sa(int decide_array_type, int decide_array_id, int op_type, Node *now, \
+void output_logic_sa(int decide_array_type, int decide_array_id, int op_type, Nodes *now, \
                 vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //执行期间对阵列的影响
     //对节点：需要调用模块时，更新finish_id
@@ -636,12 +638,12 @@ void output_logic_sa(int decide_array_type, int decide_array_id, int op_type, No
     //1.是否需要调用模块 LUT SA MA 都有设计好的模块供调用
     //获取时间
     double time_n = time_only_sa( array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-//    cout << "output_logic中的time_only_sa正常运行" << endl;
+//    //cout << "output_logic中的time_only_sa正常运行" << endl;
     op_sa_only( op_type, decide_array_id, now, time_n, array_list1, array_list2, array_list3);
 
 }
 //来源：-1.reg 2.sa-out 5.sa-buffer 6.sa 可以写回的位置 0  reg  2 sa  5sa-buffer
-void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void write_back_sa(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                    vector<magic_arr> &array_list3, int back_type, int back_id) {
 //写到buffer中，如果buffer中已经有数据了如何处理？
 
@@ -653,11 +655,11 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
     vector<int> sa_no_using = find_no_using( 0, 2, array_list1, array_list2, array_list3);
     vector<int> sa_waiting = waiting_array_list( 0, 2, array_list1, array_list2, array_list3);
     vector<int> sa_list;
-    for (auto i: sa_no_using) {
+    for (auto &i: sa_no_using) {
         if (cap(2, i) > 0)
             sa_list.push_back(i);
     }
-    for (auto i: sa_waiting) {
+    for (auto &i: sa_waiting) {
         if (cap(2, i) > 0)
             sa_list.push_back(i);
     }
@@ -997,7 +999,7 @@ void write_back_sa(int from_type, int from_id, Node *now, vector<lut_arr> &array
     }
 
 }
-void op_sa_only(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
+void op_sa_only(int op_type, int decide_array_id, Nodes *now, double time_now, vector<lut_arr> &array_list1,
                 vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     now->do_type = 2;
     now->finish_id = decide_array_id;//模块调用怎么写？

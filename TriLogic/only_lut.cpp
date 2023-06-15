@@ -5,12 +5,12 @@
 //需要添加功能：lut阵列做存储，这时就类似ME了
 //有 三个地方可以存储数据 -1.reg(0) 3.magic(lut存储)(3-1) 4.lut-buffer(4)
 //每一次调用和写回相关的都注意，只能写回这三个地方
-std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-              vector<magic_arr> &array_list3) {
+std::vector<double>  only_lut(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+                              vector<magic_arr> &array_list3) {
     for (int i = 0; i < controlstep2.size(); i++) {
-//        cout << "step：" << i << endl;
+//        //cout << "step：" << i << endl;
         for (int j = 0; j < controlstep2[i].size(); ++j) {
-//            cout << "node_id：" << controlstep2[i][j]->node_id << endl
+//            //cout << "node_id：" << controlstep2[i][j]->node_id << endl
 //                 << "operator_name：" << controlstep2[i][j]->operator_name
 //                 << "depend1：" << (controlstep2[i][j]->depend1 ? controlstep2[i][j]->depend1->node_id : 0) << "  "
 //                 << "depend2：" << (controlstep2[i][j]->depend2 ? controlstep2[i][j]->depend2->node_id : 0) << endl;
@@ -38,7 +38,7 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
                     //更新wb_pos,表示写到了寄存器中
                     controlstep2[i][j]->wb_pos[0].push_back(-1);
                     //输出：
-//                    cout << "do_type: " << controlstep2[i][j]->do_type << "  finish_id: "
+//                    //cout << "do_type: " << controlstep2[i][j]->do_type << "  finish_id: "
 //                         << controlstep2[i][j]->finish_id << endl;
                     continue;//进行下一个循环
                 }
@@ -129,9 +129,9 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
 
                 }
 
-//                cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name："
+//                //cout << "node_id：" << controlstep2[i][j]->node_id << "  operator_name："
 //                     << controlstep2[i][j]->operator_name << endl;
-//                cout << "do_type： " << controlstep2[i][j]->do_type << "  finish_id：" << controlstep2[i][j]->finish_id
+//                //cout << "do_type： " << controlstep2[i][j]->do_type << "  finish_id：" << controlstep2[i][j]->finish_id
 //                     << endl;
                 //更新出度
                 out_degree(controlstep2[i][j]);
@@ -177,39 +177,39 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
 
             //先决定执行类型
             int do_array_type = 1, do_array_id = -1;//执行阵列的类型,id
-//            cout << "op_type " << op2int(controlstep2[i][j]->operator_name) << endl
+//            //cout << "op_type " << op2int(controlstep2[i][j]->operator_name) << endl
 //                 << "决定的执行阵列类型：" << do_array_type << endl;
             //更新节点的do_type,执行节点的do_type只有1:lut-out 2:sa-out 3:magic
             controlstep2[i][j]->do_type = do_array_type;
-//            cout << "node " << controlstep2[i][j]->node_id << endl
+//            //cout << "node " << controlstep2[i][j]->node_id << endl
 //                 << "第一次将op的do_type修改后的值为：" << endl
 //                 << "do_type: " << controlstep2[i][j]->do_type << endl;
             //如果要执行的类型当前没有阵列，则建立
             if (array_list1.empty())
                 do_array_id = build(1, type_operation, array_list1, array_list2, array_list3);
-//            cout << "当前的决定执行阵列的位置为：" << do_array_id << endl;
-//            cout << "op类型的节点选择id之前的三种阵列个数为：" << endl
+//            //cout << "当前的决定执行阵列的位置为：" << do_array_id << endl;
+//            //cout << "op类型的节点选择id之前的三种阵列个数为：" << endl
 //                 << array_list1.size() << " " << array_list2.size() << " " << array_list3.size() << endl;
             //决定执行阵列的id
             do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
                                           array_list2, array_list3, input1_type, input1_id, input2_type, input2_id);
 
-//            cout << "调用do_array_id后的执行阵列位置为：" << do_array_id << endl;
+//            //cout << "调用do_array_id后的执行阵列位置为：" << do_array_id << endl;
 
             if (operand_num == 1) //只有一个操作数，读取
             {
-//                cout << "操作数个数为1" << endl;
+//                //cout << "操作数个数为1" << endl;
                 data_read_lut(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                               array_list1, array_list2, array_list3);
             } else //有两个操作数
             {
-//                cout << "操作数个数为2" << endl;
+//                //cout << "操作数个数为2" << endl;
                 data_read_lut(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                               array_list1, array_list2, array_list3);
                 data_read_lut(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
                               array_list1, array_list2, array_list3);
             }
-//            cout << "date_read运行正常" << endl;
+//            //cout << "date_read运行正常" << endl;
             //现在已经知道了操作数的个数operand_num
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
@@ -222,7 +222,7 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
             output_logic_lut(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
 
-//            cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
+//            //cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
             //写回在最开始，不用在执行
             //只要有写操作，就存在-内部有覆盖的情况，更新出度，清除被覆盖的节点，节点出度为0，找到存储他的阵列，将其擦除
             //补充控制节点，设计比较器件 ，看是否需要加其他运算器，如ALU
@@ -240,18 +240,18 @@ std::vector<double>  only_lut(vector<vector<Node *>> controlstep2, vector<lut_ar
     double all_latency=latency_all(array_list1, array_list2, array_list3);
     double all_energy=energy_all(array_list1, array_list2, array_list3);
     double all_area= area_all_lut(array_list1,array_list2,array_list3);
-//    cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
-//    cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
-//    cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
+//    //cout<<"构建的lut阵列个数为: "<<array_list1.size()<<" sa阵列的个数为："<<array_list2.size()<<" magic阵个数为："<<array_list2.size()<<endl;
+//    //cout << "整体架构的延迟为： " << all_latency<< "ns" << endl;
+//    //cout << "整体架构的能耗为： " << all_energy << "pJ"<<endl;
 
-//    redirectCoutToFile(controlstep2, array_list1, array_list2, array_list3);
+//    redirect//coutToFile(controlstep2, array_list1, array_list2, array_list3);
     std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
     return latency_energy_area;
 
 }
 
 double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                     vector<magic_arr> &array_list3, Node *node_now, int decide_array_type, int decide_array_id) {
+                     vector<magic_arr> &array_list3, Nodes *node_now, int decide_array_type, int decide_array_id) {
     //函数执行的操作：
     //执行阵列：更新开始时间和结束时间，将使用的阵列置为is_using=true
     //其他阵列，如果当前执行阵列的开始时间比其结束时间要大,将is_using置为false
@@ -274,14 +274,14 @@ double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         default:
             break;
     }
-//    cout << "time_now_lut" << endl;
+//    //cout << "time_now_lut" << endl;
     int op_type = op2int(node_now->operator_name);//操作类型
     //先看控制依赖
     if (node_now->control != nullptr) {
         time3 = node_now->control->end_time;
         time_n = max(time_n, time3);
     }
-//    cout << "控制依赖 time3 =" << time3 << endl;
+//    //cout << "控制依赖 time3 =" << time3 << endl;
     if (op_type == 0) //写操作,只有一个数据依赖，可能有控制依赖
     {
         if (node_now->depend1 != nullptr) //有依赖 A=b A=B OP C
@@ -353,6 +353,7 @@ double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         //存储后时间会被更新
         //对立即数进行讨论
         auto ft = ([=] {
+            int ft=0;
             if (node_now->depend1 == nullptr || node_now->depend2 == nullptr)
                 return 0;
             else {
@@ -360,6 +361,7 @@ double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                 if (time2 > time1 && wb_empty(node_now->depend1)) return 2;//存储1
                 if (time1 == time2) return 0;
             }
+            return ft;
         });
         if (node_now->depend2 != nullptr) //将2存储起来，但是2可能是个立即数，也可能已经存了
         {
@@ -389,11 +391,11 @@ double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
     }
 
     //update the is_using of array
-    for (auto i: array_list1) {
+    for (auto &i: array_list1) {
         if (i.over_time < time_n)
             i.is_using = false;
     }
-    for (auto i: array_list3) {
+    for (auto &i: array_list3) {
         if (i.over_time < time_n)
             i.is_using = false;
     }
@@ -402,13 +404,13 @@ double time_only_lut(vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
 
 }
 
-void data_read_lut(int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Node *now,
+void data_read_lut(int No_depend, int &input_type, int &input_id, int decide_array_type, int decide_array_id, Nodes *now,
                    vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //如果当前操作数来自寄存器，需要调用寄存器读函数
     //时间和能量加在哪里？
     //根据当前节点，获取当前的时间
     double time_n = time_only_lut(array_list1, array_list2, array_list3, now, decide_array_type, decide_array_id);
-//    cout << "data_read中的time_now运行正常" << endl;
+//    //cout << "data_read中的time_now运行正常" << endl;
     //从数据读取开始，op节点开始执行
     if (now->start_time == 0)
         now->start_time = time_n;
@@ -550,7 +552,7 @@ void data_read_lut(int No_depend, int &input_type, int &input_id, int decide_arr
 }
 
 void input_logic_lut(int operand_num, int input1_type, int input1_id, int input2_type, int input2_id,
-                     int decide_array_type, int decide_array_id, Node *now,
+                     int decide_array_type, int decide_array_id, Nodes *now,
                      vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     int op_type = op2int(now->operator_name);
     switch (decide_array_type) {
@@ -713,7 +715,7 @@ void input_logic_lut(int operand_num, int input1_type, int input1_id, int input2
 
 }
 
-void output_logic_lut(int decide_array_type, int decide_array_id, int op_type, Node *now,
+void output_logic_lut(int decide_array_type, int decide_array_id, int op_type, Nodes *now,
                       vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //执行期间对阵列的影响
     //对节点：需要调用模块时，更新finish_id
@@ -730,7 +732,7 @@ void output_logic_lut(int decide_array_type, int decide_array_id, int op_type, N
 
 
 
-void write_back_lut(int from_type, int from_id, Node *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void write_back_lut(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                     vector<magic_arr> &array_list3, int back_type, int back_id) {
 //只能写回lut和reg
     //先列出magic和sa所有能写的阵列，按照优先级进行排序
@@ -1080,7 +1082,7 @@ void write_back_lut(int from_type, int from_id, Node *now, vector<lut_arr> &arra
 
 }
 
-void op_lut_only(int op_type, int decide_array_id, Node *now, double time_now, vector<lut_arr> &array_list1,
+void op_lut_only(int op_type, int decide_array_id, Nodes *now, double time_now, vector<lut_arr> &array_list1,
                  vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //重新确认节点的执行类型
     now->do_type = 1;

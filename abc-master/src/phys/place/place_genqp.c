@@ -208,7 +208,7 @@ int generateCoGConstraints(reverseCOG COG_rev[]) {
       stack[++stackPtr] = p->m_sub2;
     } else {
       /*
-      cout << "adding a COG constraint for box "
+      //cout << "adding a COG constraint for box "
        << p->bounds.x << ","
        << p->bounds.y << " of size"
        << p->bounds.w << "x"

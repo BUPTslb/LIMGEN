@@ -48,7 +48,7 @@
     Next, all nodes (logic nodes and white boxes) of the network are traversed 
     in a topologic order.
     When a white box is encountered, the TFI cone of box inputs are tranversed 
-    and all new logic nodes encoutered added to the AIG.
+    and all new logic nodes en//coutered added to the AIG.
     Then, the white box is created by the call to Tim_ManCreateBox().
     Then, new POs of the AIG are created in 1-to-1 correspondence with box inputs. 
     Then, new PIs of the AIG are created in 1-to-1 correspondence with box outputs.

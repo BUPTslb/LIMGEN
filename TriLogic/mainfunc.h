@@ -24,12 +24,12 @@ const double power_limit = 10;//功耗限制，单位：
 const int bit_num_operand = 64;//操作数的位数，全局变量，暂时定义为64
 
 //定义节点类型
-struct Node {
+struct Nodes {
     int node_id;//节点ID,用来代表节点
     string operator_name;//算子，只算有操作的，用来选逻辑族，也能判断是不是写操作
-    Node *depend1 = NULL;//两个数据依赖指针,初始定义为NULL
-    Node *depend2 = NULL;//指向前面
-    Node *control = NULL;//控制依赖
+    Nodes *depend1 = NULL;//两个数据依赖指针,初始定义为NULL
+    Nodes *depend2 = NULL;//指向前面
+    Nodes *control = NULL;//控制依赖
     double start_time;//开始时间
     double end_time;//结束时间
     int do_type;//执行的类型 -1 REG 1 LUT 2 SA 3 MA 4 LUT-latch 5 SA-BUFFER 6 SA存储
@@ -38,6 +38,9 @@ struct Node {
     //节点存储表,结构体中不能对向量对象进行初始化
     vector<vector<int>> wb_pos;//存储节点执行完的位置
     //存储节点写回的位置,0:register,1:lut,2:sa,3:ma,4:lut_latch,5:sa-buffer
+    Nodes(){
+        wb_pos.resize(6);
+    }
 };
 
 struct Array_place{
@@ -49,9 +52,9 @@ struct Array_place{
     int pos_y;//阵列位置
 };
 
-extern vector<Node> nodes;//节点类型的向量，里面可以放下一个个节点
+extern vector<Nodes> nodes;//节点类型的向量，里面可以放下一个个节点
 
-extern vector<Node> nodes2;
+extern vector<Nodes> nodes2;
 
 void reset_nodes2();
 
@@ -65,7 +68,6 @@ int lut_level_op(int op_type, int lut_type);
 class Array {
 public:
     int array_id;
-    int place_id;
     bool is_using;//当前正在使用
     int row_num;//大小，行数
     int col_num;//大小，列数
@@ -76,11 +78,19 @@ public:
     double energy;//在RRAM/lux上消耗的能量
     //与array_list中阵列的数据交换次数表，从xx阵列中拿数据
     vector<vector<int>> data_exchange;//0:register,1:lut,2:sa,3:ma
-    //无参数构造函数
+
     Array(){
         data_exchange.resize(4);
-        place_id=0;
     }
+//    ~Array(){
+//
+//        data_exchange.clear();
+//
+//    }
+
+
+
+
 };
 
 //继承
@@ -90,7 +100,9 @@ struct lut_arr : public Array {
 //    set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
-    int lut_level;
+//    ~lut_arr(){
+//        lut_latch.clear();
+//    }
 };
 
 struct sa_arr : public Array {
@@ -100,43 +112,49 @@ struct sa_arr : public Array {
     int sa_out;//当前sa的输出
     bool add_use;
     vector<int> store_node;//存储的节点操作数ID,规定：只存储=
+    ~sa_arr(){
+        sa_buffer.clear();
+    }
 };
 
 struct magic_arr : public Array {
     bool add_use;
     vector<int> store_node;//存储的节点操作数ID，规定：只存储=
+    ~magic_arr(){
+        store_node.clear();
+    }
 };
 
 int Type2node(string type);//Type2node函数的声明
 //在构建节点关系的时候用1
-Node *find_node_by_number1(int node_id);//寻找节点指针的函数声明
-Node *find_node_by_number(int node_id);//寻找节点指针的函数声明
+Nodes *find_node_by_number1(int node_id);//寻找节点指针的函数声明
+Nodes *find_node_by_number(int node_id);//寻找节点指针的函数声明
 //topo排序
-void topologicalSort(vector<Node> nodes, map<int, int> &inDegree,
-                     vector<vector<Node>> &controlstep, map<int, int> &id_pos);//函数声明
+void topologicalSort(vector<Nodes> nodes, map<int, int> &inDegree,
+                     vector<vector<Nodes>> &controlstep, map<int, int> &id_pos);//函数声明
 void ComIndegree(queue<int> &nodeQueue, map<int, int> &inDegree,
-                 vector<Node> &nodes, map<int, int> &id_pos);//子函数声明
+                 vector<Nodes> &nodes, map<int, int> &id_pos);//子函数声明
 //将算子转换成符号
 int op2int(string operation);
 
 //控制步处理函数
 std::vector<double>
-control_step(vector<vector<Node *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+control_step(vector<vector<Nodes *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
              vector<magic_arr> &array_list3);
 
 std::vector<double>
-only_lut(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+only_lut(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
          vector<magic_arr> &array_list3);
 
 std::vector<double>
-only_sa(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+only_sa(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
         vector<magic_arr> &array_list3);
 
 std::vector<double>
-only_magic(vector<vector<Node *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+only_magic(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
            vector<magic_arr> &array_list3);
 
-void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void redirectcoutToFile(vector<vector<Nodes *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                         vector<magic_arr> &array_list3);
 
 

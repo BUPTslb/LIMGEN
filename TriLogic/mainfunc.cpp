@@ -63,9 +63,9 @@ int Type2node(std::string type){
     return 0;
 }
 //根据节点id，返回节点指针，好像和id_pos功能冲突了
-Node * find_node_by_number(int node_id) {
+Nodes * find_node_by_number(int node_id) {
     auto it = std::find_if(nodes2.begin(), nodes2.end(),
-                           [node_id](const Node& node) {
+                           [node_id](const Nodes& node) {
                                return node.node_id == node_id;
                            });
 
@@ -76,9 +76,9 @@ Node * find_node_by_number(int node_id) {
     }
 }
 
-Node * find_node_by_number1(int node_id) {
+Nodes * find_node_by_number1(int node_id) {
     auto it = std::find_if(nodes.begin(), nodes.end(),
-                           [node_id](const Node& node) {
+                           [node_id](const Nodes& node) {
                                return node.node_id == node_id;
                            });
 
@@ -128,7 +128,7 @@ vector<Lut_Record> lut_records()
 //使用的lut数量
 int lut_num_op(int op_type,int lut_type)
 {
-    for (auto i : lut_record) {
+    for (auto &i : lut_record) {
         if (i.op_type==op_type && i.data_bits==bit_num_operand)
         {
             if (lut_type==4)
@@ -142,7 +142,7 @@ int lut_num_op(int op_type,int lut_type)
 }
 //使用的lut级别数
 int lut_level_op(int op_type,int lut_type){
-    for (auto i : lut_record) {
+    for (auto &i : lut_record) {
         if (i.op_type==op_type && i.data_bits==bit_num_operand)
         {
             if (lut_type==4)
@@ -155,15 +155,15 @@ int lut_level_op(int op_type,int lut_type){
 }
 
 //out the report
-void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
+void redirectcoutToFile(vector<vector<Nodes *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                         vector<magic_arr> &array_list3)
 {
-    cout<<"start to create report"<<endl;
+    //cout<<"start to create report"<<endl;
     ofstream outfile;
     outfile.open("report.txt", ios::out | ios::trunc );
     if (outfile.is_open())
     {
-        cout<<"open report.txt"<<endl;
+        //cout<<"open report.txt"<<endl;
         outfile << "**************************************************"<< endl;
         outfile<< "number of array_lut:" << array_list1.size() << endl;
         for (auto &i: array_list1) {
@@ -197,7 +197,7 @@ void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &ar
         outfile << "**************************************************"<< endl;
         outfile << "the end time of node:" << endl;
         for (auto &i: control_step) {
-            for (auto j: i) {
+            for (auto &j: i) {
                 outfile<< "node-id: " << j->node_id << endl
                        << "depend1 over time =" << (j->depend1 ? j->depend1->end_time : 0) << endl
                        << "depend2 over time =" << (j->depend2 ? j->depend2->end_time : 0) << endl
@@ -209,7 +209,7 @@ void redirectCoutToFile(vector<vector<Node *>> control_step, vector<lut_arr> &ar
         }
         outfile.close();
     }
-    cout<<"close the file"<<endl;
+    //cout<<"close the file"<<endl;
 
 }
 

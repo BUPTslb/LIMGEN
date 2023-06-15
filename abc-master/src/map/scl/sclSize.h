@@ -68,7 +68,7 @@ struct SC_Man_
     Vec_Flt_t *    vTimes2;       // backup storage for times
     Vec_Flt_t *    vTimes3;       // backup storage for slews
     // buffer trees
-    float          EstLoadMax;    // max ratio of Cout/Cin when this kicks in
+    float          EstLoadMax;    // max ratio of //cout/Cin when this kicks in
     float          EstLoadAve;    // average load of the gate
     float          EstLinear;     // linear coefficient
     int            nEstNodes;     // the number of estimations

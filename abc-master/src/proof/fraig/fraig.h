@@ -120,7 +120,7 @@ struct Prove_ParamsStruct_t_
 
 /*=== fraigApi.c =============================================================*/
 extern Fraig_NodeVec_t *   Fraig_ManReadVecInputs( Fraig_Man_t * p );
-extern Fraig_NodeVec_t *   Fraig_ManReadVecOutputs( Fraig_Man_t * p );    
+extern Fraig_NodeVec_t *   Fraig_ManReadVe//coutputs( Fraig_Man_t * p );
 extern Fraig_NodeVec_t *   Fraig_ManReadVecNodes( Fraig_Man_t * p );      
 extern Fraig_Node_t **     Fraig_ManReadInputs ( Fraig_Man_t * p );       
 extern Fraig_Node_t **     Fraig_ManReadOutputs( Fraig_Man_t * p );       
