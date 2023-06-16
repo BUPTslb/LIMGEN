@@ -26,3 +26,9 @@ A simulator is integrated in the framework to evaluate the performance of hetero
 本工作将发表在ICCAD'2023上，引用请参考一下格式：
 
 This work will be published in ICCAD'2023, please refer to the following format for citation:
+
+
+## 后续工作：
+为了证明布局布线的合理性，需要使用其他方式（公认常用的布局布线策略，比如禁忌搜索等）与现有的模拟退火进行比较
+使用DOT图绘制出最后的布局布线结果，以便于观察，数据的大小也要考虑，可以用python的networkx库绘制，线的粗细来表示数据传输的大小
+考虑传输数据的大小时，要在前端更加细粒度的解析代码，对数据位数进行标注
