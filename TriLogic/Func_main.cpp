@@ -267,7 +267,6 @@ int main() {
                     break;
                 case 2://类型为assign,默认只有一个输入
                 {
-
                     //如果input是ID，则直接输出
                     if (d[i]["Input"].IsInt() && !input_depend[0]) {
                         Nodes *a = find_node_by_number1(d[i]["Input"].GetInt());
@@ -278,7 +277,6 @@ int main() {
                         c->depend1 = a;
                         inDegree[c->node_id]++;//入度++
                     }
-
                     //如果input是数，搜索hash表（立即数和变量名都会被表示为string）
                     if (d[i]["Input"].IsString() && !input_depend[0]) {
                         input_depend[0] = true;
@@ -388,10 +386,16 @@ int main() {
                 get_best(best_latency, best_energy, best_area, latency_energy_area, array_num_latency,
                          array_num_energy,array_num_area,
                          array_list1, array_list2, array_list3);
-                outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
-                        << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                outFile << latency_energy_area[0] << ','
+                        << latency_energy_area[1] << ','
+                        << latency_energy_area[2] << ','
+                        << array_list1.size() << ','
+                        << csa_num << ','
+                        << dsa_num << ','
+                        << array_list3.size() << ','
                         <<array_list1.size()+array_list2.size()+array_list3.size()<<','
-                        << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
+                        << Reg_sum.write_num_sum << ','
+                        << Reg_sum.read_num_sum << std::endl;
 
             }
                 break;
@@ -407,10 +411,16 @@ int main() {
                 get_best(best_latency, best_energy, best_area, latency_energy_area, array_num_latency,
                          array_num_energy,array_num_area,
                          array_list1, array_list2, array_list3);
-                outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
-                        << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                outFile << latency_energy_area[0] << ','
+                        << latency_energy_area[1] << ','
+                        << latency_energy_area[2] << ','
+                        << array_list1.size() << ','
+                        << csa_num << ','
+                        << dsa_num << ','
+                        << array_list3.size() << ','
                         <<array_list1.size()+array_list2.size()+array_list3.size()<<','
-                        << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
+                        << Reg_sum.write_num_sum << ','
+                        << Reg_sum.read_num_sum << std::endl;
             }
                 break;
             case 3: {
@@ -425,10 +435,16 @@ int main() {
                 get_best(best_latency, best_energy, best_area, latency_energy_area, array_num_latency,
                          array_num_energy,array_num_area,
                          array_list1, array_list2, array_list3);
-                outFile << latency_energy_area[0] << ',' << latency_energy_area[1] << ',' << latency_energy_area[2] << ','
-                        << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
+                outFile << latency_energy_area[0] << ','
+                        << latency_energy_area[1] << ','
+                        << latency_energy_area[2] << ','
+                        << array_list1.size() << ','
+                        << csa_num << ','
+                        << dsa_num << ','
+                        << array_list3.size() << ','
                         <<array_list1.size()+array_list2.size()+array_list3.size()<<','
-                        << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
+                        << Reg_sum.write_num_sum << ','
+                        << Reg_sum.read_num_sum << std::endl;
             }
                 break;
             default:

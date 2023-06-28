@@ -55,7 +55,6 @@ bool is_in_wb(int array_type, int array_id, Nodes *node_now) {
         }
         default:
             break;
-
     }
     return false;
 }

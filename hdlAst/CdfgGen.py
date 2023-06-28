@@ -1,4 +1,3 @@
-from graphviz import Digraph
 from hdlConvertorAst.hdlAst import HdlIdDef, HdlModuleDec, HdlModuleDef, HdlStmProcess,\
     HdlStmBlock, HdlStmAssign, HdlOp, HdlStmIf, HdlStmWhile, iHdlExpr, HdlValueId, HdlValueInt, HdlOpType
 from hdlConvertorAst.to.json import ToJson

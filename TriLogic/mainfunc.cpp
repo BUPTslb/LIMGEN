@@ -44,10 +44,7 @@ void reset_nodes2()
         {
             nodes2[i].control=find_node_by_number(nodes[i].control->node_id);
         }
-
     }
-
-
 }
 
 
