@@ -238,17 +238,14 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
             if (do_array_type == 1 && array_list1.empty() ||
                 do_array_type == 2 && array_list2.empty() ||
                 do_array_type == 3 && array_list3.empty())
-            {
-                //cout<<"control step 14 "<<endl;
                 do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
-                //cout<<"no error with build "<<endl;
-            }
+
 
             //cout<<"control step 15 "<<endl;
             //决定执行阵列的id
-            do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
+            else
+                do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
                                           array_list2, array_list3, input1_type, input1_id, input2_type, input2_id);
-            //cout<<"no error with decide_array_id "<<endl;
 
             /*现在已知：
              * 操作数1所在阵列类型，id；
@@ -348,49 +345,28 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
     //cout<<"controlstep array_list2.size = "<<array_list2.size()<<endl;
     for (int i = array_list1.size(); i <array_list1.size()+array_list2.size(); ++i) {
         Array_place place_arr{};
-        //cout<<"controlstep array_list2 "<<i <<"  1"<<endl;
         place_arr.array_id = i;
-        //cout<<"controlstep array_list2 "<<i <<"  2"<<endl;
         place_arr.array_type = 2;
-        //cout<<"controlstep array_list2 "<<i <<"  3"<<endl;
         place_arr.array_width = array_list2[i-array_list1.size()].col_num;
-        //cout<<"controlstep array_list2 "<<i <<"  4"<<endl;
         place_arr.array_height = array_list2[i-array_list1.size()].row_num;
-        //cout<<"controlstep array_list2 "<<i <<"  5"<<endl;
         place_arr.pos_x = 0;
-        //cout<<"controlstep array_list2 "<<i <<"  6"<<endl;
         place_arr.pos_y = 0;
-        //cout<<"controlstep array_list2 "<<i <<"  7"<<endl;
         place_list.push_back(place_arr);
-        //cout<<"controlstep array_list2 "<<i <<"  8"<<endl;
         place_num(array_list2[i - array_list1.size()].data_exchange, data_transfer, i, array_list1.size(),
                   array_list2.size());//???
-        //cout<<"controlstep array_list2 "<<i <<"  9"<<endl;
     }
-    //cout<<"no error with array_list2 "<<endl;
-    //cout<<"controlstep array_list3.size = "<<array_list3.size()<<endl;
     for (int i = array_list1.size()+array_list2.size(); i <array_list1.size()+array_list2.size()+array_list3.size(); ++i) {
         Array_place place_arr{};
-        //cout<<"controlstep array_list3 "<<i <<"  1"<<endl;
         place_arr.array_id = i;
-        //cout<<"controlstep array_list3 "<<i <<"  2"<<endl;
         place_arr.array_type = 3;
-        //cout<<"controlstep array_list3 "<<i <<"  3"<<endl;
         place_arr.array_width = array_list3[i-array_list1.size()-array_list2.size()].col_num;
-        //cout<<"controlstep array_list3 "<<i <<"  4"<<endl;
         place_arr.array_height = array_list3[i-array_list1.size()-array_list2.size()].row_num;
-        //cout<<"controlstep array_list3 "<<i <<"  5"<<endl;
         place_arr.pos_x = 0;
-        //cout<<"controlstep array_list3 "<<i <<"  6"<<endl;
         place_arr.pos_y = 0;
-        //cout<<"controlstep array_list3 "<<i <<"  7"<<endl;
         place_list.push_back(place_arr);
-        //cout<<"controlstep array_list3 "<<i <<"  8"<<endl;
         place_num(array_list3[i - array_list1.size() - array_list2.size()].data_exchange, data_transfer, i,
                   array_list1.size(), array_list2.size());//???
-        //cout<<"controlstep array_list3 "<<i <<"  9"<<endl;
     }
-    //cout<<"no error with array_list3 "<<endl;
 
     //规定xy的界限
     int x_max=ceil(sqrt(num_array));
@@ -408,34 +384,24 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
     double coolingRate=0.95;
     int maxIterations=1e6;
     double threshold=1e-30;
-    //cout<<"control step  simulateAnnealing 1"<<endl;
     simulateAnnealing(place_list,Place_array,data_transfer, num_array,x_max,y_max, initialTemperature, finalTemperature,
             coolingRate, maxIterations, threshold);
-    //cout<<"control step  simulateAnnealing 2"<<endl;
     //释放空间
     for (int i = 0; i < num_array; ++i) {
         delete [] data_transfer[i];
     }
     delete [] data_transfer;
-    //cout<<"no error with delete [] data_transfer; "<<endl;
-    //cout<<"x_max = "<<x_max<<endl;
     for (int i = 0; i < x_max; ++i) {
-        //cout<<"Place_array delete "<<i<<endl;
         delete [] Place_array[i];
     }
     delete [] Place_array;
-    //cout<<"no error with delete [] Place_array; "<<endl;
 
 
     //遍历完控制步，输出延迟、能耗、面积信息
     double all_latency=latency_all(array_list1, array_list2, array_list3);
-    //cout<<"no error with latency_all "<<endl;
     double all_energy=energy_all(array_list1, array_list2, array_list3);
-    //cout<<"no error with energy_all "<<endl;
     double all_area= area_all(array_list1,array_list2,array_list3);
-    //cout<<"no error with area_all "<<endl;
 
-//    redirect//coutToFile(controlstep2, array_list1, array_list2, array_list3);
     std::vector<double> latency_energy_area={all_latency,all_energy,all_area};
     return latency_energy_area;
 

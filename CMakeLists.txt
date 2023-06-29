@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(INC_DIR  ./include)
 add_executable(Synthesis
         TriLogic/Func_main.cpp
-        TriLogic/logic_func.cpp
+        TriLogic/arr_size.cpp
         TriLogic/logic_func.h
         TriLogic/mainfunc.cpp
         TriLogic/mainfunc.h
@@ -28,5 +28,5 @@ add_executable(Synthesis
         TriLogic/only_lut.cpp
         TriLogic/only_sa.cpp
         TriLogic/only_magic.cpp
-        TriLogic/dse.h)
+        TriLogic/dse.h TriLogic/build.cpp TriLogic/find_input.cpp TriLogic/data_read.cpp TriLogic/out_degree.cpp TriLogic/num_node_position.cpp TriLogic/op_row_need.cpp)
 

@@ -223,8 +223,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
     if (op_type == 0) //写的操作,目标肯定只有 -1(reg) 3(ma) 4(lut-buffer) 5(sa-buffer) 6(sa)
     {
         //对不合理情况进行判断
-        if (do_type == 1 || do_type == 2)
-            //cout << "warning: time_update出现了错误类型：" << do_type << endl;
         switch (do_type) {
             case -1://REG
             {
@@ -254,7 +252,7 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
             {
                 array_list2[decide_array_id].start_time = time_now;
                 double time_up = sa_latency(op_type,array_list2[decide_array_id].sa_type);
-//                //cout<<"sa memory time up = "<< time_up<<endl;
+                //cout<<"sa memory time up = "<< time_up<<endl;
                 node_now->end_time = time_now + time_up;
                 array_list2[decide_array_id].over_time = node_now->end_time;
                 //set is_using
@@ -268,8 +266,6 @@ void time_update(int op_type, int do_type, int decide_array_id, double time_now,
     }
     else
     {
-        if (do_type!=1&&do_type!=2&&do_type!=3)
-            //cout<<"warning: time_update出现了错误类型："<<do_type<<endl;
         switch (do_type) {
             //对不合理情况进行判断
             case 1://lut
@@ -319,8 +315,6 @@ void read_time_update(int array_type, int array_id, double time_now, Nodes *now,
                       vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
 
     //对不合理情况进行判断
-    if (array_type==1||array_type==2)
-        //cout<<"warning: read_time_update出现了错误类型："<<array_type<<endl;
     switch (array_type) {
         case -1://REG
         {
@@ -367,8 +361,6 @@ void read_time_update(int array_type, int array_id, double time_now, Nodes *now,
 void read_energy_update(int array_type, int array_id, Nodes *node_now,
                         vector<lut_arr> &array_list1, vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     //对不合理情况进行判断
-    if (array_type==1||array_type==2)
-        //cout<<"warning: read_energy_update出现了错误类型："<<array_type<<endl;
     //读的一定是数，-1.reg 3.magic 4.lut-buffer 5.sa-buffer 6.sa
     switch (array_type) {
         case -1://REG
@@ -409,8 +401,6 @@ void energy_update(int op_type, int do_type, int array_id, vector<lut_arr> &arra
     if (op_type == 0) //写的操作,目标肯定只有 -1 3 4 5 6
     {
         //对不合理情况进行判断
-        if (do_type==1||do_type==2)
-            //cout<<"warning: energy_update出现了错误类型："<<do_type<<endl;
         switch (do_type) {
             case -1://REG
             {
@@ -444,8 +434,6 @@ void energy_update(int op_type, int do_type, int array_id, vector<lut_arr> &arra
     else //执行操作，目标应该只有 1 2 3
     {
         //对不合理情况进行判断
-        if (do_type!=1&&do_type!=2&&do_type!=3)
-            //cout<<"warning: energy_update出现了错误类型："<<do_type<<endl;
         switch (do_type) {
             case 1: //lut执行
             {

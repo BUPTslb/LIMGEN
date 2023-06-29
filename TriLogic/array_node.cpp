@@ -248,16 +248,12 @@ void
 place_num(vector<vector<int>> data_exchange, int **data_transfer, int array_id, int list1_size, int list2_size) {
 
     for (int i = 1; i < 4; i++) {
-        //cout<<"Place_num 1"<<endl;
         for (int j = 0; j < data_exchange[i].size(); j++) {
-            //cout<<"place_num 2"<<endl;
             int to_id;
             if (i == 1) to_id = j;
             else if (i == 2) to_id = j + list1_size;
             else to_id = j + list1_size + list2_size;
-            //cout<<"place_num 3"<<endl;
             data_transfer[array_id][to_id] += data_exchange[i][j];
-            //cout<<"place_num 4"<<endl;
         }
     }
 }

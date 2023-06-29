@@ -91,8 +91,8 @@ int op2int(string operation){
     if (operation == l_eq)          return 1;//相等
     if (operation == l_less)        return 2;
     if (operation == l_bigger)      return 3;
-    if (operation == l_shiftL)      return 4;
-    if (operation == l_shiftR)      return 5;
+    if (operation == l_shiftL)      return 4;//逻辑左移，沒有用到
+    if (operation == l_shiftR)      return 5;//逻辑右移，沒有用到
     if (operation == l_and)         return 6;//sa ma
     if (operation == l_or)          return 7;//sa ma
     if (operation == l_not)         return 8;//sa ma
@@ -149,65 +149,6 @@ int lut_level_op(int op_type,int lut_type){
         }
     }
     return 1;//未定义的操作
-}
-
-//out the report
-void redirectcoutToFile(vector<vector<Nodes *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                        vector<magic_arr> &array_list3)
-{
-    //cout<<"start to create report"<<endl;
-    ofstream outfile;
-    outfile.open("report.txt", ios::out | ios::trunc );
-    if (outfile.is_open())
-    {
-        //cout<<"open report.txt"<<endl;
-        outfile << "**************************************************"<< endl;
-        outfile<< "number of array_lut:" << array_list1.size() << endl;
-        for (auto &i: array_list1) {
-            outfile << "op_type of lut_array" << i.array_id << endl;
-            outfile << "op-num of lut" << i.array_id << "=" << i.op_type << endl;
-            outfile << "The op of this lut:  "<<i.op_type;
-//            for (auto &j: i.op_type) {
-//                outfile << j << "  ";
-//            }
-            outfile<<endl<<"time of this lut:"<<"start time: "<<i.start_time<<"  over time: "<<i.over_time<<endl;
-
-        }
-        outfile << "**************************************************"<< endl;
-        outfile << "number of array_sa:" << array_list2.size() << endl;
-        for (auto &i: array_list2) {
-            outfile << "number of stored_node in sa-array-" << i.array_id << "=" << i.store_node.size() << endl;
-            for (auto &j: i.store_node) {
-                outfile << j << "  ";
-            }
-            outfile<<endl<<"time of this sa:"<<"start time: "<<i.start_time<<"  over time: "<<i.over_time<<endl;
-        }
-        outfile << "**************************************************"<< endl;
-        outfile << "number of array_magic:" << array_list3.size() << endl;
-        for (auto &i: array_list3) {
-            outfile << "number of stored_node in magic-array-" << i.array_id << "=" << i.store_node.size() << endl;
-            for (auto &j: i.store_node) {
-                outfile << j <<"  ";
-            }
-            outfile<<endl;
-        }
-        outfile << "**************************************************"<< endl;
-        outfile << "the end time of node:" << endl;
-        for (auto &i: control_step) {
-            for (auto &j: i) {
-                outfile<< "node-id: " << j->node_id << endl
-                       << "depend1 over time =" << (j->depend1 ? j->depend1->end_time : 0) << endl
-                       << "depend2 over time =" << (j->depend2 ? j->depend2->end_time : 0) << endl
-                       << "control over time =" << (j->control ? j->control->end_time : 0) << endl
-                       << "start_time = " << j->start_time << endl
-                       << "do_array_type=" << j->do_type << " do_id=" << j->finish_id << endl
-                       << "end time = " << j->end_time << endl;
-            }
-        }
-        outfile.close();
-    }
-    //cout<<"close the file"<<endl;
-
 }
 
 

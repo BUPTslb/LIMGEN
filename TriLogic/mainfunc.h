@@ -82,14 +82,6 @@ public:
     Array(){
         data_exchange.resize(4);
     }
-//    ~Array(){
-//
-//        data_exchange.clear();
-//
-//    }
-
-
-
 
 };
 
@@ -154,8 +146,6 @@ std::vector<double>
 only_magic(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
            vector<magic_arr> &array_list3);
 
-void redirectcoutToFile(vector<vector<Nodes *>> control_step, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
-                        vector<magic_arr> &array_list3);
 
 
 //全部运行完之后

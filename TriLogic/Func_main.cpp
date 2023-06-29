@@ -337,7 +337,7 @@ int main() {
 
 
 
-    for (int p = 0; p < 1000; ++p) {
+    for (int p = 0; p < 2; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1;//lut阵列表
@@ -358,6 +358,11 @@ int main() {
             case 0: {
                 vector<double> latency_energy_area = control_step(controlstep2, array_list1, array_list2,array_list3);
                 int csa_num = 0, dsa_num = 0;
+                if (array_list2.size()+array_list3.size() <5
+                    ||array_list2.size()<2
+                    ||array_list3.size()<2
+                    ||array_list1.size()+array_list2.size()+array_list3.size()>100)
+                    p--;
                 for (int i=0;i< array_list2.size();i++) {
                     if (array_list2[i].sa_type == 1)
                         csa_num++;

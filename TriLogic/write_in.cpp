@@ -12,12 +12,12 @@ void write_cover(int op_type, Nodes *now, int pos_array, int pos_id, int row_nee
         case 2: {
             //cout<<"write_over 2"<<endl;
             //先存储出度为0的，然后是其他地方存的有的（这个cap_array_cover函数中有）
-            for (int i=0;i< array_list2[pos_id].store_node.size();i++) {
+            for (auto i:array_list2[pos_id].store_node) {
                 //cout<<"write_over 3"<<endl;
                 if (find_node_by_number(i)->out_degree == 0) //节点出度为0，不再被需要
                 {
                     //cout<<"write_over 4"<<endl;
-                    erase_node_list.push_front(i);
+                    erase_node_list.push_front(find_node_by_number(i)->node_id);
                     //cout<<"write_over 5"<<endl;
                 }
                 //出度不为0，但是多个地方存的都有
@@ -32,7 +32,7 @@ void write_cover(int op_type, Nodes *now, int pos_array, int pos_id, int row_nee
         case 3: {
             //cout<<"write_over 8"<<endl;
             //先存储出度为0的，然后是其他地方存的有的（这个cap_array_cover函数中有）
-            for (int i=0;i< array_list3[pos_id].store_node.size();i++) {
+            for (auto i:array_list3[pos_id].store_node) {
                 //cout<<"write_over 9"<<endl;
                 if (find_node_by_number(i)->out_degree == 0) //节点出度为0，不再被需要
                 {
@@ -55,6 +55,11 @@ void write_cover(int op_type, Nodes *now, int pos_array, int pos_id, int row_nee
     }
     //按顺序覆盖，阵列的存储节点、节点的写回阵列都要更新
     //擦除的阵列的写回表  阵列存储表也要更新
+
+    if (!erase_node_list.empty())
+    {
+        cout<< erase_node_list.size() << endl;
+    }
     if (op_type == 0)  //正常的节点变量写入，只需要占用一行
     {
         //写入sa
@@ -629,7 +634,8 @@ void write_back(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_l
                 break;
             case 1: //来自lut-out,写回顺位：4 lut-latch、3 ma\2 sa、0 reg
             {
-                vector<int> ready_type = {4, 2, 3, 0}; //写回的顺位
+//                vector<int> ready_type = {4, 2, 3, 0}; //写回的顺位
+                vector<int> ready_type = {4, 2, 3}; //写回的顺位
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 4) //buffer,只写回自己阵列
@@ -661,7 +667,8 @@ void write_back(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_l
                 break;
             case 2://来自sa-out,写回顺位：sa-buffer、sa、reg、ma
             {
-                vector<int> ready_type = {5, 2, 3, 0};
+//                vector<int> ready_type = {5, 2, 3, 0};
+                vector<int> ready_type = {5, 2, 3};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 //选择要写回的类型，如果选择了buffer
@@ -696,7 +703,8 @@ void write_back(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_l
                 break;
             case 3: //来自magic存储 ,写回顺位：寄存器0、其他magic 3、sa存储 2
             {
-                vector<int> ready_type = {0, 2, 3};
+//                vector<int> ready_type = {0, 2, 3};
+                vector<int> ready_type = {2, 3};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
@@ -725,7 +733,8 @@ void write_back(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_l
                 break;
             case 4: //来自lut-buffer。写回顺位：寄存器0、其他magic 3、sa存储 2
             {
-                vector<int> ready_type = {0, 2, 3};
+//                vector<int> ready_type = {0, 2, 3};
+                vector<int> ready_type = {2, 3};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
@@ -753,7 +762,8 @@ void write_back(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_l
                 break;
             case 5: //来自sa-buffer。写回顺位：寄存器0、其他magic 3、sa存储 2
             {
-                vector<int> ready_type = {0, 2, 3};
+//                vector<int> ready_type = {0, 2, 3};
+                vector<int> ready_type = {2, 3};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
@@ -782,7 +792,8 @@ void write_back(int from_type, int from_id, Nodes *now, vector<lut_arr> &array_l
                 break;
             case 6: //来自sa存储，写回顺位：寄存器0、其他magic 3、sa存储 2
             {
-                vector<int> ready_type = {0, 2, 3};
+//                vector<int> ready_type = {0, 2, 3};
+                vector<int> ready_type = {2, 3};
                 vector<int> ready_array;
                 int write_type = ready_type[rand() % ready_type.size()];
                 if (write_type == 0) {
