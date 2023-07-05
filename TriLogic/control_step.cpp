@@ -2,7 +2,8 @@
 #include "mainfunc.h"
 #include "logic_func.h"
 #include "dse.h"
-
+//将所有阵列进行编号
+vector<Array_place> place_list;
 
 std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
                                  vector<magic_arr> &array_list3) {
@@ -303,46 +304,29 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
     }
 
     //开始执行模拟退火布局布线
-    //将所有阵列进行编号
-    vector<Array_place> place_list;
-    //cout<<"no error with vector<Array_place> place_list; "<<endl;
+    place_list.clear();
+
     int num_array=array_list1.size()+array_list2.size()+array_list3.size();//阵列个数
-    //cout<<"no error with num_array "<<endl;
     int **data_transfer=new int * [num_array];//数据传输次数
-    //cout<<"no error with **data_transfer "<<endl;
     for (int i = 0; i < num_array; ++i) {
         data_transfer[i]=new int[num_array];
         for (int j = 0; j < num_array; ++j) {
             data_transfer[i][j]=0;
         }
     }
-    //cout<<"no error with **data_transfer [][]"<<endl;
 
-    //cout<<"controlstep array_list1.size = "<<array_list1.size()<<endl;
     for (int i = 0; i < array_list1.size(); ++i) {
-        //cout<<"controlstep array_list1 "<<i <<"  1"<<endl;
         Array_place place_arr;
-        //cout<<"controlstep array_list1 "<<i <<"  2"<<endl;
         place_arr.array_id = i;
-        //cout<<"controlstep array_list1 "<<i <<"  3"<<endl;
         place_arr.array_type = 1;
-        //cout<<"controlstep array_list1 "<<i <<"  4"<<endl;
         place_arr.array_width = array_list1[i].lut_num;
-        //cout<<"controlstep array_list1 "<<i <<"  5"<<endl;
         place_arr.array_height = array_list1[i].row_num;
-        //cout<<"controlstep array_list1 "<<i <<"  6"<<endl;
         place_arr.pos_x = 0;
-        //cout<<"controlstep array_list1 "<<i <<"  7"<<endl;
         place_arr.pos_y = 0;
-        //cout<<"controlstep array_list1 "<<i <<"  8"<<endl;
         place_list.push_back(place_arr);
-        //cout<<"controlstep array_list1 "<<i <<"  9"<<endl;
         //遍历array_list1的data_exchange
         place_num(array_list1[i].data_exchange, data_transfer, i, array_list1.size(), array_list2.size());//???
-        //cout<<"controlstep array_list1 "<<i <<"  10"<<endl;
     }
-    //cout<<"no error with array_list1 "<<endl;
-    //cout<<"controlstep array_list2.size = "<<array_list2.size()<<endl;
     for (int i = array_list1.size(); i <array_list1.size()+array_list2.size(); ++i) {
         Array_place place_arr{};
         place_arr.array_id = i;
@@ -355,7 +339,7 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
         place_num(array_list2[i - array_list1.size()].data_exchange, data_transfer, i, array_list1.size(),
                   array_list2.size());//???
     }
-    for (int i = array_list1.size()+array_list2.size(); i <array_list1.size()+array_list2.size()+array_list3.size(); ++i) {
+    for (int i = array_list1.size()+array_list2.size(); i <num_array; ++i) {
         Array_place place_arr{};
         place_arr.array_id = i;
         place_arr.array_type = 3;
@@ -367,6 +351,18 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
         place_num(array_list3[i - array_list1.size() - array_list2.size()].data_exchange, data_transfer, i,
                   array_list1.size(), array_list2.size());//???
     }
+    //ID从零开始，获取每个阵列的数据传输矩阵
+    for (int i = 0; i < num_array; ++i) {
+        vector<int> data_transfer_vector_temp;
+        for (int j = 0; j < num_array ; ++j) {
+            data_transfer_vector_temp.push_back(data_transfer[i][j]);
+        }
+        place_list[i].connect_line=data_transfer_vector_temp;
+    }
+
+
+
+
 
     //规定xy的界限
     int x_max=ceil(sqrt(num_array));
@@ -386,6 +382,7 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
     double threshold=1e-30;
     simulateAnnealing(place_list,Place_array,data_transfer, num_array,x_max,y_max, initialTemperature, finalTemperature,
             coolingRate, maxIterations, threshold);
+    //将坐标值更新到 place_list;
     //释放空间
     for (int i = 0; i < num_array; ++i) {
         delete [] data_transfer[i];

@@ -5,10 +5,12 @@
 #include<fstream>
 #include<sstream>
 #include<map>
-//#include<SDL2/SDL.h>
 #include<typeinfo>
 #include <algorithm>
 #include"rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/prettywriter.h"
 #include "parameter.h"
 #include <queue>
 #include <set>
@@ -50,11 +52,14 @@ struct Array_place{
     int array_height;
     int pos_x;//阵列位置
     int pos_y;//阵列位置
+    std::vector<int> connect_line;//连接线
 };
 
 extern vector<Nodes> nodes;//节点类型的向量，里面可以放下一个个节点
 
 extern vector<Nodes> nodes2;
+
+extern vector<Array_place> place_list;;
 
 void reset_nodes2();
 

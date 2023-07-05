@@ -159,9 +159,7 @@ int main() {
                 }
 
             }
-            //cout << endl << "F：";
             for (int there = 0; there < sizeofF; there++) {
-                //cout << d[i]["Statement_when_false"][there].GetInt() << "   ";
                 Nodes *b = find_node_by_number1(d[i]["Statement_when_false"][there].GetInt());
 
                 if (b != NULL && (b->control == NULL || b->control->node_id < con))//b不是空节点,且当前控制节点没有指向
@@ -170,10 +168,8 @@ int main() {
                         inDegree[b->node_id]++;//节点b的入度++
                     b->control = con_node;
                     TvsF.insert(pair<int, bool>(b->node_id, false));//构建互斥
-                    //cout << "there is " << con << " to " << b->node_id << "control depend" << endl;
                 }
             }
-//                //cout<<endl;
         }
         if (type_id == 4)//类型为loop
         {
@@ -182,13 +178,11 @@ int main() {
             int con = d[i]["Condition"].GetInt();//条件节点的位置
             Nodes *con_node = find_node_by_number1(con);
 
-            //cout << "loop depend" << endl << "condition: " << con << endl;
             int sizeofL = d[i]["Statement_loop"].Size();//LOOP节点数目
             con_node->out_degree += sizeofL;//更新条件节点的出度
 
             for (int there = 0; there < sizeofL; there++) {
                 int there_id = d[i]["Statement_loop"][there].GetInt();
-//                    //cout<<there_id<<endl;
                 //1.该节点可能是OP，没有Dst，所以要先对类型进行判断
                 //2.条件节点判断的输入也可能有多个，最好写成函数，直接套用OP之间的依赖
                 //问题：there_id可能根本不在nodes中，nodes的依赖可能有很多，需要找到他的直接依赖
@@ -198,7 +192,6 @@ int main() {
                     if (a->control == NULL)//如果第一次设置控制节点
                         inDegree[a->node_id]++;//入度++
                     a->control = con_node;
-                    //cout << "loop node " << there_id << " condition: " << con_node->node_id << endl;
 
                 }
             }
@@ -324,7 +317,6 @@ int main() {
     vector<int> array_num_energy;
     vector<int> array_num_area;
 
-//    //cout<<"array vector define no error"<<endl;
 
     std::ofstream outFile;
 
@@ -337,7 +329,7 @@ int main() {
 
 
 
-    for (int p = 0; p < 2; ++p) {
+    for (int p = 0; p < 1; ++p) {
         reset_nodes2();
         init_Buffer_Reg();//初始化buffer和Reg
         vector<lut_arr> array_list1;//lut阵列表
@@ -358,11 +350,11 @@ int main() {
             case 0: {
                 vector<double> latency_energy_area = control_step(controlstep2, array_list1, array_list2,array_list3);
                 int csa_num = 0, dsa_num = 0;
-                if (array_list2.size()+array_list3.size() <5
-                    ||array_list2.size()<2
-                    ||array_list3.size()<2
-                    ||array_list1.size()+array_list2.size()+array_list3.size()>100)
-                    p--;
+//                if (array_list2.size()+array_list3.size() <4
+//                    ||array_list2.size()<2
+//                    ||array_list3.size()<2
+//                    ||array_list1.size()+array_list2.size()+array_list3.size()>100)
+//                    p--;
                 for (int i=0;i< array_list2.size();i++) {
                     if (array_list2[i].sa_type == 1)
                         csa_num++;
@@ -376,6 +368,7 @@ int main() {
                         << array_list1.size() << ',' << csa_num << ',' << dsa_num << ',' << array_list3.size() << ','
                         <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ',' << Reg_sum.read_num_sum << std::endl;
+                outFile.close();
 
             }
                 break;
@@ -401,6 +394,7 @@ int main() {
                         <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ','
                         << Reg_sum.read_num_sum << std::endl;
+                outFile.close();
 
             }
                 break;
@@ -426,6 +420,7 @@ int main() {
                         <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ','
                         << Reg_sum.read_num_sum << std::endl;
+                outFile.close();
             }
                 break;
             case 3: {
@@ -450,15 +445,47 @@ int main() {
                         <<array_list1.size()+array_list2.size()+array_list3.size()<<','
                         << Reg_sum.write_num_sum << ','
                         << Reg_sum.read_num_sum << std::endl;
+                outFile.close();
             }
                 break;
             default:
                 break;
         }
 
+        //array转json
+        //先创建document
+        rapidjson::Document doc;
+        doc.SetArray();//设置数组[]，里面有多个阵列对象
+        for (auto i: place_list) {
+            rapidjson::Value array(rapidjson::kObjectType);
+            array.AddMember("ID", i.array_id, doc.GetAllocator());
+            array.AddMember("TYPE", i.array_type, doc.GetAllocator());
+            array.AddMember("X", i.pos_x, doc.GetAllocator());
+            array.AddMember("Y", i.pos_y, doc.GetAllocator());
+            array.AddMember("WIDTH",i.array_width, doc.GetAllocator());
+            array.AddMember("HEIGHT",i.array_height, doc.GetAllocator());
+            rapidjson::Value connect_line(rapidjson::kArrayType);
+            for (const auto& value : i.connect_line) {
+                rapidjson::Value intValue(value);
+                connect_line.PushBack(intValue, doc.GetAllocator());
+            }
+            array.AddMember("CONNECT_LINE", connect_line, doc.GetAllocator());
+            doc.PushBack(array, doc.GetAllocator());
+        }
+        rapidjson::StringBuffer buffer;
+        rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+        doc.Accept(writer);
+        std::ofstream outputFile("output.json");
+        if (outputFile.is_open()) {
+            outputFile << buffer.GetString();
+            outputFile.close();
+            std::cout << "JSON file generated successfully." << std::endl;
+        } else {
+            std::cerr << "Failed to open output file." << std::endl;
+        }
         cout << "LOOP :" << p + 1 << endl;
     }
-    outFile.close();
+
 
     cout << "BEST Delay: latency = " << best_latency[0] << " energy = " << best_latency[1] <<" area =  "<<best_latency[2] << endl;
     cout << "Array num = " << array_num_latency[0] << " " << array_num_latency[1] << " "
@@ -470,7 +497,7 @@ int main() {
     cout << "Array num = " << array_num_area[0] << " " << array_num_area[1] << " "
          << array_num_area[2] << endl;
 
-    //绘制帕累托优化的解
+
 
     //先判断设计目标，按照设计目标来循环给约束
     return 0;
