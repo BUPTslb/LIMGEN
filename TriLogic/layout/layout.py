@@ -1,5 +1,10 @@
 import matplotlib.pyplot as plt
 import json
+with open('output.json') as f:
+    data = json.load(f)
+n_array=len(data)
+print(n_array)
+print(type(data[0]))
 
 # 创建一个新的图形
 fig, ax = plt.subplots()
