@@ -231,18 +231,13 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
             int do_array_type = 0, do_array_id = -1;//执行阵列的类型,id
             //cout<<"control step 12 "<<endl;
             do_array_type = decide_array_type(type_operation, design_target);//决定执行阵列类型 1 2 3
-            //cout<<"no error with decide_array_type "<<endl;
             //更新节点的do_type,执行节点的do_type只有1:lut-out 2:sa-out 3:magic
             controlstep2[i][j]->do_type = do_array_type;
-            //cout<<"control step 13 "<<endl;
             //如果要执行的类型当前没有阵列，则建立
             if (do_array_type == 1 && array_list1.empty() ||
                 do_array_type == 2 && array_list2.empty() ||
                 do_array_type == 3 && array_list3.empty())
                 do_array_id = build(do_array_type, type_operation, array_list1, array_list2, array_list3);
-
-
-            //cout<<"control step 15 "<<endl;
             //决定执行阵列的id
             else
                 do_array_id = decide_array_id(type_operation, controlstep2[i][j], do_array_type, array_list1,
@@ -261,22 +256,15 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
             //input_type的类型有：-1(寄存器) 1(lut) 2(sa) 3(magic)
             if (operand_num == 1) //只有一个操作数，读取
             {
-                //cout << "opnum 1 data_read" << endl;
                 data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
-                //cout << "opnum 1 data_read 2" << endl;
             } else //有两个操作数
             {
-                //cout << "opnum 2-1 data_read 1" << endl;
                 data_read(1, input1_type, input1_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
-                //cout << "opnum 2-1 data_read 2" << endl;
                 data_read(2, input2_type, input2_id, do_array_type, do_array_id, controlstep2[i][j],
                           array_list1, array_list2, array_list3);
-                //cout << "opnum 2-1 data_read 3" << endl;
             }
-            //cout<<"no error with data read "<<endl;
-//            //cout << "date_read运行正常" << endl;
             //现在已经知道了操作数的个数operand_num
             //操作数所在的阵列类型：input_type 位置：input_id
             //执行阵列的类型：decide_array_type 位置：decide_array_id
@@ -284,13 +272,9 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
             input_logic(operand_num, input1_type, input1_id, input2_type, input2_id, do_array_type, do_array_id,
                         controlstep2[i][j],
                         array_list1, array_list2, array_list3);
-            //cout<<"no error with input logic "<<endl;
             //执行运算,要更新finish_id
             output_logic(do_array_type, do_array_id, type_operation, controlstep2[i][j], array_list1, array_list2,
                          array_list3);
-            //cout<<"no error with output logic "<<endl;
-
-//            //cout << "finish_id of this：" << controlstep2[i][j]->finish_id << endl;
             //写回在最开始，不用在执行
             //只要有写操作，就存在-内部有覆盖的情况，更新出度，清除被覆盖的节点，节点出度为0，找到存储他的阵列，将其擦除
             //补充控制节点，设计比较器件 ，看是否需要加其他运算器，如ALU
@@ -298,7 +282,6 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
 
             //更新出度
             out_degree(controlstep2[i][j]);
-            //cout<<"no error with out_degree "<<" i "<<i<<" j "<<j<<endl;
 
         }
     }
