@@ -137,8 +137,17 @@ def route_decide(i, j):
 def routing0(i, j):
 # j在i的左上方，从i到j，右下到左上，先向上，再向左走到j右侧一列，再向上走到j
 # 需要5个坐标(i的上侧坐标，向上走一段的坐标，向左走一段的坐标，再向上走一段的坐标（不能走到j的右侧），j的右侧连接坐标)
+    print("j", j)
+    x1 = [axises[i['X']][i['Y']][0] + i['WIDTH'] / 2, axises[data[j]['X']][data[j]['Y']][0] + data[j]['WIDTH'] / 2]
+    print("x1", x1)
+    y1 = [axises[i['X']][i['Y']][1] + i['HEIGHT'] / 2,
+        axises[data[j]['X']][data[j]['Y']][1] + data[j]['HEIGHT'] / 2]
+    print("y1", y1)
+    if i['CONNECT_LINE'][j] == 0:
+        return
+    line1 = plt.Line2D(x1, y1, lw=0.5+5*np.log2(i['CONNECT_LINE'][j])/n_array, color='black')
+    ax.add_line(line1)
 
-    return 0
 
 def routing1(i, j):
 # j在i的上方，从i到j，下到上，先向上，再向右走到右侧空地，向上走到j右侧，再连接j
@@ -187,15 +196,26 @@ def routing7(i, j):
 for i in data:
     for j in range(i['ID'] + 1, n_array):
         # 对位置做出判断
+        if route_decide(i,j) == 0:
+            routing0(i, data[j])
+        elif route_decide(i, j) == 1:
+            routing1(i, data[j])
+        elif route_decide(i, j) == 2:
+            routing2(i, data[j])
+        elif route_decide(i, j) == 3:
+            routing3(i, data[j])
+        elif route_decide(i,j) == 4:
+            routing4(i, data[j])
+        elif route_decide(i, j) == 5:
+            routing5(i, data[j])
+        elif route_decide(i, j) == 6:
+            routing6(i, data[j])
+        elif route_decide(i, j) == 7:
+            routing7(i, data[j])
+        else:
+            continue
 
-        print("j", j)
-        x1 = [axises[i['X']][i['Y']][0] + i['WIDTH'] / 2, axises[data[j]['X']][data[j]['Y']][0] + data[j]['WIDTH'] / 2]
-        print("x1", x1)
-        y1 = [axises[i['X']][i['Y']][1] + i['HEIGHT'] / 2,
-              axises[data[j]['X']][data[j]['Y']][1] + data[j]['HEIGHT'] / 2]
-        print("y1", y1)
-        line1 = plt.Line2D(x1, y1, lw=1, color='black')
-        ax.add_line(line1)
+
 
 # 保存图形为PNG图片
 plt.savefig('graph.png', dpi=300)
