@@ -170,41 +170,32 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
 
                 continue;//进行下一个循环
             }//下面的操作没有=了
-            //cout<<"no error with = "<<endl;
 
             //首先确定操作数的个数
             int operand_num = 2;
             if (type_operation == 8) operand_num = 1;//NOT
-            //cout<<"control step 1 "<<endl;
             //第一步，取操作数,这里的type,id都指的是阵列
             int input1_type = 0, input2_type = 0, input1_id = -1, input2_id = -1;
             //寻找的是节点存储的ID,或者执行完毕的输出位置
             if (operand_num == 1) //1个操作数
             {
-                //cout<<"control step 2 "<<endl;
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 //判断立即数
                 if (controlstep2[i][j]->depend1 != nullptr)
                 {
-                    //cout<<"control step 3 "<<endl;
                     find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
-                    //cout<<"no error with find_input "<<endl;
                 }
                 else {
-                    //cout<<"control step 4 "<<endl;
                     //立即数
                     input1_type = -1;
                     input1_id = -1;
-                    //cout<<"control step 5 "<<endl;
                 }
             } else    //2个操作数
             {
                 //-1 R 1 lut-out 2 sa-out 3 magic 4 lut-buffer 5 sa-buffer 6 sa
                 if (controlstep2[i][j]->depend1 != nullptr)
                 {
-                    //cout<<"control step 6 "<<endl;
                     find_input(input1_type, input1_id, controlstep2[i][j]->depend1);
-                    //cout<<"no error with find_input "<<endl;
                 }
                 else {
                     //cout<<"control step 7 "<<endl;

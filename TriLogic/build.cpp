@@ -15,7 +15,7 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             now1.row_num = 64;//代表是lut6
             now1.col_num = bit_num_operand;//这里只代表输出的位数，不代表真实的列数
             now1.lut_num = lut_num_op(op_type, 6);//lut-6数量
-            lut_level_op(op_type, 6);//执行但前运算需要的级别数
+            cout<<"bulid lut size:"<<now1.lut_num<<endl;
             //初始化读写次数
             now1.read_number = 0;
             now1.write_number = 0;
@@ -32,7 +32,6 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
                 now1.op_type=op_type;
 
             array_list1.push_back(now1);
-//            //cout << "当前array_list1的大小为：" << array_list1.size() << endl;
             build = array_list1.size() - 1;
 
         }
@@ -68,7 +67,6 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             array_list2.push_back(now2);
             build = array_list2.size() - 1;
 
-//            //cout<<"new SA array "<<now2.start_time<<" time "<<now2.over_time<<endl;
 
         }
             break;

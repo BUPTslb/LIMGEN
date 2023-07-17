@@ -108,18 +108,30 @@ int op2int(string operation){
 vector<Lut_Record> lut_record= lut_records();
 vector<Lut_Record> lut_records()
 {
-    std::ifstream infile("database_lut.txt");
-    std::vector<Lut_Record> records; // 存储所有记录的向量
-    std::string line;
-    while (std::getline(infile, line)) { // 逐行读取文件内容
-        size_t pos = 0;
-        std::string token;
-        int count = 0;
-        Lut_Record item{};
-        while (infile >> item.op_type >> item.data_bits >> item.lut4_num >> item.lut4_level >> item.lut6_num >> item.lut6_level){
-            records.push_back(item);
+    vector<Lut_Record> records; // 存储所有记录的向量
+    ifstream lutfs;
+    lutfs.open("..\\TriLogic\\database\\database_lut.txt");
+    if (lutfs.is_open())
+    {
+        cout << "Opening file Successfull!" << endl;
+        string line;
+        while (getline(lutfs, line)) { // 逐行读取文件内容
+//            size_t pos = 0;
+//            string token;
+//            int count = 0;
+            Lut_Record item{};
+            while (lutfs >> item.op_type >> item.data_bits >> item.lut4_num >> item.lut4_level >> item.lut6_num >> item.lut6_level){
+                records.push_back(item);
+                cout<<item.op_type<<" "<<item.data_bits<<" "<<item.lut4_num<<" "<<item.lut4_level<<" "<<item.lut6_num<<" "<<item.lut6_level<<endl;
+            }
         }
     }
+    else
+    {
+        cout<< "Opening file Failed!" << endl;
+    }
+    lutfs.close();
+
     return records;
 }
 //使用的lut数量
@@ -131,7 +143,10 @@ int lut_num_op(int op_type,int lut_type)
             if (lut_type==4)
                 return i.lut4_num;
             if (lut_type==6)
+            {
+                cout<<"lut_6"<<i.lut6_num<<endl;
                 return i.lut6_num;
+            }
         }
     }
     return bit_num_operand;//其他按位操作

@@ -25,8 +25,8 @@ add_executable(Synthesis
         TriLogic/array_node.cpp
         TriLogic/topoSort.cpp
         TriLogic/control_step.cpp
-        TriLogic/only_lut.cpp
-        TriLogic/only_sa.cpp
-        TriLogic/only_magic.cpp
+        TriLogic/onlyArc/only_lut.cpp
+        TriLogic/onlyArc/only_sa.cpp
+        TriLogic/onlyArc/only_magic.cpp
         TriLogic/dse.h TriLogic/build.cpp TriLogic/find_input.cpp TriLogic/data_read.cpp TriLogic/out_degree.cpp TriLogic/num_node_position.cpp TriLogic/op_row_need.cpp)
 

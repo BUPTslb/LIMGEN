@@ -296,16 +296,16 @@ int main() {
      *******************************/
     topologicalSort(nodes, inDegree, controlstep, id_pos);//函数使用，现在得到了controlstep vector<vector<Nodes>>,但是没有依赖关系
 
-    for (int i = 0; i < controlstep.size(); ++i) {
-        cout << "control step" << i + 1 << ",size=" << controlstep[i].size() << endl;
-        for (int j = 0; j < controlstep[i].size(); ++j) {
-            cout << controlstep[i][j].node_id << ":" << controlstep[i][j].operator_name << endl;
-            cout << controlstep[i][j].node_id << "depend="
-                 << (controlstep[i][j].depend1 ? controlstep[i][j].depend1->node_id : 0) << " "
-                 << (controlstep[i][j].depend2 ? controlstep[i][j].depend2->node_id : 0)
-                 << endl;
-        }
-    }
+//    for (int i = 0; i < controlstep.size(); ++i) {
+//        cout << "control step" << i + 1 << ",size=" << controlstep[i].size() << endl;
+//        for (int j = 0; j < controlstep[i].size(); ++j) {
+//            cout << controlstep[i][j].node_id << ":" << controlstep[i][j].operator_name << endl;
+//            cout << controlstep[i][j].node_id << "depend="
+//                 << (controlstep[i][j].depend1 ? controlstep[i][j].depend1->node_id : 0) << " "
+//                 << (controlstep[i][j].depend2 ? controlstep[i][j].depend2->node_id : 0)
+//                 << endl;
+//        }
+//    }
 
 
     int model_chosen[4] = {0, 1, 2, 3};

@@ -1,5 +1,5 @@
-#include "mainfunc.h"
-#include "logic_func.h"
+#include "../mainfunc.h"
+#include "../logic_func.h"
 
 //对照实验，只选用lut来实现功能
 //需要添加功能：lut阵列做存储，这时就类似ME了

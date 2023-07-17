@@ -1,5 +1,5 @@
-#include "mainfunc.h"
-#include "logic_func.h"
+#include "../mainfunc.h"
+#include "../logic_func.h"
 //对照实验，只选用sa来实现功能
 //可以存储的位置 6.sa 5.sa-buffer -1.reg  写回要重新调用
 std::vector<double>  only_sa(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,

@@ -97,9 +97,7 @@ struct lut_arr : public Array {
 //    set<int> op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int op_type;//存放当前LUT支持的操作类型，最大为3，如果有非按位运算，最大为1
     int lut_num;//正常情况=列数，调用模块时候=模块使用的lut数量
-//    ~lut_arr(){
-//        lut_latch.clear();
-//    }
+
 };
 
 struct sa_arr : public Array {

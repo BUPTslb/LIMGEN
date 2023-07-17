@@ -1,5 +1,5 @@
-#include "mainfunc.h"
-#include "logic_func.h"
+#include "../mainfunc.h"
+#include "../logic_func.h"
 //对照实验，只选用magic实现功能
 //可以做存储的地方只有magic和reg
 std::vector<double>  only_magic(vector<vector<Nodes *>> controlstep2, vector<lut_arr> &array_list1, vector<sa_arr> &array_list2,
