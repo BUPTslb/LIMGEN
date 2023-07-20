@@ -3,6 +3,15 @@
 int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
                 vector<sa_arr> &array_list2, vector<magic_arr> &array_list3) {
     int build;
+    //写一个匿名函数
+    auto f=[](const int &a){
+        float b=a%32;
+        int floor=a/32;
+        if (b>0)
+            floor+=1;
+        int c=floor*32;
+        return c;
+    };
     switch (decide_array_type) {
         case 1: {
             lut_arr now1;
@@ -12,9 +21,11 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             //初始化is_using
             now1.is_using = false;
             //初始化面积
+
             now1.row_num = 64;//代表是lut6
+
             now1.col_num = bit_num_operand;//这里只代表输出的位数，不代表真实的列数
-            now1.lut_num = lut_num_op(op_type, 6);//lut-6数量
+            now1.lut_num = f(lut_num_op(op_type, 6));//lut-6数量
             cout<<"bulid lut size:"<<now1.lut_num<<endl;
             //初始化读写次数
             now1.read_number = 0;
@@ -51,8 +62,18 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
 
             now2.sa_type=sa_type_ready[type_chosen];
             //初始化大小
-            now2.row_num = bit_num_operand;
-            now2.col_num = bit_num_operand;
+            if (bit_num_operand<=32)
+            {
+                now2.row_num = 32;
+                now2.col_num = 32;
+            }
+            else
+            {
+                now2.row_num = 64;
+                now2.col_num = 64;
+            }
+//            now2.row_num = bit_num_operand;
+//            now2.col_num = bit_num_operand;
             //初始化读写次数
             now2.read_number = 0;
             now2.write_number = 0;
@@ -80,8 +101,18 @@ int build(int decide_array_type, int op_type, vector<lut_arr> &array_list1, \
             if (op_type==11)
                 now3.add_use=true;
             //初始化大小
-            now3.row_num = 64;
-            now3.col_num = 64;
+            if (bit_num_operand<=32)
+            {
+                now3.row_num = 32;
+                now3.col_num = 32;
+            }
+            else
+            {
+                now3.row_num = 64;
+                now3.col_num = 64;
+            }
+//            now3.row_num = 64;
+//            now3.col_num = 64;
             //初始化读写次数
             now3.read_number = 0;
             now3.write_number = 0;

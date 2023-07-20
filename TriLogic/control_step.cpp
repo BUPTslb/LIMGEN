@@ -288,6 +288,8 @@ std::vector<double> control_step(vector<vector<Nodes *>> &controlstep2, vector<l
             data_transfer[i][j]=0;
         }
     }
+    //由于LUT阵列太大，要进行拆分，因此要设计一个函数，将LUT阵列拆分并添加其连接关系
+    //N个阵列为一个LUT模块，其中一个阵列作为输入，另一个作为输出，其他阵列作为中间阵列
 
     for (int i = 0; i < array_list1.size(); ++i) {
         Array_place place_arr;

@@ -3,7 +3,7 @@ import numpy as np
 
 import json
 
-with open('output.json') as f:
+with open("output.json") as f:
     data = json.load(f)
 n_array = len(data)
 print(type(data))
@@ -20,8 +20,8 @@ for i in data:
     sizes[i['X']][i['Y']][0] = i['WIDTH']
     sizes[i['X']][i['Y']][1] = i['HEIGHT']
 # 创建布局矩阵
-connect = np.full((x_num, y_num), -1)
-print("connect ",connect)
+#connect = np.full((x_num, y_num), -1)
+#print("connect ",connect)
 #every_x和every_y分别存储每一列的x坐标和每一行的y坐标(统一化)
 every_x = np.zeros(x_num)
 print("every_x ",every_x)
@@ -29,20 +29,19 @@ every_y = np.zeros(y_num)
 print("every_y ",every_y)
 for i in range(x_num):
     if i == 0:
-        every_x[i] = 4 * n_array
+        every_x[i] = 10
     else:
-        every_x[i] = every_x[i - 1] + max(sizes[i - 1, :, 0]) + 4 * n_array
+        every_x[i] = every_x[i - 1] + 64
 
 for i in range(y_num):
     if i == 0:
-        every_y[i] = 4 * n_array
+        every_y[i] = n_array
     else:
-        every_y[i] = every_y[i - 1] + max(sizes[:, i - 1, 1]) + 4 * n_array
+        every_y[i] = every_y[i - 1] + max(sizes[:, i - 1, 1])
 
 Y = []
 X = []
 for i in data:
-    connect[i['X']][i['Y']] = i['ID']
     # 获取边缘X Y的数值
     while len(Y) <= i['X']:
         Y.append(0)
@@ -51,8 +50,8 @@ for i in data:
     Y[i['X']] += i['HEIGHT']
     X[i['Y']] += i['WIDTH']
 
-print(X)
-print(Y)
+print("边缘X的值",X)
+print("边缘Y的值",Y)
 
 Y_max = max(Y)
 X_max = max(X)

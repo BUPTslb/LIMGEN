@@ -23,7 +23,7 @@ const double cycle_limit = 500;//运行时间(速度)限制，单位：周期
 const double area_limit = 1000;//面积限制，单位：
 const double power_limit = 10;//功耗限制，单位：
 //定义数据的位数，这个后期要修改，从CDFG中得到
-const int bit_num_operand = 64;//操作数的位数，全局变量，暂时定义为64
+const int bit_num_operand = 16;//操作数的位数，全局变量，暂时定义为16
 
 //定义节点类型
 struct Nodes {

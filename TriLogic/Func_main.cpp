@@ -475,7 +475,8 @@ int main() {
         rapidjson::StringBuffer buffer;
         rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
         doc.Accept(writer);
-        std::ofstream outputFile("output.json");
+        //"..\\TriLogic\\database\\database_lut.txt"
+        std::ofstream outputFile("..\\TriLogic\\layout\\output.json");
         if (outputFile.is_open()) {
             outputFile << buffer.GetString();
             outputFile.close();
