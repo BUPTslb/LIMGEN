@@ -23,9 +23,9 @@ A simulator is integrated in the framework to evaluate the performance of hetero
 9. 评估和对比实验 Evaluation and Comparison Experiments
 
 ## 引用 reference
-本工作将发表在ICCAD'2023上，引用请参考一下格式：
+本工作将发表在ICCAD'2023上，引用格式将在论文发布后补充：
 
-This work will be published in ICCAD'2023, please refer to the following format for citation:
+This work will be published in ICCAD'2023, citation format will be supplemented after publication:
 
 
 ## 后续工作：
