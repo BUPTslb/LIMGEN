@@ -23,9 +23,20 @@ A simulator is integrated in the framework to evaluate the performance of hetero
 9. 评估和对比实验 Evaluation and Comparison Experiments
 
 ## 引用 reference
-本工作将发表在ICCAD'2023上，引用格式将在论文发布后补充：
+本工作发表在ICCAD'2023上，BIBTEX引用格式：
 
-This work will be published in ICCAD'2023, citation format will be supplemented after publication:
+This work has be published in ICCAD'2023, bibtex citation format :
+“
+@INPROCEEDINGS{10323837,
+  author={Shen, Libo and Long, Boyu and Liu, Rui and Zhang, Xiaoyu and Han, Yinhe and Chen, Xiaoming},
+  booktitle={2023 IEEE/ACM International Conference on Computer Aided Design (ICCAD)}, 
+  title={LIM-GEN: A Data-Guided Framework for Automated Generation of Heterogeneous Logic-in-Memory Architecture}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={1-9},
+  doi={10.1109/ICCAD57390.2023.10323837}}
+”
 
 
 ## 后续工作：
