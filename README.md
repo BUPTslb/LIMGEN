@@ -20,7 +20,7 @@ A simulator is integrated in the framework to evaluate the performance of hetero
 This work is published in ICCAD'2023, bibtex citation format :
 
 
-“
+```bash
 @INPROCEEDINGS{10323837,
   author={Shen, Libo and Long, Boyu and Liu, Rui and Zhang, Xiaoyu and Han, Yinhe and Chen, Xiaoming},
   booktitle={2023 IEEE/ACM International Conference on Computer Aided Design (ICCAD)}, 
@@ -30,7 +30,7 @@ This work is published in ICCAD'2023, bibtex citation format :
   number={},
   pages={1-9},
   doi={10.1109/ICCAD57390.2023.10323837}}
-”
+ ```
 
 
 ## Future work：
